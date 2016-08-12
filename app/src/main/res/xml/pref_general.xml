@@ -1,0 +1,36 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--android:key="pref_key_storage_settings"-->
+    <PreferenceCategory android:title="Private key">
+
+        <io.mainframe.hacs.settings.PrivateKeyChooser
+            android:key="privateKeyFilename"
+            android:title="Select your private key" />
+
+        <EditTextPreference
+            android:key="privateKeyPassword"
+            android:inputType="textPassword"
+            android:title="The password to the private key" />
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="Security">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="requireMainframeWifi"
+            android:summaryOff="Accept every wifi. Risky!"
+            android:summaryOn="Accept only the Mainframe wifi (recommended)."
+            android:title="Require Mainframe wifi" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="checkServerFingerprint"
+            android:summaryOff="No fingerprint check. Risky!"
+            android:summaryOn="The fingerprint of the door endpoint will be verified (recommended)."
+            android:title="Check server fingerprint" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
