@@ -3,4 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="statusOpen">#00FF00</color>
+    <color name="statusClosed">#ff0011</color>
+    <color name="statusClosing">#ffdd00</color>
+    <color name="statusUnknown">#e600ff</color>
 </resources>

@@ -18,5 +18,9 @@ public final class Constants {
     // testing
     public static final String DOOR_SERVER_HOST_KEY = "02:31:0d:a4:21:22:92:fb:68:5d:87:b3:18:66:13:43";
 
-
+    public static final String KEYSTORE_FILE = "keystore/hacs_keystore.bks";
+    public static final String KEYSTORE_PW = "keystorepw";
+    public static final String MQTT_SERVER = "ssl://mainframe.io:8883";
+    public static final String MQTT_TOPIC_STATUS = "/access-control-system/space-state";
+    public static final String MQTT_TOPIC_STATUS_NEXT = "/access-control-system/space-state-next";
 }

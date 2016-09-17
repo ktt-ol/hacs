@@ -7,9 +7,7 @@ public final class DoorCommand {
 
     private static final String CMD = "set-status";
 
-    public static final String CLOSE = CMD + " none";
-    public static final String KEYHOLDER = CMD + " keyholder";
-    public static final String MEMBER = CMD + " member";
-    public static final String PUBLIC = CMD + " public";
-    public static final String OPEN = CMD + " open";
+    public static String getCmd(Status status) {
+        return CMD + " " + status.getValue();
+    }
 }

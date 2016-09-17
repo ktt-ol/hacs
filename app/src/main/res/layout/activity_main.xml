@@ -11,56 +11,91 @@
               tools:context=".MainActivity">
 
 
-    <TextView
-        android:id="@+id/globalWarnTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:visibility="gone"/>
-
-    <!--
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginTop="6dp">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Space Status:"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/spaceStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
-            android:text="offen"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-    -->
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Network:"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            />
+
+
+        <ImageView
+            android:id="@+id/verifiedWifi"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/ic_error_black_24dp"
+            />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp">
 
         <TextView
-            android:id="@+id/doorStatus"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
-            android:text="Kein WLan"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:text="Current status:"
+            />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/currentStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            android:text="UNKNOWN"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Next status:"
+            />
+
+        <TextView
+            android:id="@+id/nextStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            android:text=""/>
+
+    </RelativeLayout>
+
+
+
+    <Spinner
+        android:id="@+id/spinnerStatusNow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:spinnerMode="dialog"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/custom_spinner"
+        android:padding="10dp"
+        />
+
+    <Spinner
+        android:id="@+id/spinnerStatusNext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:spinnerMode="dialog"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/custom_spinner"
+        android:padding="10dp"
+        />
 
     <ProgressBar
         android:id="@+id/progressMain"
@@ -69,37 +104,54 @@
         android:layout_gravity="center_horizontal"
         android:visibility="invisible"/>
 
-    <!--<LinearLayout-->
-    <!--android:layout_width="fill_parent"-->
-    <!--android:layout_height="wrap_content">-->
-
-    <Button
-        android:id="@+id/buttonStatusNone"
-        style="@style/bigButton"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/containerMqttConnection"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="Schließen"
+        android:visibility="gone">
 
-        />
+        <TextView
+            android:id="@+id/textStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/reconnectMqttButton"
+            android:paddingLeft="8dp"
+            android:text="..."
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            />
 
-    <Button
-        android:id="@+id/buttonStatusPublic"
-        style="@style/bigButton"
-        android:layout_width="wrap_content"
+        <ImageButton
+            android:id="@+id/reconnectMqttButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/ic_autorenew_black_24dp"
+            />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/globalWarnView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Public"/>
+        android:orientation="horizontal"
+        android:visibility="gone">
 
-    <Button
-        android:id="@+id/buttonStatusOpen"
-        style="@style/bigButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Öffnen"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="8dp"
+            android:src="@drawable/ic_warning_yellow_24dp"
+            />
 
-    <!--</LinearLayout>-->
+        <TextView
+            android:id="@+id/globalWarnTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="..."
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            />
+    </LinearLayout>
 
 
 </LinearLayout>
