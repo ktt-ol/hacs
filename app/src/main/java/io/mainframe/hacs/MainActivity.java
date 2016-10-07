@@ -65,8 +65,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MqttConnector mqttConnector;
     private boolean isInMainframeWifi = false;
     private String tryCommand;
-
-    private boolean skipNextOnSelectStatusNext = false;
+    // used to detect password changes
+    private String lastMqttPassword = "";
 
     private final DoorStateElement[] spaceStatus = {
             new DoorStateElement(null, "Set Status"),
@@ -103,10 +103,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         spinnerNext.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (skipNextOnSelectStatusNext) {
-                    skipNextOnSelectStatusNext = false;
+                if (position == 0) {
                     return;
                 }
+
+                final DoorStateElement nextState = MainActivity.this.spaceStatusNext[position];
+                mqttConnector.send(Constants.MQTT_TOPIC_STATUS_NEXT, nextState.getStatus().getValue());
             }
 
             @Override
@@ -149,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        this.lastMqttPassword = getConnectionPassword();
         this.mqttConnector = new MqttConnector(getApplicationContext(), this);
     }
 
@@ -166,6 +169,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         checkWifi();
         updateButtonState();
         registerReceiver(this.networkStatus, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+        String mqttPassword = getConnectionPassword();
+        if (!this.lastMqttPassword.equals(mqttPassword)) {
+            Log.i(TAG, "Reconnect to mqtt server, because of password change.");
+            this.lastMqttPassword = mqttPassword;
+            this.mqttConnector.disconnect();
+            this.mqttConnector.connect();
+        }
     }
 
     @Override
@@ -325,6 +336,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /* mqtt callbacks */
 
     @Override
+    public String getConnectionPassword() {
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        return preferences.getString("mqttPassword", "");
+    }
+
+    @Override
     public void onMqttReady() {
         updateDoorStatus("...", R.color.statusUnknown);
         findViewById(R.id.containerMqttConnection).setVisibility(View.INVISIBLE);
@@ -341,6 +358,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (Constants.MQTT_TOPIC_STATUS_NEXT.equals(topic)) {
             updateStatusText(R.id.nextStatus, msg);
         }
+    }
+
+    @Override
+    public void error(String msg) {
+        updateDoorStatus("mqtt error: " + msg, R.color.statusUnknown);
+        findViewById(R.id.reconnectMqttButton).setVisibility(View.VISIBLE);
+        findViewById(R.id.containerMqttConnection).setVisibility(View.VISIBLE);
+
+        ((TextView) findViewById(R.id.currentStatus)).setText("UNKNOWN");
+        ((TextView) findViewById(R.id.nextStatus)).setText("UNKNOWN");
     }
 
     /* NetworkStatus callbacks */
@@ -363,15 +390,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (IllegalArgumentException e) {
             textView.setText("UNKNOWN");
         }
-    }
-
-    @Override
-    public void error(String msg) {
-        updateDoorStatus("mqtt error: " + msg, R.color.statusUnknown);
-        findViewById(R.id.reconnectMqttButton).setVisibility(View.VISIBLE);
-        findViewById(R.id.containerMqttConnection).setVisibility(View.VISIBLE);
-
-        ((TextView) findViewById(R.id.currentStatus)).setText("UNKNOWN");
-        ((TextView) findViewById(R.id.nextStatus)).setText("UNKNOWN");
     }
 }

@@ -105,8 +105,14 @@ public class MqttConnector {
 
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
-//        options.setUserName("test");
-//        options.setPassword("test".toCharArray());
+
+        String password = this.callbacks.getConnectionPassword();
+        if (!password.isEmpty()) {
+            Log.d(TAG, "Using password to connect");
+            options.setUserName(Constants.MQTT_USER);
+            options.setPassword(password.toCharArray());
+        }
+
         final IMqttToken token;
         try {
             InputStream input = this.ctx.getAssets().open(Constants.KEYSTORE_FILE);
@@ -134,6 +140,15 @@ public class MqttConnector {
                 handleError("Can't connect to mqtt server.", exception);
             }
         });
+    }
+
+    public void send(String topic, String msg) {
+        Log.i(TAG, "Sending '" + msg + "' on " + topic);
+        try {
+            client.publish(topic, new MqttMessage(msg.getBytes()));
+        } catch (MqttException e) {
+            handleError("Can't publish message.", e);
+        }
     }
 
     private void subscribe(final String topic) {

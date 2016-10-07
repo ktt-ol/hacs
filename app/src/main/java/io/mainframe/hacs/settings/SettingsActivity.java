@@ -13,6 +13,9 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.ssh.CheckPrivateKeyAsync;
 import io.mainframe.hacs.ssh.SshResponse;

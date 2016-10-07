@@ -8,13 +8,15 @@ echo -n | openssl s_client -connect mainframe.io:8883 | sed -ne '/-BEGIN CERTIFI
 keytool -import -trustcacerts -keystore hacs_keystore.bks -storepass keystorepw -noprompt -alias mqtt_mainframe -file mqtt_mainframe.io.crt -storetype BKS -providerClass org.bouncycastle.jce.provider.BouncyCastleProvider -providerpath bcprov-ext-jdk14-1.53.jar
 ```
 
+# ssh keys
+
+Must start with `mf-door.` and end with `.private.key` and must have a password.
 
 ## TODO
 
-* Error Handling, Rückgabe ssh
-* ignore options berücksichtigen
 * Launcher icon
 * Make better progressbar/waiting
+* Save passwords more secure, e.g. https://developer.android.com/samples/BasicAndroidKeyStore/index.html
 
 # Libs
 

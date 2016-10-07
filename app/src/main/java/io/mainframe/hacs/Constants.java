@@ -20,7 +20,9 @@ public final class Constants {
 
     public static final String KEYSTORE_FILE = "keystore/hacs_keystore.bks";
     public static final String KEYSTORE_PW = "keystorepw";
+    public static final String MQTT_USER = "hacs_app";
     public static final String MQTT_SERVER = "ssl://mainframe.io:8883";
     public static final String MQTT_TOPIC_STATUS = "/access-control-system/space-state";
-    public static final String MQTT_TOPIC_STATUS_NEXT = "/access-control-system/space-state-next";
+//    public static final String MQTT_TOPIC_STATUS_NEXT = "/test/access-control-system/space-state-next";
+public static final String MQTT_TOPIC_STATUS_NEXT = "/access-control-system/space-state-next";
 }

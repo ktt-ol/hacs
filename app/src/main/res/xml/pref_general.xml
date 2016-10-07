@@ -14,6 +14,15 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="MQTT">
+
+        <EditTextPreference
+            android:key="mqttPassword"
+            android:inputType="textPassword"
+            android:title="The password for the mqtt server" />
+
+    </PreferenceCategory>
+
 
     <PreferenceCategory android:title="Security">
 
