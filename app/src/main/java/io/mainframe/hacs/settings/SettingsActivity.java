@@ -146,6 +146,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             final SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
             editor.putBoolean("credentialsOk", credentialsOk);
             editor.commit();
+
         }
     }
 }

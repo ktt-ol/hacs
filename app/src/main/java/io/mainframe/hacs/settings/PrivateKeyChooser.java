@@ -1,5 +1,6 @@
 package io.mainframe.hacs.settings;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -47,7 +48,9 @@ public class PrivateKeyChooser extends DialogPreference implements View.OnClickL
     @Override
     protected View onCreateDialogView() {
         this.contentView = super.onCreateDialogView();
-        new FindPrivateKeysAsync().execute();
+        this.contentView.findViewById(R.id.searchButton).setOnClickListener(this);
+        this.contentView.findViewById(R.id.selectManuallyButton).setOnClickListener(this);
+
         return this.contentView;
     }
 
@@ -62,7 +65,38 @@ public class PrivateKeyChooser extends DialogPreference implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        this.privateKeyFilePath = ((File) v.getTag()).getAbsolutePath();
+        switch (v.getId()) {
+            case R.id.searchButton:
+                new FindPrivateKeysAsync().execute();
+                this.contentView.findViewById(R.id.listPrivateKeysProgress).setVisibility(View.VISIBLE);
+                enableButtons(false);
+                break;
+
+            case R.id.selectManuallyButton:
+                new FileChooser((Activity) getContext())
+                        .setExtension(".key")
+                        .setFileListener(new FileChooser.FileSelectedListener() {
+                            @Override
+                            public void fileSelected(final File file) {
+                                clearResults();
+                                privateKeyFilePath = file.getAbsolutePath();
+                                addResultEntry(file,(RadioGroup) contentView.findViewById(R.id.privateKeyList));
+                                contentView.findViewById(R.id.scrollView).setVisibility(View.VISIBLE);
+                            }
+                        })
+                        .showDialog();
+
+                break;
+
+            default:
+                 this.privateKeyFilePath = ((File) v.getTag()).getAbsolutePath();
+                break;
+        }
+    }
+
+    private void enableButtons(boolean enabled) {
+        this.contentView.findViewById(R.id.searchButton).setEnabled(enabled);
+        this.contentView.findViewById(R.id.selectManuallyButton).setEnabled(enabled);
     }
 
     @Override
@@ -77,8 +111,31 @@ public class PrivateKeyChooser extends DialogPreference implements View.OnClickL
         }
     }
 
+    private RadioButton addResultEntry(File keyFile, RadioGroup privateKeyList) {
+        final String absolutePath = keyFile.getAbsolutePath();
+        RadioButton radioButton = new RadioButton(getContext());
+        radioButton.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        radioButton.setPadding(0, 6, 0, 6);
+        radioButton.setText(String.format("%s (%s)", keyFile.getName(), absolutePath));
+        radioButton.setTag(keyFile);
+        radioButton.setOnClickListener(this);
+        privateKeyList.addView(radioButton);
+        if (absolutePath.equals(this.privateKeyFilePath)) {
+            privateKeyList.check(radioButton.getId());
+        }
+        return radioButton;
+    }
+
+    private void clearResults() {
+        RadioGroup privateKeyList = (RadioGroup) this.contentView.findViewById(R.id.privateKeyList);
+        privateKeyList.removeAllViews();
+        this.contentView.findViewById(R.id.scrollView).setVisibility(View.INVISIBLE);
+    }
 
     private void dataRetrieved(ArrayList<File> result) {
+        enableButtons(true);
+        this.contentView.findViewById(R.id.listPrivateKeysProgress).setVisibility(View.INVISIBLE);
+        clearResults();
         if (result.isEmpty()) {
             this.contentView.findViewById(R.id.listPrivateKeysProgress).setVisibility(View.GONE);
             this.contentView.findViewById(R.id.noPrivateKeysFound).setVisibility(View.VISIBLE);
@@ -86,24 +143,12 @@ public class PrivateKeyChooser extends DialogPreference implements View.OnClickL
         }
 
         RadioGroup privateKeyList = (RadioGroup) this.contentView.findViewById(R.id.privateKeyList);
-
         for (File keyFile : result) {
-            final String absolutePath = keyFile.getAbsolutePath();
-            RadioButton radioButton = new RadioButton(getContext());
-            radioButton.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-            radioButton.setPadding(0, 6, 0, 6);
-            radioButton.setText(String.format("%s (%s)", keyFile.getName(), absolutePath));
-            radioButton.setTag(keyFile);
-            radioButton.setOnClickListener(this);
-            privateKeyList.addView(radioButton);
-            if (absolutePath.equals(this.privateKeyFilePath)) {
-                privateKeyList.check(radioButton.getId());
-            }
+            addResultEntry(keyFile, privateKeyList);
         }
 
         this.contentView.findViewById(R.id.listPrivateKeysProgress).setVisibility(View.GONE);
         this.contentView.findViewById(R.id.scrollView).setVisibility(View.VISIBLE);
-
     }
 
 

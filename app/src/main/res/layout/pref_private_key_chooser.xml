@@ -8,11 +8,18 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
 
+    <Button
+        android:text="Search for it..."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/searchButton"/>
+
     <LinearLayout
         android:id="@+id/listPrivateKeysProgress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="invisible">
 
         <TextView
             android:layout_width="wrap_content"
@@ -26,7 +33,6 @@
             android:layout_height="wrap_content" />
 
     </LinearLayout>
-
 
     <TextView
         android:id="@+id/noPrivateKeysFound"
@@ -47,42 +53,15 @@
             android:id="@+id/privateKeyList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <!--<RadioButton-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:paddingTop="6dp"-->
-            <!--android:paddingBottom="6dp"-->
-            <!--android:text="/sdklfsdf/sdklfds/sdfsdf.comsdf" />-->
-
-            <!--<RadioButton-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:paddingTop="6dp"-->
-            <!--android:paddingBottom="6dp"-->
-            <!--android:text="/sdklfsdf/sdklfds/sdfsdf.comsdf" />-->
-
-            <!--<RadioButton-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:paddingTop="6dp"-->
-            <!--android:paddingBottom="6dp"-->
-            <!--android:text="/sdklfsdf/sdklfds/sdfsdf.comsdf" />-->
-
-            <!--<RadioButton-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:paddingTop="6dp"-->
-            <!--android:paddingBottom="6dp"-->
-            <!--android:text="/sdklfsdf/sdklfds/sdfsdf.comsdf" />-->
-
         </RadioGroup>
 
     </ScrollView>
 
-    <!--<ListView-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:id="@+id/privateKeyList" />-->
+    <Button
+        android:text="Select manually..."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:id="@+id/selectManuallyButton"/>
 
 </LinearLayout>
