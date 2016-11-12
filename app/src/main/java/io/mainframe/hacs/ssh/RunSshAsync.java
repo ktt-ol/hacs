@@ -51,7 +51,7 @@ public class RunSshAsync extends AsyncTask<PkCredentials, Void, RunSshAsync.Resu
         JSch jsch = new JSch();
         try {
             jsch.addIdentity(credentials.privateKeyFile, credentials.password);
-            Session session = jsch.getSession(credentials.getUser(), Constants.DOOR_SERVER_HOST, Constants.DOOR_SERVER_PORT);
+            Session session = jsch.getSession(Constants.DOOR_USER, Constants.DOOR_SERVER_HOST, Constants.DOOR_SERVER_PORT);
 
             // Avoid asking for key confirmation
             Properties prop = new Properties();
