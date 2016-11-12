@@ -85,11 +85,13 @@ public class MqttConnector {
     public void disconnect() {
         if (!this.client.isConnected()) {
             Log.d(TAG, "Client is already disconnected.");
+            this.client.unregisterResources();
             return;
         }
 
         try {
             this.client.disconnect();
+            this.client.unregisterResources();
         } catch (MqttException e) {
             Log.e(TAG, "Error during disconnect", e);
         }
@@ -112,7 +114,6 @@ public class MqttConnector {
             options.setUserName(Constants.MQTT_USER);
             options.setPassword(password.toCharArray());
         }
-
         final IMqttToken token;
         try {
             InputStream input = this.ctx.getAssets().open(Constants.KEYSTORE_FILE);
