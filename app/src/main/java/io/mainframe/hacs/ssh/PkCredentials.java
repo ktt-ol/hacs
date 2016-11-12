@@ -20,14 +20,14 @@ public class PkCredentials {
     }
 
     /**
-     * Gets the "lalafoo" from "mf-door.lalafoo.private.key"
+     * Gets the "lalafoo" from "mf-door.lalafoo.key"
      *
      * @return the user, based on the name of the key file
      */
     public String getUser() {
         File pkFile = new File(this.privateKeyFile);
         String[] splits = pkFile.getName().split(Pattern.quote("."));
-        if (splits.length != 4) {
+        if (splits.length != 3) {
             throw new IllegalArgumentException("Invalid private key filename: " + pkFile.getName());
         }
         return splits[1];

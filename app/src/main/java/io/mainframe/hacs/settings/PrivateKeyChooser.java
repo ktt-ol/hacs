@@ -145,7 +145,7 @@ public class PrivateKeyChooser extends DialogPreference implements View.OnClickL
                     continue;
                 }
 //                System.out.println("FILE: " + file.toString());
-                if (file.getName().startsWith("mf-door.") && file.getName().endsWith(".private.key")) {
+                if (file.getName().startsWith("mf-door.") && file.getName().endsWith(".key")) {
                     result.add(file);
                 }
             }
