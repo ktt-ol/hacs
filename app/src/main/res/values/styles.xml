@@ -6,6 +6,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="@attr/libNameStyle">@style/LibName</item>
+        <item name="@attr/libLicenseStyle">@style/LibLicense</item>
     </style>
 
 
@@ -17,5 +20,18 @@
     </style>
 
     <style name="Theme.Dialog" parent="@android:style/Theme.Dialog" />
+
+    <style name="LibName">
+        <item name="android:textAppearance">@android:style/TextAppearance.Medium</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">10dp</item>
+    </style>
+    <style name="LibLicense">
+        <item name="android:textAppearance">@android:style/TextAppearance.Small</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
 
 </resources>

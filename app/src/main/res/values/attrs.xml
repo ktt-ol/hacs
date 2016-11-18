@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="libNameStyle" format="reference"/>
+    <attr name="libLicenseStyle" format="reference"/>
+</resources>

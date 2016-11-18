@@ -20,12 +20,14 @@ Must start with `mf-door.` and end with `.key` and must have a password.
 * [ ] Save passwords more secure, e.g. https://developer.android.com/samples/BasicAndroidKeyStore/index.html
 * [ ] Scan passwords with QR-Code
 * [X] About dialog
-    * [ ] List libs with their Licenses
+    * [X] List libs with their Licenses
 
 # Libs
 
 * https://www.eclipse.org/paho/clients/android/
 * https://github.com/googlesamples/easypermissions
+* https://github.com/ACRA/acra.git
+* http://www.jcraft.com/jsch/
 
 # Helpful!
 
