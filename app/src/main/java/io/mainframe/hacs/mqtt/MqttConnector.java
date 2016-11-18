@@ -12,13 +12,10 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 
-import java.io.IOException;
 import java.io.InputStream;
 
-import io.mainframe.hacs.Constants;
-import io.mainframe.hacs.NetworkStatus;
+import io.mainframe.hacs.common.Constants;
 
 /**
  * Responsible for the conneciton to the client server. The connection will be initialized automatically and ....

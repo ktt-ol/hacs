@@ -1,4 +1,4 @@
-package io.mainframe.hacs;
+package io.mainframe.hacs.main;
 
 import android.content.Context;
 import android.graphics.Color;

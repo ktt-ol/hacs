@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
-        <activity android:name=".MainActivity" >
+        <activity android:name=".main.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,7 +44,7 @@
         <service android:name="org.eclipse.paho.android.service.MqttService" >
         </service>
         <!--
-        <receiver android:name="io.mainframe.hacs.NetworkStatus">
+        <receiver android:name="io.mainframe.hacs.common.NetworkStatus">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>

@@ -1,4 +1,4 @@
-package io.mainframe.hacs;
+package io.mainframe.hacs.main;
 
 import android.app.Activity;
 import android.app.Dialog;

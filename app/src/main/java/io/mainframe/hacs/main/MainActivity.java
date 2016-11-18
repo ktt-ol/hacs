@@ -1,11 +1,10 @@
-package io.mainframe.hacs;
+package io.mainframe.hacs.main;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
@@ -18,16 +17,19 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Arrays;
 import java.util.List;
 
+import io.mainframe.hacs.common.Constants;
+import io.mainframe.hacs.common.DoorCommand;
+import io.mainframe.hacs.common.NetworkStatus;
+import io.mainframe.hacs.R;
+import io.mainframe.hacs.common.Status;
 import io.mainframe.hacs.about.AboutActivity;
 import io.mainframe.hacs.mqtt.MqttConnector;
 import io.mainframe.hacs.mqtt.MqttConnectorCallbacks;

@@ -1,4 +1,4 @@
-package io.mainframe.hacs;
+package io.mainframe.hacs.common;
 
 /**
  * Created by holger on 11.08.16.

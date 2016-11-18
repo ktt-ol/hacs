@@ -1,4 +1,4 @@
-package io.mainframe.hacs;
+package io.mainframe.hacs.common;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -69,7 +69,7 @@ public class NetworkStatus extends BroadcastReceiver {
     }
 
 
-    interface NetworkStatusCallback {
+    public interface NetworkStatusCallback {
         void onNetworkChange(boolean hasNetwork, boolean hasWifi, boolean hasMobile);
     }
 }

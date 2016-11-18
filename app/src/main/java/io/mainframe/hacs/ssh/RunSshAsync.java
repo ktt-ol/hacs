@@ -10,7 +10,7 @@ import com.jcraft.jsch.Session;
 import java.io.InputStream;
 import java.util.Properties;
 
-import io.mainframe.hacs.Constants;
+import io.mainframe.hacs.common.Constants;
 
 /**
  * Created by holger on 09.11.15.
