@@ -19,7 +19,8 @@ Must start with `mf-door.` and end with `.key` and must have a password.
 * [ ] Make better progressbar/waiting
 * [ ] Save passwords more secure, e.g. https://developer.android.com/samples/BasicAndroidKeyStore/index.html
 * [ ] Scan passwords with QR-Code
-* [ ] About dialog
+* [X] About dialog
+    * [ ] List libs with their Licenses
 
 # Libs
 

@@ -28,6 +28,7 @@ import android.widget.Toast;
 import java.util.Arrays;
 import java.util.List;
 
+import io.mainframe.hacs.about.AboutActivity;
 import io.mainframe.hacs.mqtt.MqttConnector;
 import io.mainframe.hacs.mqtt.MqttConnectorCallbacks;
 import io.mainframe.hacs.settings.SettingsActivity;
@@ -200,15 +201,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         if (item.getItemId() == R.id.action_settings) {
-
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else if (item.getItemId() == R.id.action_about) {
+            startActivity(new Intent(this, AboutActivity.class));
             return true;
         }
-
 
         return super.onOptionsItemSelected(item);
     }
