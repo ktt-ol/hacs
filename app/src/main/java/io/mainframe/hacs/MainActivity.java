@@ -1,5 +1,6 @@
 package io.mainframe.hacs;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Arrays;
+import java.util.List;
 
 import io.mainframe.hacs.mqtt.MqttConnector;
 import io.mainframe.hacs.mqtt.MqttConnectorCallbacks;
@@ -32,11 +34,11 @@ import io.mainframe.hacs.settings.SettingsActivity;
 import io.mainframe.hacs.ssh.PkCredentials;
 import io.mainframe.hacs.ssh.RunSshAsync;
 import io.mainframe.hacs.ssh.SshResponse;
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
 
 
-
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SshResponse<RunSshAsync.Result>, YesNoDialog.ResultListener, MqttConnectorCallbacks, NetworkStatus.NetworkStatusCallback {
-
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SshResponse<RunSshAsync.Result>, YesNoDialog.ResultListener, MqttConnectorCallbacks, NetworkStatus.NetworkStatusCallback, EasyPermissions.PermissionCallbacks {
 
     public static class DoorStateElement {
         // can be null for unkown
@@ -115,8 +117,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onNothingSelected(AdapterView<?> parent) {
                 System.out.println("nothing selected");
             }
-        });
 
+        });
 
         final ArrayAdapter<DoorStateElement> statusAdapter = new DisableFirstEntryArrayAdapter<>(this, android.R.layout.simple_spinner_item, this.spaceStatus);
         statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -153,7 +155,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         this.lastMqttPassword = getConnectionPassword();
         this.mqttConnector = new MqttConnector(getApplicationContext(), this);
+
+        ensurePermission();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -183,6 +188,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onPause() {
         super.onPause();
         unregisterReceiver(this.networkStatus);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
     @Override
@@ -218,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void processFinish(RunSshAsync.Result response) {
         this.
-        stopWaiting();
+                stopWaiting();
         switch (response.status) {
             case SUCCESS:
                 Toast.makeText(this, response.msg, Toast.LENGTH_LONG).show();
@@ -248,6 +261,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private void ensurePermission() {
+        String[] perms = {
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.ACCESS_WIFI_STATE,
+                Manifest.permission.INTERNET,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.WAKE_LOCK,
+                Manifest.permission.READ_PHONE_STATE
+        };
+        if (!EasyPermissions.hasPermissions(this, perms)) {
+            Log.w(TAG, "Requesting permission");
+            // Do not have permissions, request them now
+            EasyPermissions.requestPermissions(this, getString(R.string.ask_for_permission), 1, perms);
+        }
+    }
+
     private void startWaiting() {
         findViewById(R.id.spinnerStatusNow).setEnabled(false);
         findViewById(R.id.spinnerStatusNext).setEnabled(false);
@@ -273,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         findViewById(R.id.spinnerStatusNow).setEnabled(enable);
         findViewById(R.id.verifiedWifi).setBackground(getResources().getDrawable(
-                enable ? R.drawable.ic_verified_user_black_24dp: R.drawable.ic_error_black_24dp));
+                enable ? R.drawable.ic_verified_user_black_24dp : R.drawable.ic_error_black_24dp));
     }
 
     private void updateDoorStatus(String message, int color) {
@@ -390,5 +420,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (IllegalArgumentException e) {
             textView.setText("UNKNOWN");
         }
+    }
+
+    /* EasyPermissions.PermissionCallbacks */
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        Log.d(TAG, "onPermissionsDenied:" + requestCode + ":" + perms.size());
+
+        // (Optional) Check whether the user denied any permissions and checked "NEVER ASK AGAIN."
+        // This will display a dialog directing them to enable the permission in app settings.
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this, getString(R.string.ask_for_permission_again))
+                    .setTitle(getString(R.string.app_name))
+                    .setPositiveButton(getString(R.string.action_settings))
+                    .setNegativeButton(getString(R.string.cancel), null /* click listener */)
+                    .setRequestCode(1)
+                    .build()
+                    .show();
+        }
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        // ignored
     }
 }
