@@ -15,10 +15,10 @@ Must start with `mf-door.` and end with `.key` and must have a password.
 ## TODO
 
 * [X] Berechtigungen erfragen
-* [ ] Launcher icon
+* [X] Launcher icon
 * [ ] Make better progressbar/waiting
 * [ ] Save passwords more secure, e.g. https://developer.android.com/samples/BasicAndroidKeyStore/index.html
-* [ ] Scan passwords with QR-Code
+* [X] Scan passwords with QR-Code
 * [X] About dialog
     * [X] List libs with their Licenses
 
