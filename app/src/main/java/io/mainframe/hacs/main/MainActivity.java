@@ -31,6 +31,7 @@ import io.mainframe.hacs.common.NetworkStatus;
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.common.Status;
 import io.mainframe.hacs.about.AboutActivity;
+import io.mainframe.hacs.common.YesNoDialog;
 import io.mainframe.hacs.mqtt.MqttConnector;
 import io.mainframe.hacs.mqtt.MqttConnectorCallbacks;
 import io.mainframe.hacs.settings.SettingsActivity;
@@ -160,6 +161,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.mqttConnector = new MqttConnector(getApplicationContext(), this);
 
         ensurePermission();
+
+        // for testing
+//        findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//            }
+//        });
     }
 
 
@@ -245,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
                 }
                 String dialogMsg = response.msg + "\nContinue?";
-                YesNoDialog.create("Wrong Hostkey", dialogMsg).show(getSupportFragmentManager(), "hostkey," + response.command);
+                YesNoDialog.show(this, "Wrong Hostkey", dialogMsg, "hostkey", this);
                 break;
             case UNKNOWN_ERROR:
                 Toast.makeText(this, response.msg, Toast.LENGTH_LONG).show();
@@ -255,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void dialogClosed(String tag, boolean resultOk) {
-        if (resultOk && tag.startsWith("hostkey")) {
+        if (resultOk && tag.equals("hostkey")) {
             final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             PkCredentials credentials = new PkCredentials(preferences);
             new RunSshAsync(this, this.tryCommand, false).execute(credentials);

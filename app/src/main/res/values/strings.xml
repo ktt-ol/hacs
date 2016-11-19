@@ -12,5 +12,7 @@
     <string name="ask_for_permission">Ohne die folgenden Rechte wird diese App nicht richtig funktionieren.</string>
     <string name="ask_for_permission_again">Du hast der App nicht die notwendigen Rechte gewährt. Ohne diese Rechte wird sie nicht korrekt funktionieren. Du kannst das aber jetzt in den "Einstellungen" ändern.</string>
 
-    <string name="settings_scan_qrcode">QR-Code scannen</string>
+    <string name="settings_qrcode_scan">QR-Code scannen</string>
+    <string name="settings_qrcode_install_app_title">Scan App fehlt</string>
+    <string name="settings_qrcode_install_app">Soll eine App zum lesen von QR-Codes installiert werden? (Du wirst in den PlayStore geleitet.)</string>
 </resources>

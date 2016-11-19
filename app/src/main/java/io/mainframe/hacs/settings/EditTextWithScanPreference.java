@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import io.mainframe.hacs.R;
+import io.mainframe.hacs.common.YesNoDialog;
 
 /**
  * Adds a "scan a qr code" button to the {@link EditTextPreference}. Not that the parent
@@ -22,7 +23,10 @@ import io.mainframe.hacs.R;
  * Created by holger on 19.11.16.
  */
 
-public class EditTextWithScanPreference extends EditTextPreference implements View.OnClickListener {
+public class EditTextWithScanPreference extends EditTextPreference implements View.OnClickListener, YesNoDialog.ResultListener {
+
+    public static final String INTENT_QR_CODE_SCAN = "com.google.zxing.client.android.SCAN";
+    public static final String MARKET_LINK_QR_CODE_SCAN = "market://details?id=com.google.zxing.client.android";
 
     private static final String TAG = EditTextWithScanPreference.class.getName();
 
@@ -48,7 +52,7 @@ public class EditTextWithScanPreference extends EditTextPreference implements Vi
         ViewGroup container = (ViewGroup) editText.getParent();
 
         Button scanButton = new Button(getContext());
-        scanButton.setText(getContext().getString(R.string.settings_scan_qrcode));
+        scanButton.setText(getContext().getString(R.string.settings_qrcode_scan));
         scanButton.setOnClickListener(this);
         container.addView(scanButton);
 
@@ -58,7 +62,7 @@ public class EditTextWithScanPreference extends EditTextPreference implements Vi
     public void onClick(View v) {
         ActivityRunner activity = (ActivityRunner) getContext();
         try {
-            Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+            Intent intent = new Intent(INTENT_QR_CODE_SCAN);
             intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
             activity.startActivityWithResult(intent, new ActivityResultCallback() {
                 @Override
@@ -68,11 +72,24 @@ public class EditTextWithScanPreference extends EditTextPreference implements Vi
             });
         } catch (ActivityNotFoundException anfe) {
             Log.i(TAG, "No QR code intent found.");
-            // TODO: ask before open this intent
-            Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
-            activity.startActivity(new Intent(Intent.ACTION_VIEW, marketUri));
+            YesNoDialog.show(getContext(),
+                    getContext().getString(R.string.settings_qrcode_install_app_title),
+                    getContext().getString(R.string.settings_qrcode_install_app),
+                    null, this)
+                    .show();
         }
     }
+
+    @Override
+    public void dialogClosed(String tag, boolean resultOk) {
+        if (!resultOk) {
+            return;
+        }
+        Uri marketUri = Uri.parse(MARKET_LINK_QR_CODE_SCAN);
+        ActivityRunner activity = (ActivityRunner) getContext();
+        activity.startActivity(new Intent(Intent.ACTION_VIEW, marketUri));
+    }
+
 
     public interface ActivityRunner {
 
