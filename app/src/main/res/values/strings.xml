@@ -11,4 +11,6 @@
 
     <string name="ask_for_permission">Ohne die folgenden Rechte wird diese App nicht richtig funktionieren.</string>
     <string name="ask_for_permission_again">Du hast der App nicht die notwendigen Rechte gewährt. Ohne diese Rechte wird sie nicht korrekt funktionieren. Du kannst das aber jetzt in den "Einstellungen" ändern.</string>
+
+    <string name="settings_scan_qrcode">QR-Code scannen</string>
 </resources>

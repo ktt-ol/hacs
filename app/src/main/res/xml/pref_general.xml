@@ -5,21 +5,21 @@
 
         <io.mainframe.hacs.settings.PrivateKeyChooser
             android:key="privateKeyFilename"
-            android:title="Select your private key" />
+            android:title="Select your private key"/>
 
-        <EditTextPreference
-            android:key="privateKeyPassword"
+        <io.mainframe.hacs.settings.EditTextWithScanPreference
             android:inputType="textPassword"
-            android:title="The password to the private key" />
+            android:key="privateKeyPassword"
+            android:title="The password to the private key"/>
 
     </PreferenceCategory>
 
     <PreferenceCategory android:title="MQTT">
 
-        <EditTextPreference
-            android:key="mqttPassword"
+        <io.mainframe.hacs.settings.EditTextWithScanPreference
             android:inputType="textPassword"
-            android:title="The password for the mqtt server" />
+            android:key="mqttPassword"
+            android:title="The password for the mqtt server"/>
 
     </PreferenceCategory>
 
@@ -31,14 +31,14 @@
             android:key="requireMainframeWifi"
             android:summaryOff="Accept every wifi. Risky!"
             android:summaryOn="Accept only the Mainframe wifi (recommended)."
-            android:title="Require Mainframe wifi" />
+            android:title="Require Mainframe wifi"/>
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="checkServerFingerprint"
             android:summaryOff="No fingerprint check. Risky!"
             android:summaryOn="The fingerprint of the door endpoint will be verified (recommended)."
-            android:title="Check server fingerprint" />
+            android:title="Check server fingerprint"/>
 
     </PreferenceCategory>
 

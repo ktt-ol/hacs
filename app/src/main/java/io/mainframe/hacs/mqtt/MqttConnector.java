@@ -95,9 +95,13 @@ public class MqttConnector {
     }
 
     public void connect() {
-        if (client.isConnected()) {
-            Log.d(TAG, "Client is already connected.");
-            return;
+        try {
+            if (client.isConnected()) {
+                Log.d(TAG, "Client is already connected.");
+                return;
+            }
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Error during connect check.", e);
         }
 
         Log.d(TAG, "Try to connect.");

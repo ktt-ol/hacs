@@ -3,6 +3,7 @@ package io.mainframe.hacs.settings;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -11,16 +12,50 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
+import android.util.Pair;
 import android.view.MenuItem;
 
-import java.security.KeyStore;
-import java.security.KeyStoreException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.ssh.CheckPrivateKeyAsync;
 import io.mainframe.hacs.ssh.SshResponse;
 
-public class SettingsActivity extends AppCompatPreferenceActivity {
+public class SettingsActivity extends AppCompatPreferenceActivity implements EditTextWithScanPreference.ActivityRunner {
+
+    private Map<Integer, EditTextWithScanPreference.ActivityResultCallback> callbacks = new ConcurrentHashMap<>();
+    private int callbackIdCounter = 0;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (!this.callbacks.containsKey(requestCode)) {
+            return;
+        }
+
+        EditTextWithScanPreference.ActivityResultCallback callback = this.callbacks.remove(requestCode);
+        if (resultCode == RESULT_OK) {
+            String contents = data.getStringExtra("SCAN_RESULT");
+            System.out.println("contens: " + contents);
+            callback.activityResultCallback(contents);
+        }
+//        if (resultCode == RESULT_CANCELED) {
+//            handle cancel
+//        }
+    }
+
+    @Override
+    public void startActivityWithResult(Intent intent, EditTextWithScanPreference.ActivityResultCallback callback) {
+        int id = this.callbackIdCounter;
+        this.callbackIdCounter++;
+
+        this.callbacks.put(id, callback);
+        startActivityForResult(intent, id);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
