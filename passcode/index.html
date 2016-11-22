@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Passcode to qrcodes</title>
+  <script type="text/javascript" src="qrcodejs/jquery.min.js"></script>
+  <script type="text/javascript" src="qrcodejs/qrcode.js"></script>
+  <script type="text/javascript" src="crc8.js"></script>
+  <style type="text/css">
+    body {
+      font-size: 18px;
+    }
+
+    input {
+      width: 80%;
+    }
+
+    svg {
+      width: 400px;
+      height: 400px;
+    }
+
+    .qrcode {
+      text-align: center;
+    }
+
+    .cell {
+      display: inline-block;
+      padding: 100px;
+    }
+
+    .cell span {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 10px;;
+    }
+  </style>
+</head>
+<body>
+<p>
+  <input id="passcode" type="text"
+         value=""
+         placeholder="Insert your passcode here" formnovalidate autocomplete="false"/>
+</p>
+
+<p id="error" style="display: none"></p>
+
+<div class="qrcode">
+
+  <div class="cell">
+
+    <span>Private Key password:</span>
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <g id="pkey"></g>
+    </svg>
+  </div>
+
+  <div class="cell">
+    <span>Mqtt password:</span>
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <g id="mqtt"></g>
+    </svg>
+  </div>
+</div>
+
+<script type="text/javascript">
+  var size = 400;
+
+  var pkeySvg = new QRCode(document.getElementById("pkey"), {
+    width: size,
+    height: size,
+    useSVG: true
+  });
+  var mqttSvg = new QRCode(document.getElementById("mqtt"), {
+    width: size,
+    height: size,
+    useSVG: true
+  });
+
+  function makeChecksum(input) {
+    // convert sample text to array of bytes
+    var byte_array = input.split('').map(function (x) {
+      return x.charCodeAt(0)
+    });
+
+    var crc8 = new CRC8();
+    return crc8.checksum(byte_array)
+  }
+
+  function showError(msg) {
+    $("#error").html(msg).show();
+  }
+
+  function makeCode() {
+    var passcode = $("#passcode").val();
+
+    if (!passcode || passcode.length === 0) {
+      return;
+    }
+
+    var split = passcode.split('#');
+    if (split.length !== 3) {
+      showError("Invalid passcode (format)");
+      return;
+    }
+
+    var pkey = decodeURIComponent(split[0]);
+    var mqtt = decodeURIComponent(split[1]);
+
+    var checksum = makeChecksum(pkey + mqtt);
+    if (checksum !== parseInt(split[2], 10)) {
+      showError("Invalid passcode (checksum)");
+      console.log(split, checksum, pkey, mqtt);
+      return;
+    }
+
+    pkeySvg.makeCode(pkey);
+    mqttSvg.makeCode(mqtt);
+  }
+
+  makeCode();
+
+  $("#passcode").on("blur", function () {
+    makeCode();
+  }).on("keydown", function (e) {
+    if (e.keyCode == 13) {
+      makeCode();
+    }
+  });
+</script>
+</body>
+</html>
