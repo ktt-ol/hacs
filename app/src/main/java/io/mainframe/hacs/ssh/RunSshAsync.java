@@ -7,6 +7,8 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -75,21 +77,27 @@ public class RunSshAsync extends AsyncTask<PkCredentials, Void, RunSshAsync.Resu
             // SSH Channel
             ChannelExec channelssh = (ChannelExec) session.openChannel("exec");
 
+            ByteArrayOutputStream errorOut = new ByteArrayOutputStream();
+            channelssh.setErrStream(errorOut);
+
             // Execute command
+            Log.d(TAG, "ssh exec: " + this.command);
             channelssh.setCommand(this.command);
             channelssh.connect();
 
-            InputStream input = channelssh.getInputStream();
-            int data = input.read();
-            StringBuilder outputBuffer = new StringBuilder();
-            while (data != -1) {
-                outputBuffer.append((char) data);
-                data = input.read();
-            }
+            channelssh.start();
+
+            String resultStr = readStream(channelssh.getInputStream());
 
             channelssh.disconnect();
 
-            return new Result(this.command, Status.SUCCESS, outputBuffer.toString());
+            String errorStr = errorOut.toString("utf8");
+
+            Log.d(TAG, "ssh output: " + resultStr);
+            if (!errorStr.isEmpty()) {
+                Log.w(TAG, "ssh error output: " + errorStr);
+            }
+            return new Result(this.command, Status.SUCCESS, resultStr);
         } catch (Exception e) {
             String msg = "Error running ssh: " + e.getMessage();
             Log.e(TAG, msg, e);
@@ -103,4 +111,15 @@ public class RunSshAsync extends AsyncTask<PkCredentials, Void, RunSshAsync.Resu
         this.delegate.processFinish(result);
     }
 
+    private String readStream(InputStream input) throws IOException {
+        int data = input.read();
+        StringBuilder outputBuffer = new StringBuilder();
+        while (data != -1) {
+            outputBuffer.append((char) data);
+            data = input.read();
+        }
+
+        input.close();
+        return outputBuffer.toString();
+    }
 }

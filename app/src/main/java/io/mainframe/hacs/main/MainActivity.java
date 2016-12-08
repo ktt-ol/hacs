@@ -26,10 +26,8 @@ import android.widget.Toast;
 import java.util.List;
 
 import io.mainframe.hacs.common.Constants;
-import io.mainframe.hacs.common.DoorCommand;
 import io.mainframe.hacs.common.NetworkStatus;
 import io.mainframe.hacs.R;
-import io.mainframe.hacs.common.Status;
 import io.mainframe.hacs.about.AboutActivity;
 import io.mainframe.hacs.common.YesNoDialog;
 import io.mainframe.hacs.mqtt.MqttConnector;
@@ -140,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
                 PkCredentials credentials = new PkCredentials(preferences);
                 final DoorStateElement newState = MainActivity.this.spaceStatus[position];
-                MainActivity.this.tryCommand = DoorCommand.getCmd(newState.getStatus());
+                MainActivity.this.tryCommand = DoorCommand.getSwitchDoorStateCmd(newState.getStatus());
                 new RunSshAsync(MainActivity.this, MainActivity.this.tryCommand, true).execute(credentials);
 
                 spinner.setSelection(0);
@@ -159,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         this.lastMqttPassword = getConnectionPassword();
         this.mqttConnector = new MqttConnector(getApplicationContext(), this);
+
+        findViewById(R.id.doorBuzzerButton).setOnClickListener(this);
 
         ensurePermission();
 
@@ -229,7 +229,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // prevents double clicking
                 findViewById(R.id.reconnectMqttButton).setVisibility(View.INVISIBLE);
                 this.mqttConnector.connect();
-                return;
+                break;
+            case R.id.doorBuzzerButton:
+                final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                PkCredentials credentials = new PkCredentials(preferences);
+                MainActivity.this.tryCommand = DoorCommand.getDoorBuzzerCmd();
+                startWaiting();
+                new RunSshAsync(MainActivity.this, MainActivity.this.tryCommand, true).execute(credentials);
+                break;
         }
     }
 
@@ -239,8 +246,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     public void processFinish(RunSshAsync.Result response) {
-        this.
-                stopWaiting();
+        this.stopWaiting();
         switch (response.status) {
             case SUCCESS:
                 Toast.makeText(this, response.msg, Toast.LENGTH_LONG).show();
@@ -290,12 +296,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void startWaiting() {
         findViewById(R.id.spinnerStatusNow).setEnabled(false);
         findViewById(R.id.spinnerStatusNext).setEnabled(false);
+        findViewById(R.id.doorBuzzerButton).setEnabled(false);
         findViewById(R.id.progressMain).setVisibility(View.VISIBLE);
     }
 
     private void stopWaiting() {
         findViewById(R.id.spinnerStatusNow).setEnabled(true);
         findViewById(R.id.spinnerStatusNext).setEnabled(true);
+        findViewById(R.id.doorBuzzerButton).setEnabled(true);
         findViewById(R.id.progressMain).setVisibility(View.INVISIBLE);
     }
 
@@ -313,6 +321,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.spinnerStatusNow).setEnabled(enable);
         findViewById(R.id.verifiedWifi).setBackground(getResources().getDrawable(
                 enable ? R.drawable.ic_verified_user_black_24dp : R.drawable.ic_error_black_24dp));
+        findViewById(R.id.doorBuzzerButton).setEnabled(enable);
     }
 
     private void updateDoorStatus(String message, int color) {

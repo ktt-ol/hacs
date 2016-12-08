@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.0
+* Door buzzer button added
+
 ## 1.3.0
 * About dialog added
 * Can read passwords from qr-code
