@@ -9,10 +9,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,26 +21,22 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
-import io.mainframe.hacs.common.Constants;
-import io.mainframe.hacs.common.NetworkStatus;
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.about.AboutActivity;
-import io.mainframe.hacs.common.YesNoDialog;
+import io.mainframe.hacs.common.Constants;
+import io.mainframe.hacs.common.NetworkStatus;
 import io.mainframe.hacs.mqtt.MqttConnector;
 import io.mainframe.hacs.mqtt.MqttConnectorCallbacks;
 import io.mainframe.hacs.settings.SettingsActivity;
-import io.mainframe.hacs.ssh.PkCredentials;
-import io.mainframe.hacs.ssh.RunSshAsync;
-import io.mainframe.hacs.ssh.SshResponse;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SshResponse<RunSshAsync.Result>, YesNoDialog.ResultListener, MqttConnectorCallbacks, NetworkStatus.NetworkStatusCallback, EasyPermissions.PermissionCallbacks {
+public class MainActivity extends AppCompatActivity implements SshUiHandler.OnShhCommandHandler, View.OnClickListener,
+         MqttConnectorCallbacks, NetworkStatus.NetworkStatusCallback, EasyPermissions.PermissionCallbacks{
 
     public static class DoorStateElement {
         // can be null for unkown
@@ -68,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private NetworkStatus networkStatus = new NetworkStatus(this);
     private MqttConnector mqttConnector;
     private boolean isInMainframeWifi = false;
-    private String tryCommand;
     // used to detect password changes
     private String lastMqttPassword = "";
 
@@ -134,12 +129,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     return;
                 }
 
-                startWaiting();
-                final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-                PkCredentials credentials = new PkCredentials(preferences);
                 final DoorStateElement newState = MainActivity.this.spaceStatus[position];
-                MainActivity.this.tryCommand = DoorCommand.getSwitchDoorStateCmd(newState.getStatus());
-                new RunSshAsync(MainActivity.this, MainActivity.this.tryCommand, true).execute(credentials);
+                sendSshCommand(DoorCommand.getSwitchDoorStateCmd(newState.getStatus()));
 
                 spinner.setSelection(0);
 
@@ -169,7 +160,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            }
 //        });
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -231,50 +221,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 this.mqttConnector.connect();
                 break;
             case R.id.doorBuzzerButton:
-                final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-                PkCredentials credentials = new PkCredentials(preferences);
-                MainActivity.this.tryCommand = DoorCommand.getDoorBuzzerCmd();
-                startWaiting();
-                new RunSshAsync(MainActivity.this, MainActivity.this.tryCommand, true).execute(credentials);
+                sendSshCommand(DoorCommand.getDoorBuzzerCmd());
                 break;
         }
     }
 
 
-    /**
-     * When a 'RunSshAsync' task is completed
-     */
-    @Override
-    public void processFinish(RunSshAsync.Result response) {
-        this.stopWaiting();
-        switch (response.status) {
-            case SUCCESS:
-                Toast.makeText(this, response.msg, Toast.LENGTH_LONG).show();
-                break;
-            case WRONG_HOST_KEY:
-                final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-                boolean checkServerFingerprint = preferences.getBoolean("checkServerFingerprint", true);
-                if (checkServerFingerprint) {
-                    Toast.makeText(this, response.msg, Toast.LENGTH_LONG).show();
-                    break;
-                }
-                String dialogMsg = response.msg + "\nContinue?";
-                YesNoDialog.show(this, "Wrong Hostkey", dialogMsg, "hostkey", this);
-                break;
-            case UNKNOWN_ERROR:
-                Toast.makeText(this, response.msg, Toast.LENGTH_LONG).show();
-                break;
-        }
-    }
 
-    @Override
-    public void dialogClosed(String tag, boolean resultOk) {
-        if (resultOk && tag.equals("hostkey")) {
-            final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-            PkCredentials credentials = new PkCredentials(preferences);
-            new RunSshAsync(this, this.tryCommand, false).execute(credentials);
-        }
-    }
 
     private void ensurePermission() {
         String[] perms = {
@@ -297,14 +250,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.spinnerStatusNow).setEnabled(false);
         findViewById(R.id.spinnerStatusNext).setEnabled(false);
         findViewById(R.id.doorBuzzerButton).setEnabled(false);
-        findViewById(R.id.progressMain).setVisibility(View.VISIBLE);
     }
 
     private void stopWaiting() {
         findViewById(R.id.spinnerStatusNow).setEnabled(true);
         findViewById(R.id.spinnerStatusNext).setEnabled(true);
         findViewById(R.id.doorBuzzerButton).setEnabled(true);
-        findViewById(R.id.progressMain).setVisibility(View.INVISIBLE);
     }
 
     private void updateButtonState() {
@@ -462,5 +413,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
         // ignored
+    }
+
+    private void sendSshCommand(String command) {
+        startWaiting();
+        final SshUiHandler sshUiHandler = (SshUiHandler) getSupportFragmentManager().findFragmentById(R.id.sshUi);
+        sshUiHandler.runSshCommand(command);
+    }
+
+
+    @Override
+    public void onSshCommandComplete(String command, boolean success) {
+        stopWaiting();
     }
 }
