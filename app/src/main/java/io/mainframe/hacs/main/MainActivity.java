@@ -38,26 +38,6 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class MainActivity extends AppCompatActivity implements SshUiHandler.OnShhCommandHandler, View.OnClickListener,
          MqttConnectorCallbacks, NetworkStatus.NetworkStatusCallback, EasyPermissions.PermissionCallbacks{
 
-    public static class DoorStateElement {
-        // can be null for unkown
-        private Status status;
-        private String label;
-
-        public DoorStateElement(Status status, String label) {
-            this.status = status;
-            this.label = label;
-        }
-
-        public Status getStatus() {
-            return this.status;
-        }
-
-        @Override
-        public String toString() {
-            return this.label;
-        }
-    }
-
 
     private static final String TAG = MainActivity.class.getName();
 
