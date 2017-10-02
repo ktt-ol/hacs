@@ -20,6 +20,10 @@ Copy the resulting `hacs_keystore.bks` to the `src/main/assets/keystore/` folder
 
 Must start with `mf-door.` and end with `.key` and must have a password.
 
+# Play store
+
+https://play.google.com/apps/publish/
+
 ## TODO
 
 * [X] Berechtigungen erfragen
