@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.0
+* Complete redesign of the UI
+* Feature: Show current keyholder
+* Feature: "Become keyholder"
+* mqtt connection handling changed
+
 ## 1.4.0
 * Door buzzer button added
 

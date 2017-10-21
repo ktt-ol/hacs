@@ -68,7 +68,6 @@ public class NextStatusFragment extends BasePageFragment implements MqttStatusLi
     }
 
     private void setStatusText(Status status) {
-        System.out.println("## nextStatus: " + status);
         TextView text = (TextView) getView().findViewById(R.id.nextStatus_status);
         text.setText(status == null ? getString(R.string.unknown) : status.getUiValue());
 
@@ -90,6 +89,11 @@ public class NextStatusFragment extends BasePageFragment implements MqttStatusLi
             return;
         }
         setStatusText(newStatus);
+    }
+
+    @Override
+    public void onNewKeyHolder(String keyholder) {
+        // ignored
     }
 
     @Override

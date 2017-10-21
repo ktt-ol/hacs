@@ -28,6 +28,7 @@ public final class Constants {
     public static final String MQTT_TOPIC_STATUS = "/access-control-system/space-state";
     //    public static final String MQTT_TOPIC_STATUS_NEXT = "/test/access-control-system/space-state-next";
     public static final String MQTT_TOPIC_STATUS_NEXT = "/access-control-system/space-state-next";
+    public static final String MQTT_TOPIC_KEYHOLDER = "/access-control-system/keyholder/name";
 
     public static final String DOOR_USER = "keyholder";
 

@@ -66,6 +66,7 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
     public void onPause() {
         super.onPause();
 
+        getInteraction().getMqttConnector().removeListener(this);
         getInteraction().getNetworkStatus().removeListener(this);
     }
 
@@ -92,6 +93,11 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
             return;
         }
         setStatusText(newStatus);
+    }
+
+    @Override
+    public void onNewKeyHolder(String keyholder) {
+        // ignored
     }
 
     @Override

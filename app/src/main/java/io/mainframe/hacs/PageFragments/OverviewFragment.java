@@ -14,6 +14,7 @@ import io.mainframe.hacs.main.NetworkStatus;
 import io.mainframe.hacs.main.Status;
 import io.mainframe.hacs.mqtt.MqttConnector;
 import io.mainframe.hacs.mqtt.MqttStatusListener;
+import io.mainframe.hacs.ssh.DoorCommand;
 import io.mainframe.hacs.ssh.PkCredentials;
 
 /**
@@ -42,13 +43,17 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
         view.findViewById(R.id.overview_buzzer).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // buzz
+                getInteraction().sendSshCommand(DoorCommand.getDoorBuzzerCmd());
             }
         });
         view.findViewById(R.id.overview_become_keyholder).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // keyholder
+                // TODO: there should be an extra command to become keyholder
+                final Status lastStatus = getInteraction().getMqttConnector().getLastStatus();
+                if (lastStatus != null) {
+                    getInteraction().sendSshCommand(DoorCommand.getSwitchDoorStateCmd(lastStatus));
+                }
             }
         });
 
@@ -74,12 +79,14 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
         mqtt.addListener(this);
 
         setStatusText(mqtt.getLastStatus());
+        setKeyholderText(mqtt.getLastKeyholder());
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
+        getInteraction().getMqttConnector().removeListener(this);
         getInteraction().getNetworkStatus().removeListener(this);
     }
 
@@ -92,6 +99,10 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
     private void setStatusText(Status status) {
         TextView text = (TextView) getView().findViewById(R.id.overview_status);
         text.setText(status == null ? getString(R.string.unknown) : status.getUiValue());
+    }
+
+    private void setKeyholderText(String keyholderText) {
+        ((TextView) getView().findViewById(R.id.overview_keyholder)).setText(keyholderText);
     }
 
     private void setButtonsEnabled(boolean enabled) {
@@ -112,6 +123,11 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
             return;
         }
         setStatusText(newStatus);
+    }
+
+    @Override
+    public void onNewKeyHolder(String keyholder) {
+        setKeyholderText(keyholder);
     }
 
     @Override

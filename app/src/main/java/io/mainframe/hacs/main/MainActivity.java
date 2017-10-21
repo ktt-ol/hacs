@@ -175,6 +175,11 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
     }
 
     @Override
+    public void onNewKeyHolder(String keyholder) {
+        // ignored
+    }
+
+    @Override
     public void onMqttConnected() {
         findViewById(R.id.mqttOverlay).setVisibility(View.GONE);
     }

@@ -26,9 +26,7 @@ import io.mainframe.hacs.mqtt.MqttStatusListener.Topic;
 /**
  * Responsible for the conneciton to the client server. The connection will be initialized automatically and ....
  */
-public class MqttConnector
-//        implements SharedPreferences.OnSharedPreferenceChangeListener
-{
+public class MqttConnector {
 
     public static final String PREF_MQTT_PASSWORD = "mqttPassword";
 
@@ -40,39 +38,18 @@ public class MqttConnector
     private final List<MqttStatusListener> allListener = new ArrayList<>();
 
     private MqttAndroidClient client;
-//    private String password;
     private boolean isPassowrdSet = false;
 
     // null means "unknown" - if the client is disconnected the last state will be reset to unknown!
     private Status lastStatus = null;
     private Status lastStatusNext = null;
+    private String lastKeyholder = "";
 
     public MqttConnector(Context ctx, SharedPreferences prefs) {
         this.ctx = ctx;
         this.prefs = prefs;
-//        prefs.registerOnSharedPreferenceChangeListener(this);
-
-        init();
     }
 
-//    @Override
-//    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-//        if (!PREF_MQTT_PASSWORD.equals(key)) {
-//            return;
-//        }
-//        String oldPw = password;
-//        password = sharedPreferences.getString(PREF_MQTT_PASSWORD, "");
-//        if (oldPw.equals(password)) {
-//            return;
-//        }
-//
-//        Log.i(TAG, "mqtt password changed");
-////        if (client.isConnected()) {
-////            Log.i(TAG, "do reconnect");
-//            disconnect();
-//            connect();
-////        }
-//    }
 
     private void init() {
         this.client = new MqttAndroidClient(this.ctx,
@@ -85,19 +62,6 @@ public class MqttConnector
             @Override
             public void connectionLost(Throwable cause) {
                 Log.i(TAG, "Lost connection: " + (cause == null ? "/" : cause.getMessage()));
-//                try {
-//                    Thread.sleep(500);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                if (NetworkStatus.hasNetwork()) {
-//                    try {
-//                        connect();
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-
                 handleError("Lost connection.", cause);
                 lastStatus = null;
                 lastStatusNext = null;
@@ -111,22 +75,22 @@ public class MqttConnector
                 String strMsg = message.toString();
                 Log.d(TAG, "Got mqtt msg (" + topicStr + "): " + strMsg);
                 Topic topic = Topic.byValue(topicStr);
-                Status status = Status.byMqttValue(strMsg);
 
                 switch (topic) {
                     case STATUS:
-                        lastStatus = status;
+                        lastStatus = Status.byMqttValue(strMsg);
+                        sendNewStatusToListener(topic, lastStatus);
                         break;
                     case STATUS_NEXT:
-                        lastStatusNext = status;
+                        lastStatusNext = Status.byMqttValue(strMsg);
+                        sendNewStatusToListener(topic, lastStatusNext);
                         break;
-                }
-
-                if (!hasListener()) {
-                    return;
-                }
-                for (MqttStatusListener listener : MqttConnector.this.allListener) {
-                    listener.onNewStatus(topic, status);
+                    case KEYHOLDER:
+                        lastKeyholder = strMsg;
+                        for (MqttStatusListener listener : MqttConnector.this.allListener) {
+                            listener.onNewKeyHolder(lastKeyholder);
+                        }
+                        break;
                 }
             }
 
@@ -136,6 +100,13 @@ public class MqttConnector
             }
         });
     }
+
+    private void sendNewStatusToListener(Topic topic, Status status) {
+        for (MqttStatusListener listener : MqttConnector.this.allListener) {
+            listener.onNewStatus(topic, status);
+        }
+    }
+
 
     public Status getLastStatus() {
         return lastStatus;
@@ -147,6 +118,10 @@ public class MqttConnector
 
     public Status getLastNextStatus() {
         return lastStatusNext;
+    }
+
+    public String getLastKeyholder() {
+        return lastKeyholder;
     }
 
     /* Listener */
@@ -173,33 +148,21 @@ public class MqttConnector
 
     public void disconnect() {
         try {
-            if (!client.isConnected()) {
-                Log.d(TAG, "Client is already disconnected.");
-                this.client.unregisterResources();
-                return;
-            }
+            this.client.close();
         } catch (Exception e) {
-            Log.e(TAG, "Error during connect check.", e);
+            Log.e(TAG, "Error during close", e);
         }
 
-        try {
-            this.client.disconnect(0);
-            this.client.unregisterResources();
-        } catch (Exception e) {
-            Log.e(TAG, "Error during disconnect", e);
-        }
+        this.client.unregisterResources();
+        this.client = null;
     }
 
     public void connect() {
-        client.registerResources(ctx);
-        try {
-            if (client.isConnected()) {
-                Log.d(TAG, "Client is already connected.");
-                return;
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error during connect check.", e);
+        if (client != null) {
+            disconnect();
         }
+
+        init();
 
         Log.d(TAG, "Try to connect.");
 
@@ -242,6 +205,7 @@ public class MqttConnector
 
                 subscribe(Constants.MQTT_TOPIC_STATUS);
                 subscribe(Constants.MQTT_TOPIC_STATUS_NEXT);
+                subscribe(Constants.MQTT_TOPIC_KEYHOLDER);
             }
 
             @Override
@@ -290,10 +254,5 @@ public class MqttConnector
             msgWithExcp += " (" + excp.getMessage() + ")";
         }
         Log.e(TAG, msgWithExcp, excp);
-//        disconnect();
-//        for (MqttStatusListener listener : MqttConnector.this.allListener) {
-//        onMqttConnectionLost
-//            listener.error(msgWithExcp);
-//        }
     }
 }

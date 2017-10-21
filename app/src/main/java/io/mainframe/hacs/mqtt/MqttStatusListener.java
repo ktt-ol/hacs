@@ -10,7 +10,8 @@ public interface MqttStatusListener {
 
     enum Topic {
         STATUS(Constants.MQTT_TOPIC_STATUS),
-        STATUS_NEXT(Constants.MQTT_TOPIC_STATUS_NEXT);
+        STATUS_NEXT(Constants.MQTT_TOPIC_STATUS_NEXT),
+        KEYHOLDER(Constants.MQTT_TOPIC_KEYHOLDER);
 
         private final String value;
 
@@ -30,6 +31,8 @@ public interface MqttStatusListener {
     }
 
     void onNewStatus(Topic topic, Status newStatus);
+
+    void onNewKeyHolder(String keyholder);
 
     void onMqttConnected();
 
