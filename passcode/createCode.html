@@ -17,20 +17,22 @@
 </head>
 <body>
 
+<p><a href="index.html">index.html</a></p>
+
 <p>
   Private key password: <br>
-  <input id="pkey" type="text" value="" placeholder="Insert the private key password here"/>
+  <input id="pkey" type="text" mqttValue="" placeholder="Insert the private key password here"/>
 </p>
 
 <p>
   Mqtt password: <br>
-  <input id="mqtt" type="text" value="" placeholder="Insert the mqtt password here"/>
+  <input id="mqtt" type="text" mqttValue="" placeholder="Insert the mqtt password here"/>
 </p>
 
 <button onclick="createPasscode()">Create passcode</button>
 
 <p>
-  <input id="passcode" type="text" readonly value=""/>
+  <input id="passcode" type="text" readonly mqttValue=""/>
 </p>
 
 <script type="text/javascript">

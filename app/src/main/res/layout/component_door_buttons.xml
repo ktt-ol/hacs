@@ -1,0 +1,76 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="io.mainframe.hacs.components.DoorButtonsFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/doorButtons_open"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:backgroundTint="@color/materialGreen"
+            android:text="Open"/>
+
+        <Button
+            android:id="@+id/doorButtons_close"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:backgroundTint="@color/materialRed"
+            android:text="Closed"/>
+
+        <Button
+            android:id="@+id/doorButtons_more"
+            style="@android:style/Widget.Material.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/doorButtons_close"
+            android:text="Mehr..."
+            android:textColor="@color/colorPrimary"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/doorButtons_moreButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/doorButtons_openPlus"
+            style="@android:style/Widget.Material.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="Open+"/>
+
+        <Button
+            android:id="@+id/doorButtons_keyholder"
+            style="@android:style/Widget.Material.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Keyholder"/>
+
+        <Button
+            android:id="@+id/doorButtons_member"
+            style="@android:style/Widget.Material.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/doorButtons_keyholder"
+            android:text="Member"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

@@ -4,8 +4,8 @@ android {
     compileSdkVersion 25
     buildToolsVersion '25.0.0'
     defaultConfig {
-        applicationId "io.mainframe.hacs"
-        minSdkVersion 19
+        applicationId "io.mainframe.hacs2"
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 6
         versionName '2.0.0'
@@ -29,23 +29,29 @@ repositories {
     }
 }
 
+
+
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // ssh
-    compile 'com.jcraft:jsch:0.1.53'
     //ACRA https://github.com/ACRA/acra.git
-    compile 'ch.acra:acra:4.6.2'
     // mqtt https://www.eclipse.org/paho/clients/android/
     // http://www.hivemq.com/blog/mqtt-client-library-enyclopedia-paho-android-service
-    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
-    compile('org.eclipse.paho:org.eclipse.paho.android.service:1.1.0') {
+    compile('org.eclipse.paho:org.eclipse.paho.android.service:1.1.1') {
         exclude module: 'support-v4'
     }
     // for Android 6 permission request
     dependencies {
         compile 'pub.devrel:easypermissions:0.2.1'
     }
+    // ?
+    compile 'com.jcraft:jsch:0.1.53'
+    compile 'ch.acra:acra:4.6.2'
+    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.android.support:preference-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
 }

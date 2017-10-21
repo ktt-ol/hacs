@@ -1,0 +1,35 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_marginTop="@dimen/content_space_top"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/activity_vertical_margin"
+              android:paddingLeft="@dimen/activity_horizontal_margin"
+              android:paddingRight="@dimen/activity_horizontal_margin"
+              tools:context="io.mainframe.hacs.PageFragments.StatusFragment"
+    >
+
+    <TextView
+        android:id="@+id/status_status"
+        style="@android:style/TextAppearance.Material.Display2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/unknown"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/status_text"/>
+
+    <io.mainframe.hacs.components.DoorButtons
+        android:id="@+id/status_doorButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </io.mainframe.hacs.components.DoorButtons>
+
+
+</LinearLayout>

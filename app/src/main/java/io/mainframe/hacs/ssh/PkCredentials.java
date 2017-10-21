@@ -32,4 +32,8 @@ public class PkCredentials {
         }
         return splits[1];
     }
+
+    public boolean isPasswordSet() {
+        return password != null && !password.isEmpty();
+    }
 }
