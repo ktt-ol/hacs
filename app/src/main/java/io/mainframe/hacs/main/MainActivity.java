@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.IdRes;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -17,10 +16,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Stack;
 
 import io.mainframe.hacs.PageFragments.BasePageFragment;
 import io.mainframe.hacs.PageFragments.NextStatusFragment;
@@ -39,12 +39,13 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
         EasyPermissions.PermissionCallbacks,
         NavigationView.OnNavigationItemSelectedListener, BasePageFragment.BasePageFragmentInteractionListener, MqttStatusListener {
 
-
     private static final String TAG = MainActivity.class.getName();
+    public static final String BACK_STATE_KEY = "backsate";
 
     private NetworkStatus networkStatus = null;
     private MqttConnector mqttConnector;
 
+    private Stack<Integer> fragmentBackState = new Stack<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,21 +83,49 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
         if (savedInstanceState == null) {
-            navigationView.setCheckedItem(R.id.nav_overview);
-            loadPageFragment(new OverviewFragment());
+            selectBaseFragmentById(R.id.nav_overview, true);
+        } else {
+            ArrayList<Integer> backState = savedInstanceState.getIntegerArrayList(BACK_STATE_KEY);
+            if (backState != null) {
+                fragmentBackState = new Stack<>();
+                fragmentBackState.addAll(backState);
+            }
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putIntegerArrayList(BACK_STATE_KEY, new ArrayList<>(fragmentBackState));
+
+        // call superclass to save any view hierarchy
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!fragmentBackState.isEmpty()) {
+            fragmentBackState.pop();
+        }
+
+        if (fragmentBackState.isEmpty()) {
+            super.onBackPressed();
+            return;
+        }
+
+        selectBaseFragmentById(fragmentBackState.peek(), false);
     }
 
     @Override
     public void setTitle(CharSequence title) {
         ((Toolbar) findViewById(R.id.toolbar)).setTitle(title);
-
     }
 
     private void loadPageFragment(BasePageFragment fragment) {
         setTitle(getString(fragment.getTitleRes()));
-        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .commit();
     }
 
 
@@ -104,22 +133,40 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        selectBaseFragmentById(id, true);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void selectBaseFragmentById(int id, boolean addToBackStack) {
         if (id == R.id.nav_overview) {
             loadPageFragment(new OverviewFragment());
+            if (addToBackStack) {
+                fragmentBackState.add(id);
+            }
         } else if (id == R.id.nav_status) {
             loadPageFragment(new StatusFragment());
+            if (addToBackStack) {
+                fragmentBackState.add(id);
+            }
         } else if (id == R.id.nav_statusNext) {
             loadPageFragment(new NextStatusFragment());
+            if (addToBackStack) {
+                fragmentBackState.add(id);
+            }
         } else if (id == R.id.nav_abount) {
             startActivity(new Intent(this, AboutActivity.class));
         } else if (id == R.id.nav_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
+        } else {
+            Log.w(TAG, "Unexpected id: " + id);
+            return;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-
-        return true;
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setCheckedItem(id);
     }
 
     @Override
@@ -233,9 +280,7 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
     @Override
     public void navigateToPage(Class<? extends BasePageFragment> target) {
         if (StatusFragment.class == target) {
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-            navigationView.setCheckedItem(R.id.nav_status);
-            loadPageFragment(new StatusFragment());
+            selectBaseFragmentById(R.id.nav_status, true);
         }
     }
 }

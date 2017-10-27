@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.1.0
+* Adds back button for fragment changes
+
 ## 2.0.0
 * Complete redesign of the UI
 * Feature: Show current keyholder
