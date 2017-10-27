@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.EnumSet;
+
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.common.Constants;
 import io.mainframe.hacs.components.DoorButtons;
@@ -49,7 +51,7 @@ public class NextStatusFragment extends BasePageFragment implements MqttStatusLi
         super.onResume();
 
         final MqttConnector mqtt = getInteraction().getMqttConnector();
-        mqtt.addListener(this);
+        mqtt.addListener(this, EnumSet.of(Topic.STATUS_NEXT));
 
         setStatusText(mqtt.getLastNextStatus());
 
@@ -64,7 +66,7 @@ public class NextStatusFragment extends BasePageFragment implements MqttStatusLi
     public void onPause() {
         super.onPause();
 
-        getInteraction().getMqttConnector().removeListener(this);
+        getInteraction().getMqttConnector().removeAllListener(this);
     }
 
     private void setStatusText(Status status) {
@@ -84,16 +86,11 @@ public class NextStatusFragment extends BasePageFragment implements MqttStatusLi
     /* callback */
 
     @Override
-    public void onNewStatus(Topic topic, Status newStatus) {
+    public void onNewMsg(Topic topic, Object msg) {
         if (topic != Topic.STATUS_NEXT) {
             return;
         }
-        setStatusText(newStatus);
-    }
-
-    @Override
-    public void onNewKeyHolder(String keyholder) {
-        // ignored
+        setStatusText((Status) msg);
     }
 
     @Override

@@ -26,13 +26,7 @@ https://play.google.com/apps/publish/
 
 ## TODO
 
-* [X] Berechtigungen erfragen
-* [X] Launcher icon
-* [ ] Make better progressbar/waiting
 * [ ] Save passwords more secure, e.g. https://developer.android.com/samples/BasicAndroidKeyStore/index.html
-* [X] Scan passwords with QR-Code
-* [X] About dialog
-    * [X] List libs with their Licenses
 
 # Libs
 

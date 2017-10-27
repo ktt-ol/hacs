@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import io.mainframe.hacs.PageFragments.BasePageFragment;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
         super.onCreate(savedInstanceState);
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        networkStatus = new NetworkStatus(prefs.getBoolean("requireMainframeWifi", true));
+        networkStatus = new NetworkStatus(getApplicationContext(), prefs);
         mqttConnector = new MqttConnector(getApplicationContext(), prefs);
 
         setContentView(R.layout.activity_main);
@@ -103,9 +104,6 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        System.out.println("### onNavigationItemSelected" + id);
-
         if (id == R.id.nav_overview) {
             loadPageFragment(new OverviewFragment());
         } else if (id == R.id.nav_status) {
@@ -130,14 +128,14 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
 
         registerReceiver(this.networkStatus, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         mqttConnector.connect();
-        mqttConnector.addListener(this);
+        mqttConnector.addListener(this, EnumSet.noneOf(Topic.class));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        mqttConnector.removeListener(this);
+        mqttConnector.removeAllListener(this);
         mqttConnector.disconnect();
         unregisterReceiver(this.networkStatus);
     }
@@ -170,12 +168,7 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
     /* mqtt callbacks */
 
     @Override
-    public void onNewStatus(Topic topic, Status newStatus) {
-        // ignored
-    }
-
-    @Override
-    public void onNewKeyHolder(String keyholder) {
+    public void onNewMsg(Topic topic, Object msg) {
         // ignored
     }
 

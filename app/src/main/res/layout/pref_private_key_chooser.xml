@@ -9,7 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin">
 
     <Button
-        android:text="Search for it..."
+        android:text="@string/pkc_search_for_it"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/searchButton"/>
@@ -24,7 +24,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Searching... "
+            android:text="@string/pkc_searching"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_gravity="center" />
 
@@ -38,7 +38,7 @@
         android:id="@+id/noPrivateKeysFound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Could not found any private keys.\nPlease copy your Mainframe Door private key to the any folder on the sd card."
+        android:text="@string/pkc_key_not_found"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:visibility="gone" />
 
@@ -58,7 +58,7 @@
     </ScrollView>
 
     <Button
-        android:text="Select manually..."
+        android:text="@string/pkc_select_manually"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"

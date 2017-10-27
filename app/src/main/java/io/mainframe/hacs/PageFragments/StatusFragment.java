@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.EnumSet;
+import java.util.Objects;
+
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.components.DoorButtons;
 import io.mainframe.hacs.main.NetworkStatus;
@@ -57,7 +60,7 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
         }
 
         final MqttConnector mqtt = getInteraction().getMqttConnector();
-        mqtt.addListener(this);
+        mqtt.addListener(this, EnumSet.of(Topic.STATUS));
 
         setStatusText(mqtt.getLastStatus());
     }
@@ -66,7 +69,7 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
     public void onPause() {
         super.onPause();
 
-        getInteraction().getMqttConnector().removeListener(this);
+        getInteraction().getMqttConnector().removeAllListener(this);
         getInteraction().getNetworkStatus().removeListener(this);
     }
 
@@ -88,16 +91,11 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
     }
 
     @Override
-    public void onNewStatus(Topic topic, Status newStatus) {
+    public void onNewMsg(Topic topic, Object msg) {
         if (topic != Topic.STATUS) {
             return;
         }
-        setStatusText(newStatus);
-    }
-
-    @Override
-    public void onNewKeyHolder(String keyholder) {
-        // ignored
+        setStatusText((Status) msg);
     }
 
     @Override

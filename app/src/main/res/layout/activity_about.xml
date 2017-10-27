@@ -13,7 +13,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Version"
+        android:text="@string/version"
         android:textAppearance="@android:style/TextAppearance.Large"/>
 
     <TextView
@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="15dp"
-        android:text="Licenses"
+        android:text="@string/licenses"
         android:textAppearance="@android:style/TextAppearance.Large"/>
 
 </LinearLayout>

@@ -4,7 +4,7 @@
     <string name="action_about">About</string>
 
     <string name="cancel">Abbrechen</string>
-    <string name="sending">Sende...</string>
+    <string name="sending">Sende…</string>
 
     <string name="crash_dialog_text">Leider ist HACS abgesürtzt. Das kann jedem passieren :). Bitte klicke auf OK und schicke mir damit den Report zu.</string>
     <string name="crash_dialog_comment_prompt">Platz für Kommentare</string>
@@ -20,12 +20,34 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="unknown">Unbekannt</string>
-
     <string name="nav_overview">Übersicht</string>
     <string name="nav_status">Status</string>
     <string name="nav_status_next">Status Next</string>
 
-    <string name="status_text">Setzte den aktuellen Status neu. Hierzu musst du dich im Mainframe WLan befinden.</string>
+    <string name="state_open">Open</string>
+    <string name="state_none">Closed</string>
+    <string name="state_open_plus">Open+</string>
+    <string name="state_keyholder">Keyholder</string>
+    <string name="state_member">Member</string>
+
+    <string name="pkc_search_for_it">Danach suchen…</string>
+    <string name="pkc_searching">Suche…</string>
+    <string name="pkc_key_not_found">Der private Schlüssel konnte nicht gefunden werden. Bitte kopiere den privaten Schlüssel auf irgendeinen Ordner auf das Telefon.</string>
+    <string name="pkc_select_manually">Manuell auswählen…</string>
+
+    <string name="unknown">Unbekannt</string>
+    <string name="keyholder_no_one">Niemand</string>
     <string name="nextStatus_text">Setzte den nächsten Status neu. Geht von überall (benutzt mqtt).</string>
+    <string name="status_text">Setzte den aktuellen Status neu. Hierzu musst du dich im Mainframe WLan befinden.</string>
+    <string name="change">ändern…</string>
+    <string name="door_buzzer">Tür Buzzer</string>
+    <string name="keyholder">Keyholder</string>
+    <string name="become_keyholder">Werde Keyholder</string>
+    <string name="who_is_there">Wer ist da?</string>
+    <string name="reset">Zurücksetzen</string>
+    <string name="more">Mehr…</string>
+    <string name="mqtt_connection_lost">MQTT Verbindung verloren</string>
+    <string name="reconnect">Reconnect</string>
+    <string name="version">Version</string>
+    <string name="licenses">Lizenzen</string>
 </resources>

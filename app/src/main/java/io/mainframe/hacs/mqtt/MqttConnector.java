@@ -16,6 +16,8 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,14 +30,13 @@ import io.mainframe.hacs.mqtt.MqttStatusListener.Topic;
  */
 public class MqttConnector {
 
-    public static final String PREF_MQTT_PASSWORD = "mqttPassword";
-
+    private static final String PREF_MQTT_PASSWORD = "mqttPassword";
     private static final String TAG = MqttConnector.class.getName();
 
     private final Context ctx;
     private final SharedPreferences prefs;
 
-    private final List<MqttStatusListener> allListener = new ArrayList<>();
+    private final List<Listener> allListener = Collections.synchronizedList(new ArrayList<Listener>());
 
     private MqttAndroidClient client;
     private boolean isPassowrdSet = false;
@@ -43,13 +44,13 @@ public class MqttConnector {
     // null means "unknown" - if the client is disconnected the last state will be reset to unknown!
     private Status lastStatus = null;
     private Status lastStatusNext = null;
-    private String lastKeyholder = "";
+    private String lastKeyholder = null;
+    private SpaceDevices lastDevices = null;
 
     public MqttConnector(Context ctx, SharedPreferences prefs) {
         this.ctx = ctx;
         this.prefs = prefs;
     }
-
 
     private void init() {
         this.client = new MqttAndroidClient(this.ctx,
@@ -65,8 +66,8 @@ public class MqttConnector {
                 handleError("Lost connection.", cause);
                 lastStatus = null;
                 lastStatusNext = null;
-                for (MqttStatusListener listener : MqttConnector.this.allListener) {
-                    listener.onMqttConnectionLost();
+                for (Listener listener : MqttConnector.this.allListener) {
+                    listener.callbacks.onMqttConnectionLost();
                 }
             }
 
@@ -76,22 +77,28 @@ public class MqttConnector {
                 Log.d(TAG, "Got mqtt msg (" + topicStr + "): " + strMsg);
                 Topic topic = Topic.byValue(topicStr);
 
+                Object msgValue = null;
                 switch (topic) {
                     case STATUS:
-                        lastStatus = Status.byMqttValue(strMsg);
-                        sendNewStatusToListener(topic, lastStatus);
+                        msgValue = lastStatus = Status.byMqttValue(strMsg);
                         break;
                     case STATUS_NEXT:
-                        lastStatusNext = Status.byMqttValue(strMsg);
-                        sendNewStatusToListener(topic, lastStatusNext);
+                        msgValue = lastStatusNext = Status.byMqttValue(strMsg);
                         break;
                     case KEYHOLDER:
-                        lastKeyholder = strMsg;
-                        for (MqttStatusListener listener : MqttConnector.this.allListener) {
-                            listener.onNewKeyHolder(lastKeyholder);
-                        }
+                        msgValue = lastKeyholder = strMsg;
+                        break;
+                    case DEVICES:
+                        msgValue = lastDevices = new SpaceDevices(strMsg);
                         break;
                 }
+
+                for (Listener listener : allListener) {
+                    if (listener.topics.contains(topic)) {
+                        listener.callbacks.onNewMsg(topic, msgValue);
+                    }
+                }
+
             }
 
             @Override
@@ -100,13 +107,6 @@ public class MqttConnector {
             }
         });
     }
-
-    private void sendNewStatusToListener(Topic topic, Status status) {
-        for (MqttStatusListener listener : MqttConnector.this.allListener) {
-            listener.onNewStatus(topic, status);
-        }
-    }
-
 
     public Status getLastStatus() {
         return lastStatus;
@@ -124,16 +124,20 @@ public class MqttConnector {
         return lastKeyholder;
     }
 
-    /* Listener */
-
-    public void addListener(MqttStatusListener listener) {
-        allListener.add(listener);
+    public SpaceDevices getLastDevices() {
+        return lastDevices;
     }
 
-    public void removeListener(MqttStatusListener listener) {
-        final Iterator<MqttStatusListener> iter = allListener.iterator();
+    public void addListener(MqttStatusListener listener, EnumSet<Topic> topics) {
+        allListener.add(new Listener(topics, listener));
+    }
+
+    /* Listener */
+
+    public void removeAllListener(MqttStatusListener listener) {
+        final Iterator<Listener> iter = allListener.iterator();
         while (iter.hasNext()) {
-            if (iter.next() == listener) {
+            if (iter.next().callbacks == listener) {
                 iter.remove();
                 return;
             }
@@ -143,8 +147,6 @@ public class MqttConnector {
     private boolean hasListener() {
         return !allListener.isEmpty();
     }
-
-    /* --- */
 
     public void disconnect() {
         try {
@@ -156,6 +158,8 @@ public class MqttConnector {
         this.client.unregisterResources();
         this.client = null;
     }
+
+    /* --- */
 
     public void connect() {
         if (client != null) {
@@ -198,14 +202,17 @@ public class MqttConnector {
                 // the not set value is an empty string that is not shown in mqtt
                 // we have now a valid connection, thus we set not_set as default
                 lastStatusNext = Status.NOT_SET;
+                // same here
+                lastKeyholder = "";
 
-                for (MqttStatusListener listener : MqttConnector.this.allListener) {
-                    listener.onMqttConnected();
+                for (Listener listener : MqttConnector.this.allListener) {
+                    listener.callbacks.onMqttConnected();
                 }
 
                 subscribe(Constants.MQTT_TOPIC_STATUS);
                 subscribe(Constants.MQTT_TOPIC_STATUS_NEXT);
                 subscribe(Constants.MQTT_TOPIC_KEYHOLDER);
+                subscribe(Constants.MQTT_TOPIC_DEVICES);
             }
 
             @Override
@@ -244,7 +251,6 @@ public class MqttConnector {
     }
 
     /**
-     *
      * @param msg
      * @param excp can be null
      */
@@ -254,5 +260,15 @@ public class MqttConnector {
             msgWithExcp += " (" + excp.getMessage() + ")";
         }
         Log.e(TAG, msgWithExcp, excp);
+    }
+
+    private static class Listener {
+        private EnumSet<Topic> topics;
+        private MqttStatusListener callbacks;
+
+        Listener(EnumSet<Topic> topics, MqttStatusListener callbacks) {
+            this.topics = topics;
+            this.callbacks = callbacks;
+        }
     }
 }

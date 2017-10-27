@@ -4,10 +4,10 @@ android {
     compileSdkVersion 25
     buildToolsVersion '25.0.0'
     defaultConfig {
-        applicationId "io.mainframe.hacs2"
+        applicationId "io.mainframe.hacs"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 6
+        versionCode 20
         versionName '2.0.0'
     }
     buildTypes {
@@ -15,9 +15,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }
-    dexOptions {
-        incremental true
     }
     productFlavors {
     }
@@ -50,8 +47,6 @@ dependencies {
     compile 'ch.acra:acra:4.6.2'
     compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
     compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:support-v4:25.3.1'
-    compile 'com.android.support:preference-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
 }
