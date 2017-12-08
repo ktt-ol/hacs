@@ -13,7 +13,11 @@ public final class DoorCommand {
         return CMD + " " + status.getMqttValue();
     }
 
-    public static String getDoorBuzzerCmd() {
+    public static String getInnerDoorBuzzerCmd() {
         return "open-door main";
+    }
+
+    public static String getOuterDoorBuzzerCmd() {
+        return "open-door downstairs";
     }
 }

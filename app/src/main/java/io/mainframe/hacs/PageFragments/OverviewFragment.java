@@ -41,10 +41,16 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
                 getInteraction().navigateToPage(StatusFragment.class);
             }
         });
-        view.findViewById(R.id.overview_buzzer).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.overview_buzzer_outer).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getInteraction().sendSshCommand(DoorCommand.getDoorBuzzerCmd());
+                getInteraction().sendSshCommand(DoorCommand.getOuterDoorBuzzerCmd());
+            }
+        });
+        view.findViewById(R.id.overview_buzzer_inner).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getInteraction().sendSshCommand(DoorCommand.getInnerDoorBuzzerCmd());
             }
         });
         view.findViewById(R.id.overview_become_keyholder).setOnClickListener(new View.OnClickListener() {
@@ -122,7 +128,8 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
     }
 
     private void setButtonsEnabled(boolean enabled) {
-        getView().findViewById(R.id.overview_buzzer).setEnabled(enabled);
+        getView().findViewById(R.id.overview_buzzer_outer).setEnabled(enabled);
+        getView().findViewById(R.id.overview_buzzer_inner).setEnabled(enabled);
         getView().findViewById(R.id.overview_become_keyholder).setEnabled(enabled);
     }
 

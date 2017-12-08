@@ -34,13 +34,28 @@
 
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/overview_buzzer"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/materialCyan"
-        android:text="@string/door_buzzer"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/overview_buzzer_outer"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:backgroundTint="@color/materialCyan"
+            android:text="@string/door_buzzer_outer"/>
+
+        <Button
+            android:id="@+id/overview_buzzer_inner"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:backgroundTint="@color/materialCyan"
+            android:text="@string/door_buzzer_inner"/>
+    </RelativeLayout>
 
     <TextView
         style="@style/HeadlineWithSpace"

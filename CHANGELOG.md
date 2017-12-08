@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.0
+* Adds outer door buzzer
+
 ## 2.1.0
 * Adds back button for fragment changes
 
