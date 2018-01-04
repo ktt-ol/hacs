@@ -121,8 +121,15 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
     private void setDevicesText(SpaceDevices devices) {
         String formatted = "?";
         if (devices != null) {
-         formatted = String.format("%s\n(anon: %d, unknown: %d)",
-                devices.getUsers().toString(), devices.getAnonPeople(), devices.getUnknownDevices());
+            StringBuilder buffer = new StringBuilder();
+            for (String user : devices.getUsers()) {
+                buffer.append("● ").append(user).append("\n");
+            }
+            buffer.append("\n");
+            buffer.append(getString(R.string.overview_anonPerson)).append(": ").append(devices.getAnonPeople()).append("\n")
+                    .append(getString(R.string.overview_unknownDev)).append(": ").append(devices.getUnknownDevices());
+
+            formatted = buffer.toString();
         }
         ((TextView) getView().findViewById(R.id.overview_devices)).setText(formatted);
     }

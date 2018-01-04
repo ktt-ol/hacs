@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.1
+* support new device list format
+
 ## 2.2.0
 * Adds outer door buzzer
 

@@ -51,4 +51,6 @@
     <string name="reconnect">Reconnect</string>
     <string name="version">Version</string>
     <string name="licenses">Lizenzen</string>
+    <string name="overview_anonPerson">anonyme Personen</string>
+    <string name="overview_unknownDev">unbekannte Geräte</string>
 </resources>
