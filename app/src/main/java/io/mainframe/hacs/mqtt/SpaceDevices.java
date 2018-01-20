@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public class SpaceDevices {
 
     private int anonPeople;
     private int unknownDevices;
-    private List<String> users = new ArrayList<>();
+    private List<User> userList = new ArrayList<>();
 
 
     // parses the format from the mqtt:
@@ -36,29 +37,30 @@ public class SpaceDevices {
                     JSONObject person = people.getJSONObject(i);
                     String name = person.getString("name");
                     if (person.isNull("devices")) {
-                        users.add(name);
+                        userList.add(new User(name));
                     } else {
 
                         JSONArray devices = person.getJSONArray("devices");
-                        ArrayList<String> devicesNames = new ArrayList<>();
+                        ArrayList<Device> deviceList = new ArrayList<>();
                         if (devices != null) {
                             for (int x = 0; x < devices.length(); x++) {
                                 JSONObject device = devices.getJSONObject(x);
                                 String deviceName = device.getString("name");
+                                String deviceLocation = device.getString("location");
                                 if (deviceName != null && !deviceName.isEmpty()) {
-                                    devicesNames.add(deviceName);
+                                    deviceList.add(new Device(deviceName, deviceLocation));
                                 }
                             }
                         }
-                        users.add(name + " " + devicesNames.toString());
+                        userList.add(new User(name, deviceList));
                     }
                 } catch (JSONException e) {
                     // old format
-                    users.add(people.getString(i));
+                    userList.add(new User(people.getString(i)));
                 }
             }
             int peopleCount = json.getInt("peopleCount");
-            anonPeople = peopleCount - users.size();
+            anonPeople = peopleCount - userList.size();
         } catch (JSONException e) {
             Log.e(TAG, "Can't parse the raw devices data: " + rawDataStr, e);
         }
@@ -72,7 +74,48 @@ public class SpaceDevices {
         return unknownDevices;
     }
 
-    public List<String> getUsers() {
-        return users;
+    public List<User> getUsers() {
+        return userList;
+    }
+
+    public static class User {
+        private String name;
+        private List<Device> devices;
+
+        User(String name) {
+            this.name = name;
+            this.devices = Collections.emptyList();
+        }
+
+        User(String name, List<Device> devices) {
+            this.name = name;
+            this.devices = devices;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public List<Device> getDevices() {
+            return devices;
+        }
+    }
+
+    public static class Device {
+        private String name;
+        private String location;
+
+        Device(String name, String location) {
+            this.name = name;
+            this.location = location;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getLocation() {
+            return location;
+        }
     }
 }

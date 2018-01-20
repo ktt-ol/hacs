@@ -3,12 +3,17 @@ package io.mainframe.hacs.PageFragments;
 
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Html;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.main.NetworkStatus;
@@ -23,11 +28,11 @@ import io.mainframe.hacs.ssh.PkCredentials;
  */
 public class OverviewFragment extends BasePageFragment implements NetworkStatus.NetworkStatusListener, MqttStatusListener {
 
+    private LocationColor locationColor = new LocationColor();
 
     public OverviewFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -128,16 +133,46 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
         String formatted = "?";
         if (devices != null) {
             StringBuilder buffer = new StringBuilder();
-            for (String user : devices.getUsers()) {
-                buffer.append("● ").append(user).append("\n");
+            for (SpaceDevices.User user : devices.getUsers()) {
+                buffer.append("● ").append(user.getName());
+                if (!user.getDevices().isEmpty()) {
+                    buffer.append(" [");
+
+                    List<SpaceDevices.Device> userDevices = user.getDevices();
+                    for (int i = 0; i < userDevices.size(); i++) {
+                        SpaceDevices.Device device = userDevices.get(i);
+                        String color = locationColor.getColor(device.getLocation());
+                        if (color != null) {
+                            buffer.append(makeColorTag(device.getName(), color));
+                        } else {
+                            buffer.append(device.getName());
+                        }
+
+                        if (i < userDevices.size() - 1) {
+                            buffer.append(", ");
+                        }
+                    }
+                    buffer.append("]");
+                }
+                buffer.append("<br>\n");
             }
-            buffer.append("\n");
-            buffer.append(getString(R.string.overview_anonPerson)).append(": ").append(devices.getAnonPeople()).append("\n")
+            buffer.append("<br>\nOrte: ");
+            for (Pair<String, String> colorPair : locationColor.getAll()) {
+                buffer.append(makeColorTag(colorPair.first, colorPair.second)).append(" ");
+            }
+
+            buffer.append("<br>\n<br>\n");
+            buffer.append(getString(R.string.overview_anonPerson)).append(": ").append(devices.getAnonPeople()).append("<br>\n")
                     .append(getString(R.string.overview_unknownDev)).append(": ").append(devices.getUnknownDevices());
 
+            buffer.append("<br><br><br><br>");
             formatted = buffer.toString();
         }
-        ((TextView) getView().findViewById(R.id.overview_devices)).setText(formatted);
+        ((TextView) getView().findViewById(R.id.overview_devices)).setText(Html.fromHtml(formatted));
+    }
+
+    private String makeColorTag(String content, String color) {
+        return "<font color='" + color + "'>" + content + "</font>";
     }
 
     private void setButtonsEnabled(boolean enabled) {
