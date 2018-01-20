@@ -41,10 +41,10 @@ public class AboutActivity extends AppCompatActivity {
 
         final LinearLayout layout = (LinearLayout) findViewById(R.id.aboutLayout);
         for (String[] lib : libraries) {
-            TextView name = new TextView(this, null, R.attr.libNameStyle);
+            TextView name = new TextView(this, null, R.style.LibName);
             name.setText(lib[0]);
             layout.addView(name);
-            TextView license = new TextView(this, null, R.attr.libLicenseStyle);
+            TextView license = new TextView(this, null, R.style.LibLicense);
             license.setText(lib[1]);
             layout.addView(license);
         }
