@@ -40,8 +40,9 @@
     <string name="nextStatus_text">Setzte den nächsten Status neu. Geht von überall (benutzt mqtt).</string>
     <string name="status_text">Setzte den aktuellen Status neu. Hierzu musst du dich im Mainframe WLan befinden.</string>
     <string name="change">ändern…</string>
-    <string name="door_buzzer_outer">Tür Buzzer unten</string>
-    <string name="door_buzzer_inner">Tür Buzzer oben</string>
+    <string name="door_buzzer_outer">Unten</string>
+    <string name="door_buzzer_inner_metal">Oben Metal</string>
+    <string name="door_buzzer_inner_glass">Oben Glas</string>
     <string name="keyholder">Keyholder</string>
     <string name="become_keyholder">Werde Keyholder</string>
     <string name="who_is_there">Wer ist da?</string>
@@ -53,4 +54,5 @@
     <string name="licenses">Lizenzen</string>
     <string name="overview_anonPerson">anonyme Personen</string>
     <string name="overview_unknownDev">unbekannte Geräte</string>
+    <string name="overview_buzzer">Tür Buzzer</string>
 </resources>

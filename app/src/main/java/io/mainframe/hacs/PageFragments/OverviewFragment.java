@@ -47,10 +47,16 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
                 getInteraction().sendSshCommand(DoorCommand.getOuterDoorBuzzerCmd());
             }
         });
-        view.findViewById(R.id.overview_buzzer_inner).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.overview_buzzer_inner_glass).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getInteraction().sendSshCommand(DoorCommand.getInnerDoorBuzzerCmd());
+                getInteraction().sendSshCommand(DoorCommand.getInnerGlassDoorBuzzerCmd());
+            }
+        });
+        view.findViewById(R.id.overview_buzzer_inner_metal).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getInteraction().sendSshCommand(DoorCommand.getInnerGlassDoorBuzzerCmd());
             }
         });
         view.findViewById(R.id.overview_become_keyholder).setOnClickListener(new View.OnClickListener() {
@@ -136,7 +142,7 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
 
     private void setButtonsEnabled(boolean enabled) {
         getView().findViewById(R.id.overview_buzzer_outer).setEnabled(enabled);
-        getView().findViewById(R.id.overview_buzzer_inner).setEnabled(enabled);
+        getView().findViewById(R.id.overview_buzzer_inner_metal).setEnabled(enabled);
         getView().findViewById(R.id.overview_become_keyholder).setEnabled(enabled);
     }
 

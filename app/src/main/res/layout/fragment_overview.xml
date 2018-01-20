@@ -1,92 +1,116 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_marginTop="@dimen/content_space_top"
-              android:orientation="vertical"
-              android:paddingBottom="@dimen/activity_vertical_margin"
-              android:paddingLeft="@dimen/activity_horizontal_margin"
-              android:paddingRight="@dimen/activity_horizontal_margin"
-              tools:context="io.mainframe.hacs.PageFragments.OverviewFragment">
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context="io.mainframe.hacs.PageFragments.OverviewFragment">
 
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/content_space_top"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/overview_status"
+                style="@style/HeadlineWithSpace"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/unknown"
+                />
+
+            <Button
+                android:id="@+id/overview_change"
+                style="@android:style/Widget.Material.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="@string/change"
+                android:textColor="@color/colorPrimary"/>
+
+        </RelativeLayout>
 
         <TextView
-            android:id="@+id/overview_status"
             style="@style/HeadlineWithSpace"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="@string/unknown"
+            android:text="@string/overview_buzzer"
             />
 
-        <Button
-            android:id="@+id/overview_change"
-            style="@android:style/Widget.Material.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/overview_buzzer_outer"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:backgroundTint="@color/materialCyan"
+                android:text="@string/door_buzzer_outer"/>
+
+            <Button
+                android:id="@+id/overview_buzzer_inner_glass"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:backgroundTint="@color/materialCyan"
+                android:text="@string/door_buzzer_inner_glass"/>
+
+            <Button
+                android:id="@+id/overview_buzzer_inner_metal"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:backgroundTint="@color/materialCyan"
+                android:text="@string/door_buzzer_inner_metal"/>
+
+        </RelativeLayout>
+
+        <TextView
+            style="@style/HeadlineWithSpace"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="@string/change"
-            android:textColor="@color/colorPrimary"/>
+            android:text="@string/keyholder"
+            />
 
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/overview_keyholder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/keyholder_no_one"/>
 
         <Button
-            android:id="@+id/overview_buzzer_outer"
+            android:id="@+id/overview_become_keyholder"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:backgroundTint="@color/materialCyan"
-            android:text="@string/door_buzzer_outer"/>
+            android:text="@string/become_keyholder"/>
 
-        <Button
-            android:id="@+id/overview_buzzer_inner"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
+        <TextView
+            style="@style/HeadlineWithSpace"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:backgroundTint="@color/materialCyan"
-            android:text="@string/door_buzzer_inner"/>
-    </RelativeLayout>
+            android:text="@string/who_is_there"/>
 
-    <TextView
-        style="@style/HeadlineWithSpace"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/keyholder"
-        />
-
-    <TextView
-        android:id="@+id/overview_keyholder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/keyholder_no_one"/>
-
-    <Button
-        android:id="@+id/overview_become_keyholder"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/materialCyan"
-        android:text="@string/become_keyholder"/>
-
-    <TextView
-        style="@style/HeadlineWithSpace"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/who_is_there"/>
-
-    <TextView
-        android:id="@+id/overview_devices"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/unknown"/>
-</LinearLayout>
+        <TextView
+            android:id="@+id/overview_devices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/unknown"/>
+    </LinearLayout>
+</ScrollView>
