@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.3.1
+* Bugfixes for door buttons
+
 ## 2.3.0
 * Adds a new door buzzer button (inner metal door)
 * Shows the device locations
