@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.2
+* More Bugfixes (fixes broken extended door status)
+
 ## 2.4.1
 * Bugfixes (#2)
 

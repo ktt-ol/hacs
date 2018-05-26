@@ -24,7 +24,6 @@ public class DoorButtons extends LinearLayout implements View.OnClickListener {
 
     public DoorButtons(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        initControl(context);
 
         final TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs,R.styleable.DoorButtons, 0, 0);
         try {
@@ -32,6 +31,8 @@ public class DoorButtons extends LinearLayout implements View.OnClickListener {
         } finally {
             attributes.recycle();
         }
+
+        initControl(context);
     }
 
     private void initControl(Context context) {
@@ -39,9 +40,6 @@ public class DoorButtons extends LinearLayout implements View.OnClickListener {
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         inflater.inflate(R.layout.component_door_buttons, this);
-
-        // layout is inflated, assign local variables to components
-//        header = (LinearLayout)findViewById(R.id.doo);
 
         doorButtons = new View[DoorButton.values().length];
         for (DoorButton doorButton : DoorButton.values()) {

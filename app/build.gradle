@@ -6,8 +6,8 @@ android {
         applicationId "io.mainframe.hacs"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 27
-        versionName '2.4.1'
+        versionCode 28
+        versionName '2.4.2'
     }
     buildTypes {
         release {
