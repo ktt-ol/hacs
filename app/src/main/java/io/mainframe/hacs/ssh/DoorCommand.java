@@ -7,21 +7,34 @@ import io.mainframe.hacs.main.Status;
  */
 public final class DoorCommand {
 
-    private static final String CMD = "set-status";
+    private final String command;
 
-    public static String getSwitchDoorStateCmd(Status status) {
-        return CMD + " " + status.getMqttValue();
+    private DoorCommand(String command) {
+        this.command = command;
     }
 
-    public static String getInnerGlassDoorBuzzerCmd() {
-        return "open-door glass";
+    public static DoorCommand getSwitchDoorStateCmd(Status status) {
+        return new DoorCommand("set-status " + status.getMqttValue());
     }
 
-    public static String getInnerMetalDoorBuzzerCmd() {
-        return "open-door main";
+    public static DoorCommand getInnerGlassDoorBuzzerCmd() {
+        return new DoorCommand("open-door glass");
     }
 
-    public static String getOuterDoorBuzzerCmd() {
-        return "open-door downstairs";
+    public static DoorCommand getInnerMetalDoorBuzzerCmd() {
+        return new DoorCommand("open-door main");
+    }
+
+    public static DoorCommand getOuterDoorBuzzerCmd() {
+        return new DoorCommand("open-door downstairs");
+    }
+
+    public String get() {
+        return this.command;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("DoorCommand{command='%s'}", command);
     }
 }

@@ -23,6 +23,7 @@
     <string name="nav_overview">Übersicht</string>
     <string name="nav_status">Status</string>
     <string name="nav_status_next">Status Next</string>
+    <string name="nav_machining">Machining</string>
 
     <string name="state_open">Open</string>
     <string name="state_none">Closed</string>
@@ -55,4 +56,5 @@
     <string name="overview_anonPerson">anonyme Personen</string>
     <string name="overview_unknownDev">unbekannte Geräte</string>
     <string name="overview_buzzer">Tür Buzzer</string>
+    <string name="machining_text">Setzte den Machining Status neu. Hierzu musst du dich im Mainframe WLan und im Keller befinden.</string>
 </resources>

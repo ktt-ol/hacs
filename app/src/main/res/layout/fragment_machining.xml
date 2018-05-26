@@ -1,0 +1,50 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              xmlns:hacs="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_marginTop="@dimen/content_space_top"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/activity_vertical_margin"
+              android:paddingLeft="@dimen/activity_horizontal_margin"
+              android:paddingRight="@dimen/activity_horizontal_margin"
+              tools:context="io.mainframe.hacs.PageFragments.MachiningFragment"
+    >
+
+    <TextView
+        android:id="@+id/machining_status"
+        style="@android:style/TextAppearance.Material.Display2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/unknown"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/machining_text"/>
+
+    <io.mainframe.hacs.components.DoorButtons
+        android:id="@+id/machining_doorButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        hacs:extendedStatus="false">
+    </io.mainframe.hacs.components.DoorButtons>
+
+    <TextView
+        style="@style/HeadlineWithSpace"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/keyholder"
+        />
+
+    <TextView
+        android:id="@+id/machining_keyholder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/keyholder_no_one"/>
+
+
+</LinearLayout>

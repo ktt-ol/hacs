@@ -17,6 +17,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
@@ -39,13 +40,9 @@ public class MqttConnector {
     private final List<Listener> allListener = Collections.synchronizedList(new ArrayList<Listener>());
 
     private MqttAndroidClient client;
-    private boolean isPassowrdSet = false;
+    private boolean isPasswordSet = false;
 
-    // null means "unknown" - if the client is disconnected the last state will be reset to unknown!
-    private Status lastStatus = null;
-    private Status lastStatusNext = null;
-    private String lastKeyholder = null;
-    private SpaceDevices lastDevices = null;
+    private EnumMap<Topic, Object> lastValues = new EnumMap<>(Topic.class);
 
     public MqttConnector(Context ctx, SharedPreferences prefs) {
         this.ctx = ctx;
@@ -64,8 +61,8 @@ public class MqttConnector {
             public void connectionLost(Throwable cause) {
                 Log.i(TAG, "Lost connection: " + (cause == null ? "/" : cause.getMessage()));
                 handleError("Lost connection.", cause);
-                lastStatus = null;
-                lastStatusNext = null;
+
+                lastValues.clear();
                 for (Listener listener : MqttConnector.this.allListener) {
                     listener.callbacks.onMqttConnectionLost();
                 }
@@ -80,18 +77,25 @@ public class MqttConnector {
                 Object msgValue = null;
                 switch (topic) {
                     case STATUS:
-                        msgValue = lastStatus = Status.byMqttValue(strMsg);
+                        msgValue = Status.byMqttValue(strMsg);
                         break;
                     case STATUS_NEXT:
-                        msgValue = lastStatusNext = Status.byMqttValue(strMsg);
+                        msgValue = Status.byMqttValue(strMsg);
                         break;
                     case KEYHOLDER:
-                        msgValue = lastKeyholder = strMsg;
+                        msgValue = strMsg;
                         break;
                     case DEVICES:
-                        msgValue = lastDevices = new SpaceDevices(strMsg);
+                        msgValue = new SpaceDevices(strMsg);
+                        break;
+                    case STATUS_MACHINING:
+                        msgValue = Status.byMqttValue(strMsg);
+                        break;
+                    case KEYHOLDER_MACHINING:
+                        msgValue = strMsg;
                         break;
                 }
+                lastValues.put(topic, msgValue);
 
                 for (Listener listener : allListener) {
                     if (listener.topics.contains(topic)) {
@@ -108,24 +112,12 @@ public class MqttConnector {
         });
     }
 
-    public Status getLastStatus() {
-        return lastStatus;
+    public <T> T getLastValue(Topic topic, Class<T> tClass) {
+        return (T) tClass.cast(this.lastValues.get(topic));
     }
 
     public boolean isPasswordSet() {
-        return isPassowrdSet;
-    }
-
-    public Status getLastNextStatus() {
-        return lastStatusNext;
-    }
-
-    public String getLastKeyholder() {
-        return lastKeyholder;
-    }
-
-    public SpaceDevices getLastDevices() {
-        return lastDevices;
+        return isPasswordSet;
     }
 
     public void addListener(MqttStatusListener listener, EnumSet<Topic> topics) {
@@ -159,6 +151,12 @@ public class MqttConnector {
         this.client = null;
     }
 
+    private void setLastValuesDefault() {
+        for (Topic topic : Topic.values()) {
+            this.lastValues.put(topic, topic.getDefaultValue());
+        }
+    }
+
     /* --- */
 
     public void connect() {
@@ -176,8 +174,8 @@ public class MqttConnector {
         options.setAutomaticReconnect(false);
 
         String password = prefs.getString(PREF_MQTT_PASSWORD, "");
-        isPassowrdSet = !password.isEmpty();
-        if (isPassowrdSet) {
+        isPasswordSet = !password.isEmpty();
+        if (isPasswordSet) {
             Log.d(TAG, "Using password to connect");
             options.setUserName(Constants.MQTT_USER);
             options.setPassword(password.toCharArray());
@@ -201,18 +199,16 @@ public class MqttConnector {
 
                 // the not set value is an empty string that is not shown in mqtt
                 // we have now a valid connection, thus we set not_set as default
-                lastStatusNext = Status.NOT_SET;
-                // same here
-                lastKeyholder = "";
+                setLastValuesDefault();
 
                 for (Listener listener : MqttConnector.this.allListener) {
                     listener.callbacks.onMqttConnected();
                 }
 
-                subscribe(Constants.MQTT_TOPIC_STATUS);
-                subscribe(Constants.MQTT_TOPIC_STATUS_NEXT);
-                subscribe(Constants.MQTT_TOPIC_KEYHOLDER);
-                subscribe(Constants.MQTT_TOPIC_DEVICES);
+                // register on all topics
+                for (Topic topic : Topic.values()) {
+                    subscribe(topic.getName());
+                }
             }
 
             @Override

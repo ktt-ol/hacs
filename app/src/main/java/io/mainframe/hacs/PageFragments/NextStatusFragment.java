@@ -53,7 +53,7 @@ public class NextStatusFragment extends BasePageFragment implements MqttStatusLi
         final MqttConnector mqtt = getInteraction().getMqttConnector();
         mqtt.addListener(this, EnumSet.of(Topic.STATUS_NEXT));
 
-        setStatusText(mqtt.getLastNextStatus());
+        setStatusText(mqtt.getLastValue(Topic.STATUS_NEXT, Status.class));
 
         if (!mqtt.isPasswordSet()) {
             readOnlyMode = true;
@@ -95,7 +95,7 @@ public class NextStatusFragment extends BasePageFragment implements MqttStatusLi
 
     @Override
     public void onMqttConnected() {
-        setStatusText(getInteraction().getMqttConnector().getLastNextStatus());
+        setStatusText(getInteraction().getMqttConnector().getLastValue(Topic.STATUS_NEXT, Status.class));
     }
 
     @Override

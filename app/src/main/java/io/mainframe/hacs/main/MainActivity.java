@@ -23,14 +23,17 @@ import java.util.List;
 import java.util.Stack;
 
 import io.mainframe.hacs.PageFragments.BasePageFragment;
+import io.mainframe.hacs.PageFragments.MachiningFragment;
 import io.mainframe.hacs.PageFragments.NextStatusFragment;
 import io.mainframe.hacs.PageFragments.OverviewFragment;
 import io.mainframe.hacs.PageFragments.StatusFragment;
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.about.AboutActivity;
+import io.mainframe.hacs.common.Constants;
 import io.mainframe.hacs.mqtt.MqttConnector;
 import io.mainframe.hacs.mqtt.MqttStatusListener;
 import io.mainframe.hacs.settings.SettingsActivity;
+import io.mainframe.hacs.ssh.DoorCommand;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -156,6 +159,11 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
             if (addToBackStack) {
                 fragmentBackState.add(id);
             }
+        } else if (id == R.id.nav_machining) {
+            loadPageFragment(new MachiningFragment());
+            if (addToBackStack) {
+                fragmentBackState.add(id);
+            }
         } else if (id == R.id.nav_abount) {
             startActivity(new Intent(this, AboutActivity.class));
         } else if (id == R.id.nav_settings) {
@@ -257,14 +265,14 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
 
 
     @Override
-    public void onSshCommandComplete(String command, boolean success) {
+    public void onSshCommandComplete(DoorCommand command, boolean success) {
         // ignore
     }
 
 
     @Override
-    public void sendSshCommand(String command) {
-        new SshUiHandler().runSshCommand(command, this);
+    public void sendSshCommand(Constants.DoorServer server, DoorCommand command) {
+        new SshUiHandler().runSshCommand(server, command, this);
     }
 
     @Override

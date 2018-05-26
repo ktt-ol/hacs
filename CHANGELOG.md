@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.0
+* Machining Seite
+
 ## 2.3.1
 * Bugfixes for door buttons
 

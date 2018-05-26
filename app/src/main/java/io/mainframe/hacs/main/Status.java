@@ -6,7 +6,7 @@ package io.mainframe.hacs.main;
 public enum Status {
 
     NOT_SET("", "not-set"),
-    CLOSE("none"),
+    CLOSE("none", "closed"),
     KEYHOLDER("keyholder"),
     MEMBER("member"),
     OPEN("open"),

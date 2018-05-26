@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single" android:id="@+id/group_pages">
+    <group
+        android:id="@+id/group_pages"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/nav_overview"
             android:title="@string/nav_overview"/>
@@ -11,10 +13,15 @@
         <item
             android:id="@+id/nav_statusNext"
             android:title="@string/nav_status_next"/>
+        <item
+            android:id="@+id/nav_machining"
+            android:title="@string/nav_machining"/>
     </group>
 
     <!-- with 'none' the last item is checked if come back from settings/abount -->
-    <group android:checkableBehavior="none" android:id="@+id/group_misc">
+    <group
+        android:id="@+id/group_misc"
+        android:checkableBehavior="none">
         <item
             android:id="@+id/nav_settings"
             android:title="@string/action_settings"/>

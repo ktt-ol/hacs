@@ -12,48 +12,33 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import io.mainframe.hacs.common.Constants;
+import io.mainframe.hacs.common.Constants.DoorServer;
 
 /**
  * Created by holger on 09.11.15.
  */
-public class RunSshAsync extends AsyncTask<PkCredentials, Void, RunSshAsync.Result> {
+public class RunSshAsync extends AsyncTask<Void, Void, RunSshAsync.Result> {
     private static final String TAG = "RunSSHCommand";
-
-    public enum Status {
-        SUCCESS, UNKNOWN_ERROR, WRONG_HOST_KEY
-    }
-
-    public static final class Result {
-        public final String command;
-        public final Status status;
-        public final String msg;
-
-        public Result(String command, Status status, String msg) {
-            this.command = command;
-            this.status = status;
-            this.msg = msg;
-        }
-    }
-
     private final SshResponse<Result> delegate;
-    private final String command;
+    private final DoorServer server;
+    private final PkCredentials credentials;
+    private final DoorCommand command;
     private final boolean checkServerFingerprint;
-
-    public RunSshAsync(SshResponse<Result> delegate, String command, boolean checkServerFingerprint) {
+    public RunSshAsync(SshResponse<Result> delegate, DoorServer server, PkCredentials credentials,
+                       DoorCommand command, boolean checkServerFingerprint) {
         this.delegate = delegate;
+        this.server = server;
+        this.credentials = credentials;
         this.command = command;
         this.checkServerFingerprint = checkServerFingerprint;
     }
 
     @Override
-    protected Result doInBackground(PkCredentials... params) {
-        PkCredentials credentials = params[0];
-
+    protected Result doInBackground(Void... voids) {
         JSch jsch = new JSch();
         try {
-            jsch.addIdentity(credentials.privateKeyFile, credentials.password);
-            Session session = jsch.getSession(Constants.DOOR_USER, Constants.DOOR_SERVER_HOST, Constants.DOOR_SERVER_PORT);
+            jsch.addIdentity(this.credentials.privateKeyFile, this.credentials.password);
+            Session session = jsch.getSession(this.server.user, this.server.host, this.server.port);
 
             // Avoid asking for key confirmation
             Properties prop = new Properties();
@@ -64,14 +49,13 @@ public class RunSshAsync extends AsyncTask<PkCredentials, Void, RunSshAsync.Resu
             final String hostKey = session.getHostKey().getFingerPrint(jsch);
             Log.d(TAG, "Server host key: " + hostKey);
 
-            if (this.checkServerFingerprint &&
-                    Constants.DOOR_SERVER_HOST_KEY.compareToIgnoreCase(hostKey) != 0) {
+            if (this.checkServerFingerprint && this.server.hostKey.compareToIgnoreCase(hostKey) != 0) {
                 session.disconnect();
                 String msg = String.format("Invalid host key. Expected '%s', but got '%s' instead.",
-                        Constants.DOOR_SERVER_HOST_KEY.toUpperCase(), hostKey.toUpperCase());
+                        this.server.hostKey.toUpperCase(), hostKey.toUpperCase());
                 Log.i(TAG, msg);
 
-                return new Result(this.command, Status.WRONG_HOST_KEY, msg);
+                return new Result(this.command.get(), Status.WRONG_HOST_KEY, msg);
             }
 
             // SSH Channel
@@ -81,8 +65,8 @@ public class RunSshAsync extends AsyncTask<PkCredentials, Void, RunSshAsync.Resu
             channelssh.setErrStream(errorOut);
 
             // Execute command
-            Log.d(TAG, "ssh exec: " + this.command);
-            channelssh.setCommand(this.command);
+            Log.d(TAG, "ssh exec: " + this.command.get());
+            channelssh.setCommand(this.command.get());
             channelssh.connect();
 
             channelssh.start();
@@ -96,15 +80,15 @@ public class RunSshAsync extends AsyncTask<PkCredentials, Void, RunSshAsync.Resu
             Log.d(TAG, "ssh output: " + resultStr);
             if (!errorStr.isEmpty()) {
                 Log.w(TAG, "ssh error output: " + errorStr);
+                return new Result(this.command.get(), Status.UNKNOWN_ERROR, errorStr);
             }
-            return new Result(this.command, Status.SUCCESS, resultStr);
+            return new Result(this.command.get(), Status.SUCCESS, resultStr);
         } catch (Exception e) {
             String msg = "Error running ssh: " + e.getMessage();
             Log.e(TAG, msg, e);
-            return new Result(this.command, Status.UNKNOWN_ERROR, msg);
+            return new Result(this.command.get(), Status.UNKNOWN_ERROR, msg);
         }
     }
-
 
     @Override
     protected void onPostExecute(Result result) {
@@ -121,5 +105,22 @@ public class RunSshAsync extends AsyncTask<PkCredentials, Void, RunSshAsync.Resu
 
         input.close();
         return outputBuffer.toString();
+    }
+
+
+    public enum Status {
+        SUCCESS, UNKNOWN_ERROR, WRONG_HOST_KEY
+    }
+
+    public static final class Result {
+        public final String command;
+        public final Status status;
+        public final String msg;
+
+        public Result(String command, Status status, String msg) {
+            this.command = command;
+            this.status = status;
+            this.msg = msg;
+        }
     }
 }

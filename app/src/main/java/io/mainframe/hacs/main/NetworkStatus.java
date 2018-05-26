@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import io.mainframe.hacs.common.Constants;
 
@@ -27,8 +28,7 @@ public class NetworkStatus extends BroadcastReceiver implements SharedPreference
     private boolean requireMainframeWifi;
     private final List<NetworkStatusListener> allListener =
             Collections.synchronizedList(new ArrayList<NetworkStatusListener>());
-    private boolean hasWifi, hasMobile, isInMainframeWifi;
-
+    private boolean hasWifi, hasMobile, isInMainframeWifi, hasMachiningBssid;
     public NetworkStatus(Context ctx, SharedPreferences prefs) {
         context = ctx;
         requireMainframeWifi = prefs.getBoolean(PREFS_REQUIRE_MAINFRAME_WIFI, true);
@@ -49,6 +49,10 @@ public class NetworkStatus extends BroadcastReceiver implements SharedPreference
 
     public boolean isInMainframeWifi() {
         return isInMainframeWifi;
+    }
+
+    public boolean hasMachiningBssid() {
+        return hasMachiningBssid;
     }
 
     public void addListener(NetworkStatusListener listener) {
@@ -75,7 +79,7 @@ public class NetworkStatus extends BroadcastReceiver implements SharedPreference
 
     private void updateListener() {
         for (NetworkStatusListener listener : allListener) {
-            listener.onNetworkChange(hasNetwork(), hasMobile, hasWifi, isInMainframeWifi);
+            listener.onNetworkChange(hasNetwork(), hasMobile, hasWifi, isInMainframeWifi, hasMachiningBssid);
         }
     }
 
@@ -83,6 +87,7 @@ public class NetworkStatus extends BroadcastReceiver implements SharedPreference
         hasWifi = false;
         hasMobile = false;
         isInMainframeWifi = false;
+        hasMachiningBssid = false;
 
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         final Network[] allNetworks = cm.getAllNetworks();
@@ -105,27 +110,37 @@ public class NetworkStatus extends BroadcastReceiver implements SharedPreference
             return;
         }
 
+        WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+        Log.d(TAG, String.format("Wifi found ssid: %s, bssid: %s", wifiInfo.getSSID(), wifiInfo.getBSSID()));
+
         if (!requireMainframeWifi) {
             this.isInMainframeWifi = true;
+            this.hasMachiningBssid = true;
             Log.i(TAG, "requireMainframeWifi = false");
             return;
         }
 
-
-        WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-
-        Log.d(TAG, String.format("Wifi found ssid: %s, bssid: %s", wifiInfo.getSSID(), wifiInfo.getBSSID()));
         for (String ssid : Constants.MAINFRAME_SSIDS) {
             String quotedSsid = "\"" + ssid + "\"";
             if (quotedSsid.equals(wifiInfo.getSSID())) {
                 isInMainframeWifi = true;
                 Log.i(TAG, "Mainframe wifi found.");
-                return;
+                break;
             }
         }
 
-        Log.d(TAG, "Wrong wifi, you must connect to a mainframe wifi.");
+        if (this.isInMainframeWifi) {
+            final String bssid = wifiInfo.getBSSID();
+            for (String validBssid : Constants.MACHINING_WIFI_BSSIDS) {
+                if (validBssid.compareToIgnoreCase(bssid) == 0) {
+                    this.hasMachiningBssid = true;
+                    break;
+                }
+            }
+        } else {
+            Log.d(TAG, "Wrong wifi, you must connect to a mainframe wifi.");
+        }
     }
 
     @Override
@@ -140,6 +155,6 @@ public class NetworkStatus extends BroadcastReceiver implements SharedPreference
     }
 
     public interface NetworkStatusListener {
-        void onNetworkChange(boolean hasNetwork, boolean hasMobile, boolean hasWifi, boolean isInMainframeWifi);
+        void onNetworkChange(boolean hasNetwork, boolean hasMobile, boolean hasWifi, boolean isInMainframeWifi, boolean hasMachiningBssid);
     }
 }

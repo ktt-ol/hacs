@@ -6,9 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,9 @@ import android.view.Window;
 import android.widget.Toast;
 
 import io.mainframe.hacs.R;
+import io.mainframe.hacs.common.Constants;
 import io.mainframe.hacs.common.YesNoDialog;
+import io.mainframe.hacs.ssh.DoorCommand;
 import io.mainframe.hacs.ssh.PkCredentials;
 import io.mainframe.hacs.ssh.RunSshAsync;
 import io.mainframe.hacs.ssh.SshResponse;
@@ -28,7 +28,8 @@ public class SshUiHandler extends DialogFragment implements SshResponse<RunSshAs
 
     private OnShhCommandHandler mListener;
 
-    private String tryCommand;
+    private Constants.DoorServer tryServer;
+    private DoorCommand tryCommand;
     private SharedPreferences preferences;
 
     public SshUiHandler() {
@@ -43,7 +44,9 @@ public class SshUiHandler extends DialogFragment implements SshResponse<RunSshAs
         return view;
     }
 
-    /** The system calls this only when creating the layout in a dialog. */
+    /**
+     * The system calls this only when creating the layout in a dialog.
+     */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // The only reason you might override this method when using onCreateView() is
@@ -57,14 +60,15 @@ public class SshUiHandler extends DialogFragment implements SshResponse<RunSshAs
         return dialog;
     }
 
-    public void runSshCommand(String command, FragmentActivity fragmentActivity) {
+    public void runSshCommand(Constants.DoorServer server, DoorCommand command, FragmentActivity fragmentActivity) {
+        this.tryServer = server;
         this.tryCommand = command;
 
         show(fragmentActivity.getSupportFragmentManager(), "dialog");
 
         preferences = PreferenceManager.getDefaultSharedPreferences(fragmentActivity);
         PkCredentials credentials = new PkCredentials(preferences);
-        new RunSshAsync(this, this.tryCommand, true).execute(credentials);
+        new RunSshAsync(this, this.tryServer, credentials, this.tryCommand, true).execute();
     }
 
     /**
@@ -98,14 +102,14 @@ public class SshUiHandler extends DialogFragment implements SshResponse<RunSshAs
         if (resultOk && tag.equals("hostkey")) {
             // try the last command again
             PkCredentials credentials = new PkCredentials(preferences);
-            new RunSshAsync(this, this.tryCommand, false).execute(credentials);
+            new RunSshAsync(this, this.tryServer, credentials, this.tryCommand, false).execute();
         } else {
             actionDone(false);
         }
     }
 
     private void actionDone(boolean result) {
-        dismiss();
+        dismissAllowingStateLoss();
         this.mListener.onSshCommandComplete(this.tryCommand, result);
     }
 
@@ -132,7 +136,7 @@ public class SshUiHandler extends DialogFragment implements SshResponse<RunSshAs
      * activity.
      */
     public interface OnShhCommandHandler {
-        void onSshCommandComplete(String command, boolean success);
+        void onSshCommandComplete(DoorCommand command, boolean success);
     }
 
 }

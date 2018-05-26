@@ -6,22 +6,54 @@ package io.mainframe.hacs.common;
 public final class Constants {
 
     /**
-     * Our mainframe SSID's
+     * Our mainframe SSIDs
      */
     public static final String[] MAINFRAME_SSIDS = new String[]{"mainframe", "mainframe-legacy"};
 
-    public static final String DOOR_SERVER_HOST = "192.168.2.3";
-    public static final int DOOR_SERVER_PORT = 22;
-    public static final String DOOR_SERVER_HOST_KEY = "C1:28:56:42:2B:8D:45:30:B7:43:EB:F6:A7:36:43:5D";
+    /**
+     * Valid bssids for the machining page
+     */
+    public static final String[] MACHINING_WIFI_BSSIDS = new String[]{
+            // AP 9 - Fräsraum
+            "00:26:3e:e0:49:40", // mainframe-legacy
+            "00:26:3e:e0:49:41", // mainframe
+            // AP 8 - Radstelle
+            "00:26:3e:e0:6b:80", // mainframe-legacy
+            "00:26:3e:e0:6b:81" // mainframe
+    };
+
+
+    public static final DoorServer SPACE_DOOR = new DoorServer(
+            "192.168.2.3", "keyholder", 22,
+            "C1:28:56:42:2B:8D:45:30:B7:43:EB:F6:A7:36:43:5D");
+
+    public static final DoorServer MACHINING_DOOR = new DoorServer(
+            "acs-machining.mainframe.lan", "keyholder", 22,
+            "B9:24:BC:26:8B:27:CE:0A:B5:8A:4E:BA:F4:CD:0C:84");
 
     public static final String KEYSTORE_FILE = "keystore/hacs_keystore.bks";
     public static final String KEYSTORE_PW = "keystorepw";
+
     public static final String MQTT_USER = "hacs_app";
     public static final String MQTT_SERVER = "ssl://mainframe.io:8883";
     public static final String MQTT_TOPIC_STATUS = "/access-control-system/space-state";
     public static final String MQTT_TOPIC_STATUS_NEXT = "/access-control-system/space-state-next";
     public static final String MQTT_TOPIC_KEYHOLDER = "/access-control-system/keyholder/name";
     public static final String MQTT_TOPIC_DEVICES = "/net/devices";
+    public static final String MQTT_TOPIC_MACHINING_STATUS = "/access-control-system/machining/state";
+    public static final String MQTT_TOPIC_MACHINING_KEYHOLDER = "/access-control-system/machining/keyholder/name";
 
-    public static final String DOOR_USER = "keyholder";
+    public static final class DoorServer {
+        public final String host;
+        public final String user;
+        public final int port;
+        public final String hostKey;
+
+        DoorServer(String host, String user, int port, String hostKey) {
+            this.host = host;
+            this.user = user;
+            this.port = port;
+            this.hostKey = hostKey;
+        }
+    }
 }

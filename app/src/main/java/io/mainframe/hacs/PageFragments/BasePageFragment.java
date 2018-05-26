@@ -3,8 +3,10 @@ package io.mainframe.hacs.PageFragments;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
+import io.mainframe.hacs.common.Constants;
 import io.mainframe.hacs.main.NetworkStatus;
 import io.mainframe.hacs.mqtt.MqttConnector;
+import io.mainframe.hacs.ssh.DoorCommand;
 
 /**
  * Created by holger on 06.10.17.
@@ -43,7 +45,7 @@ public abstract class BasePageFragment extends Fragment {
 
         MqttConnector getMqttConnector();
 
-        void sendSshCommand(String command);
+        void sendSshCommand(Constants.DoorServer server, DoorCommand command);
 
         void navigateToPage(Class<? extends BasePageFragment> target);
     }

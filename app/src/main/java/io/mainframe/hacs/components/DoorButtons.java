@@ -1,6 +1,7 @@
 package io.mainframe.hacs.components;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -19,10 +20,18 @@ public class DoorButtons extends LinearLayout implements View.OnClickListener {
 
     private OnButtonClickListener doorButtonListener;
     private View[] doorButtons;
+    private final boolean extendedStatus;
 
     public DoorButtons(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         initControl(context);
+
+        final TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs,R.styleable.DoorButtons, 0, 0);
+        try {
+            this.extendedStatus = attributes.getBoolean(R.styleable.DoorButtons_extendedStatus, true);
+        } finally {
+            attributes.recycle();
+        }
     }
 
     private void initControl(Context context) {
@@ -43,13 +52,17 @@ public class DoorButtons extends LinearLayout implements View.OnClickListener {
             doorButton.setOnClickListener(this);
         }
 
-        findViewById(R.id.doorButtons_more).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                findViewById(R.id.doorButtons_moreButtons).setVisibility(View.VISIBLE);
-                findViewById(R.id.doorButtons_more).setVisibility(View.GONE);
-            }
-        });
+        if (this.extendedStatus) {
+            findViewById(R.id.doorButtons_more).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    findViewById(R.id.doorButtons_moreButtons).setVisibility(View.VISIBLE);
+                    findViewById(R.id.doorButtons_more).setVisibility(View.GONE);
+                }
+            });
+        } else {
+            findViewById(R.id.doorButtons_more).setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override

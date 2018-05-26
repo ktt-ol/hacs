@@ -11,9 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.main.NetworkStatus;
@@ -23,6 +21,8 @@ import io.mainframe.hacs.mqtt.MqttStatusListener;
 import io.mainframe.hacs.mqtt.SpaceDevices;
 import io.mainframe.hacs.ssh.DoorCommand;
 import io.mainframe.hacs.ssh.PkCredentials;
+
+import static io.mainframe.hacs.common.Constants.SPACE_DOOR;
 
 /**
  */
@@ -49,28 +49,28 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
         view.findViewById(R.id.overview_buzzer_outer).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getInteraction().sendSshCommand(DoorCommand.getOuterDoorBuzzerCmd());
+                getInteraction().sendSshCommand(SPACE_DOOR, DoorCommand.getOuterDoorBuzzerCmd());
             }
         });
         view.findViewById(R.id.overview_buzzer_inner_glass).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getInteraction().sendSshCommand(DoorCommand.getInnerGlassDoorBuzzerCmd());
+                getInteraction().sendSshCommand(SPACE_DOOR, DoorCommand.getInnerGlassDoorBuzzerCmd());
             }
         });
         view.findViewById(R.id.overview_buzzer_inner_metal).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getInteraction().sendSshCommand(DoorCommand.getInnerMetalDoorBuzzerCmd());
+                getInteraction().sendSshCommand(SPACE_DOOR, DoorCommand.getInnerMetalDoorBuzzerCmd());
             }
         });
         view.findViewById(R.id.overview_become_keyholder).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO: there should be an extra command to become keyholder
-                final Status lastStatus = getInteraction().getMqttConnector().getLastStatus();
+                final Status lastStatus = getInteraction().getMqttConnector().getLastValue(Topic.STATUS, Status.class);
                 if (lastStatus != null) {
-                    getInteraction().sendSshCommand(DoorCommand.getSwitchDoorStateCmd(lastStatus));
+                    getInteraction().sendSshCommand(SPACE_DOOR, DoorCommand.getSwitchDoorStateCmd(lastStatus));
                 }
             }
         });
@@ -96,9 +96,9 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
         final MqttConnector mqtt = getInteraction().getMqttConnector();
         mqtt.addListener(this, EnumSet.of(Topic.STATUS, Topic.KEYHOLDER, Topic.DEVICES));
 
-        setStatusText(mqtt.getLastStatus());
-        setKeyholderText(mqtt.getLastKeyholder());
-        setDevicesText(mqtt.getLastDevices());
+        setStatusText(mqtt.getLastValue(Topic.STATUS, Status.class));
+        setKeyholderText(mqtt.getLastValue(Topic.KEYHOLDER, String.class));
+        setDevicesText(mqtt.getLastValue(Topic.DEVICES, SpaceDevices.class));
     }
 
     @Override
@@ -185,7 +185,7 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
     /* callback */
 
     @Override
-    public void onNetworkChange(boolean hasNetwork, boolean hasMobile, boolean hasWifi, boolean isInMainframeWifi) {
+    public void onNetworkChange(boolean hasNetwork, boolean hasMobile, boolean hasWifi, boolean isInMainframeWifi, boolean hasMachiningBssid) {
         setButtonsEnabled(isInMainframeWifi);
     }
 
@@ -203,9 +203,9 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
     @Override
     public void onMqttConnected() {
         final MqttConnector mqtt = getInteraction().getMqttConnector();
-        setStatusText(mqtt.getLastStatus());
-        setKeyholderText(mqtt.getLastKeyholder());
-        setDevicesText(mqtt.getLastDevices());
+        setStatusText(mqtt.getLastValue(Topic.STATUS, Status.class));
+        setKeyholderText(mqtt.getLastValue(Topic.KEYHOLDER, String.class));
+        setDevicesText(mqtt.getLastValue(Topic.DEVICES, SpaceDevices.class));
     }
 
     @Override

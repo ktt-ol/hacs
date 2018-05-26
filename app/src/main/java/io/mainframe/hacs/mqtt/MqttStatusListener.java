@@ -1,6 +1,7 @@
 package io.mainframe.hacs.mqtt;
 
 import io.mainframe.hacs.common.Constants;
+import io.mainframe.hacs.main.Status;
 
 /**
  * Created by holger on 13.08.16.
@@ -19,25 +20,40 @@ public interface MqttStatusListener {
     void onMqttConnectionLost();
 
     enum Topic {
-        STATUS(Constants.MQTT_TOPIC_STATUS),
-        STATUS_NEXT(Constants.MQTT_TOPIC_STATUS_NEXT),
-        KEYHOLDER(Constants.MQTT_TOPIC_KEYHOLDER),
-        DEVICES(Constants.MQTT_TOPIC_DEVICES);
 
-        private final String value;
+        STATUS(Constants.MQTT_TOPIC_STATUS, Status.NOT_SET),
+        STATUS_NEXT(Constants.MQTT_TOPIC_STATUS_NEXT, Status.NOT_SET),
+        KEYHOLDER(Constants.MQTT_TOPIC_KEYHOLDER, ""),
+        DEVICES(Constants.MQTT_TOPIC_DEVICES, null),
 
-        Topic(String value) {
-            this.value = value;
+        STATUS_MACHINING(Constants.MQTT_TOPIC_MACHINING_STATUS, Status.NOT_SET),
+        KEYHOLDER_MACHINING(Constants.MQTT_TOPIC_MACHINING_KEYHOLDER, "");
+
+        private final String name;
+        private final Object defaultValue;
+
+        Topic(String name, Object defaultValue) {
+            this.name = name;
+            this.defaultValue = defaultValue;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Object getDefaultValue() {
+            return defaultValue;
         }
 
         public static Topic byValue(String value) {
             for (Topic topic : values()) {
-                if (topic.value.equals(value)) {
+                if (topic.name.equals(value)) {
                     return topic;
                 }
             }
 
-            throw new IllegalArgumentException("Unsupported value: " + value);
+            throw new IllegalArgumentException("Unsupported name: " + value);
         }
     }
+
 }
