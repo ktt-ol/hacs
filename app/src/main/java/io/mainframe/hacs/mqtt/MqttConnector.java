@@ -55,7 +55,7 @@ public class MqttConnector {
                 MqttClient.generateClientId(),
                 MqttAndroidClient.Ack.AUTO_ACK
         );
-        this.client.setTraceEnabled(true);
+        this.client.setTraceEnabled(false);
         this.client.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable cause) {

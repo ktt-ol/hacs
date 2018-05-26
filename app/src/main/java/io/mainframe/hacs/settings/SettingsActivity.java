@@ -2,6 +2,7 @@ package io.mainframe.hacs.settings;
 
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,15 +13,9 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
-import android.util.Pair;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.LinearLayout;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,8 +25,19 @@ import io.mainframe.hacs.ssh.SshResponse;
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements EditTextWithScanPreference.ActivityRunner {
 
+    private static final String TAG = SettingsActivity.class.getName();
+
     private Map<Integer, EditTextWithScanPreference.ActivityResultCallback> callbacks = new ConcurrentHashMap<>();
     private int callbackIdCounter = 0;
+
+    /**
+     * Helper method to determine if the device has an extra-large screen. For
+     * example, 10" tablets are extra-large.
+     */
+    private static boolean isXLargeTablet(Context context) {
+        return (context.getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -44,7 +50,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
         EditTextWithScanPreference.ActivityResultCallback callback = this.callbacks.remove(requestCode);
         if (resultCode == RESULT_OK) {
             String contents = data.getStringExtra("SCAN_RESULT");
-            System.out.println("contens: " + contents);
             callback.activityResultCallback(contents);
         }
 //        if (resultCode == RESULT_CANCELED) {
@@ -87,16 +92,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
     public boolean onIsMultiPane() {
         return isXLargeTablet(this);
     }
-
-    /**
-     * Helper method to determine if the device has an extra-large screen. For
-     * example, 10" tablets are extra-large.
-     */
-    private static boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
-
 
     /**
      * This method stops fragment injection in malicious applications.
@@ -182,10 +177,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
                     this.privateKeyPassword.setSummary("Password is correct.");
                 }
             }
-            final SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
-            editor.putBoolean("credentialsOk", credentialsOk);
-            editor.commit();
-
         }
     }
 }

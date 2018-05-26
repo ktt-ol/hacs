@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.1
+* Bugfixes (#2)
+
 ## 2.4.0
 * Machining Seite
 
