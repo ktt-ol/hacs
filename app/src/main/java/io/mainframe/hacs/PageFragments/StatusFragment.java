@@ -5,13 +5,15 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.EnumSet;
-import java.util.Objects;
 
 import io.mainframe.hacs.R;
+import io.mainframe.hacs.common.YesNoDialog;
 import io.mainframe.hacs.components.DoorButtons;
+import io.mainframe.hacs.main.BackDoorStatus;
 import io.mainframe.hacs.main.NetworkStatus;
 import io.mainframe.hacs.main.Status;
 import io.mainframe.hacs.mqtt.MqttConnector;
@@ -37,7 +39,23 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
         doorButtons = (DoorButtons) view.findViewById(R.id.status_doorButtons);
         doorButtons.setOnButtonClickListener(new DoorButtons.OnButtonClickListener() {
             @Override
-            public void onClick(DoorButtons.DoorButton doorButton, View view) {
+            public void onClick(final DoorButtons.DoorButton doorButton, View view) {
+                if (doorButton.getStatus() == Status.CLOSE) {
+                    final BackDoorStatus backDoorStatus = getInteraction().getMqttConnector().getLastValue(Topic.BACK_DOOR_BOLT, BackDoorStatus.class);
+                    if (backDoorStatus == BackDoorStatus.OPEN) {
+                        YesNoDialog.show(getContext(), "Back-Door prüfen.", "Die Back-Door ist noch offen. Wirklich abschließen?", "bd", new YesNoDialog.ResultListener() {
+                            @Override
+                            public void dialogClosed(String tag, boolean resultOk) {
+                                if (resultOk) {
+                                    getInteraction().sendSshCommand(SPACE_DOOR, DoorCommand.getSwitchDoorStateCmd(doorButton.getStatus()));
+                                }
+                            }
+                        });
+
+                        return;
+                    }
+                }
+
                 getInteraction().sendSshCommand(SPACE_DOOR, DoorCommand.getSwitchDoorStateCmd(doorButton.getStatus()));
             }
         });
@@ -56,15 +74,16 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
         if (!readOnlyMode) {
             final NetworkStatus networkStatus = getInteraction().getNetworkStatus();
             networkStatus.addListener(this);
-            doorButtons.setEnabled(networkStatus.isInMainframeWifi());
+            doorButtons.setEnabled(networkStatus.isInMainframeWifi() && !networkStatus.hasMachiningBssid());
         } else {
             doorButtons.setEnabled(false);
         }
 
         final MqttConnector mqtt = getInteraction().getMqttConnector();
-        mqtt.addListener(this, EnumSet.of(Topic.STATUS));
+        mqtt.addListener(this, EnumSet.of(Topic.STATUS, Topic.BACK_DOOR_BOLT));
 
         setStatusText(mqtt.getLastValue(Topic.STATUS, Status.class));
+        setLedImage(mqtt.getLastValue(Topic.BACK_DOOR_BOLT, BackDoorStatus.class));
     }
 
     @Override
@@ -81,8 +100,23 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
     }
 
     private void setStatusText(Status status) {
-        TextView text = (TextView) getView().findViewById(R.id.status_status);
+        TextView text = getView().findViewById(R.id.status_status);
         text.setText(status == null ? getString(R.string.unknown) : status.getUiValue());
+    }
+
+    private void setLedImage(BackDoorStatus status) {
+        final ImageView imageView = getView().findViewById(R.id.back_door_status);
+
+        switch (status) {
+            case OPEN:
+                imageView.setImageResource(R.drawable.ic_led_red_black);
+                break;
+            case CLOSED:
+                imageView.setImageResource(R.drawable.ic_led_blue_black);
+                break;
+            default:
+                imageView.setImageResource(R.drawable.ic_button_black);
+        }
     }
 
     /* callback */
@@ -94,10 +128,11 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
 
     @Override
     public void onNewMsg(Topic topic, Object msg) {
-        if (topic != Topic.STATUS) {
-            return;
+        if (topic == Topic.STATUS) {
+            setStatusText((Status) msg);
+        } else if (topic == Topic.BACK_DOOR_BOLT) {
+            setLedImage((BackDoorStatus) msg);
         }
-        setStatusText((Status) msg);
     }
 
     @Override
@@ -108,5 +143,6 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
     @Override
     public void onMqttConnectionLost() {
         setStatusText(null);
+        setLedImage(BackDoorStatus.UNKNOWN);
     }
 }

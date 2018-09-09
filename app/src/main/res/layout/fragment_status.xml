@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
@@ -10,13 +11,32 @@
               tools:context="io.mainframe.hacs.PageFragments.StatusFragment"
     >
 
-    <TextView
-        android:id="@+id/status_status"
-        style="@android:style/TextAppearance.Material.Display2"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/unknown"
-        />
+        >
+
+        <TextView
+            android:id="@+id/status_status"
+            style="@android:style/TextAppearance.Material.Display2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/unknown"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            />
+
+        <ImageView
+            android:id="@+id/back_door_status"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:src="@drawable/ic_button_black"/>
+
+
+    </RelativeLayout>
 
     <TextView
         android:layout_width="match_parent"

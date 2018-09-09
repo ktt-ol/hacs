@@ -38,3 +38,7 @@ https://play.google.com/apps/publish/
 # Helpful!
 
 * http://www.hivemq.com/blog/mqtt-client-library-enyclopedia-paho-android-service
+
+# Acknowledgements
+
+* The 3 led buttons come from https://openclipart.org/user-cliparts/bnielsen 

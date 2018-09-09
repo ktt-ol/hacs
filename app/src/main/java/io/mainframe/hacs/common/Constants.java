@@ -42,6 +42,7 @@ public final class Constants {
     public static final String MQTT_TOPIC_DEVICES = "/net/devices";
     public static final String MQTT_TOPIC_MACHINING_STATUS = "/access-control-system/machining/state";
     public static final String MQTT_TOPIC_MACHINING_KEYHOLDER = "/access-control-system/machining/keyholder/name";
+    public static final String MQTT_TOPIC_BACK_DOOR_BOLT = "/access-control-system/back-door/bolt-contact";
 
     public static final class DoorServer {
         public final String host;

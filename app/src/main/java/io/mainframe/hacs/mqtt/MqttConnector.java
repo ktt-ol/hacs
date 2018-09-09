@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.mainframe.hacs.common.Constants;
+import io.mainframe.hacs.main.BackDoorStatus;
 import io.mainframe.hacs.main.Status;
 import io.mainframe.hacs.mqtt.MqttStatusListener.Topic;
 
@@ -94,6 +95,11 @@ public class MqttConnector {
                     case KEYHOLDER_MACHINING:
                         msgValue = strMsg;
                         break;
+                    case BACK_DOOR_BOLT:
+                        msgValue = BackDoorStatus.byMqttValue(strMsg);
+                        break;
+                    default:
+                        Log.w(TAG, "Unhandled topic for saving last message. " + topicStr);
                 }
                 lastValues.put(topic, msgValue);
 

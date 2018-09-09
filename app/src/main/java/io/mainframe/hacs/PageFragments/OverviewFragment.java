@@ -88,9 +88,9 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
         if (!readOnlyMode) {
             final NetworkStatus networkStatus = getInteraction().getNetworkStatus();
             networkStatus.addListener(this);
-            setButtonsEnabled(networkStatus.isInMainframeWifi());
+            setButtonsEnabled(networkStatus.isInMainframeWifi(), !networkStatus.hasMachiningBssid());
         } else {
-            setButtonsEnabled(false);
+            setButtonsEnabled(false, false);
         }
 
         final MqttConnector mqtt = getInteraction().getMqttConnector();
@@ -175,18 +175,18 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
         return "<font color='" + color + "'>" + content + "</font>";
     }
 
-    private void setButtonsEnabled(boolean enabled) {
-        getView().findViewById(R.id.overview_buzzer_outer).setEnabled(enabled);
-        getView().findViewById(R.id.overview_buzzer_inner_glass).setEnabled(enabled);
-        getView().findViewById(R.id.overview_buzzer_inner_metal).setEnabled(enabled);
-        getView().findViewById(R.id.overview_become_keyholder).setEnabled(enabled);
+    private void setButtonsEnabled(boolean buzzerEnabled, boolean becomeKeyholderEnabled) {
+        getView().findViewById(R.id.overview_buzzer_outer).setEnabled(buzzerEnabled);
+        getView().findViewById(R.id.overview_buzzer_inner_glass).setEnabled(buzzerEnabled);
+        getView().findViewById(R.id.overview_buzzer_inner_metal).setEnabled(buzzerEnabled);
+        getView().findViewById(R.id.overview_become_keyholder).setEnabled(becomeKeyholderEnabled);
     }
 
     /* callback */
 
     @Override
     public void onNetworkChange(boolean hasNetwork, boolean hasMobile, boolean hasWifi, boolean isInMainframeWifi, boolean hasMachiningBssid) {
-        setButtonsEnabled(isInMainframeWifi);
+        setButtonsEnabled(isInMainframeWifi, !hasMachiningBssid);
     }
 
     @Override

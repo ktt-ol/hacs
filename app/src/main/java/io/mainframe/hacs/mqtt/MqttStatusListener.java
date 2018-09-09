@@ -25,6 +25,8 @@ public interface MqttStatusListener {
         STATUS_NEXT(Constants.MQTT_TOPIC_STATUS_NEXT, Status.NOT_SET),
         KEYHOLDER(Constants.MQTT_TOPIC_KEYHOLDER, ""),
         DEVICES(Constants.MQTT_TOPIC_DEVICES, null),
+        // -1 unknown / 0 door open / 1 door closed
+        BACK_DOOR_BOLT(Constants.MQTT_TOPIC_BACK_DOOR_BOLT, "-1"),
 
         STATUS_MACHINING(Constants.MQTT_TOPIC_MACHINING_STATUS, Status.NOT_SET),
         KEYHOLDER_MACHINING(Constants.MQTT_TOPIC_MACHINING_KEYHOLDER, "");

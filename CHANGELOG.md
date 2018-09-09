@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.5.0
+* Shows the status of the back-door
+* Asks the user if he really wants to close the space with an open back door
+* Disables 'Keyholder' button and all buttons on status if the wifi has a machining bssid
+
 ## 2.4.2
 * More Bugfixes (fixes broken extended door status)
 
