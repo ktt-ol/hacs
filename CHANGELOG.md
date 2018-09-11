@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.5.1
+* Bugfix: Initial state of back door was wrong and leads to a crash.
+
 ## 2.5.0
 * Shows the status of the back-door
 * Asks the user if he really wants to close the space with an open back door
@@ -19,7 +22,7 @@
 
 ## 2.3.0
 * Adds a new door buzzer button (inner metal door)
-* Shows the device locations
+* Shows the device locationsstatus
 
 ## 2.2.1
 * support new device list format

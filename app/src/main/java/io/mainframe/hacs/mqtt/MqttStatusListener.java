@@ -1,6 +1,7 @@
 package io.mainframe.hacs.mqtt;
 
 import io.mainframe.hacs.common.Constants;
+import io.mainframe.hacs.main.BackDoorStatus;
 import io.mainframe.hacs.main.Status;
 
 /**
@@ -26,7 +27,7 @@ public interface MqttStatusListener {
         KEYHOLDER(Constants.MQTT_TOPIC_KEYHOLDER, ""),
         DEVICES(Constants.MQTT_TOPIC_DEVICES, null),
         // -1 unknown / 0 door open / 1 door closed
-        BACK_DOOR_BOLT(Constants.MQTT_TOPIC_BACK_DOOR_BOLT, "-1"),
+        BACK_DOOR_BOLT(Constants.MQTT_TOPIC_BACK_DOOR_BOLT, BackDoorStatus.UNKNOWN),
 
         STATUS_MACHINING(Constants.MQTT_TOPIC_MACHINING_STATUS, Status.NOT_SET),
         KEYHOLDER_MACHINING(Constants.MQTT_TOPIC_MACHINING_KEYHOLDER, "");
