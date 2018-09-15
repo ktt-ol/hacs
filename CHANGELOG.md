@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.5.2
+* Bugfix: Fixes "become keyholder" button enable state
+
 ## 2.5.1
 * Bugfix: Initial state of back door was wrong and leads to a crash.
 

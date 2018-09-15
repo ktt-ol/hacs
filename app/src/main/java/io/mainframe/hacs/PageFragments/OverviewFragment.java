@@ -88,7 +88,8 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
         if (!readOnlyMode) {
             final NetworkStatus networkStatus = getInteraction().getNetworkStatus();
             networkStatus.addListener(this);
-            setButtonsEnabled(networkStatus.isInMainframeWifi(), !networkStatus.hasMachiningBssid());
+            setButtonsEnabled(networkStatus.isInMainframeWifi(),
+                    networkStatus.isInMainframeWifi() && !networkStatus.hasMachiningBssid());
         } else {
             setButtonsEnabled(false, false);
         }
@@ -186,7 +187,7 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
 
     @Override
     public void onNetworkChange(boolean hasNetwork, boolean hasMobile, boolean hasWifi, boolean isInMainframeWifi, boolean hasMachiningBssid) {
-        setButtonsEnabled(isInMainframeWifi, !hasMachiningBssid);
+        setButtonsEnabled(isInMainframeWifi, isInMainframeWifi && !hasMachiningBssid);
     }
 
     @Override
