@@ -54,7 +54,7 @@ public class MachiningFragment extends BasePageFragment implements NetworkStatus
     public void onResume() {
         super.onResume();
 
-        PkCredentials credentials = new PkCredentials(PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        PkCredentials credentials = new PkCredentials(PreferenceManager.getDefaultSharedPreferences(getActivity()), getContext());
         // if the ssh key password is not set
         boolean readOnlyMode = !credentials.isPasswordSet();
 

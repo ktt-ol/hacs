@@ -26,6 +26,9 @@
             android:id="@+id/nav_settings"
             android:title="@string/action_settings"/>
         <item
+            android:id="@+id/nav_logs"
+            android:title="@string/title_activity_log_viewer"/>
+        <item
             android:id="@+id/nav_abount"
             android:title="@string/action_about"/>
     </group>

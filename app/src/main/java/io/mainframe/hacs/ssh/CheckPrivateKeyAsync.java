@@ -1,31 +1,18 @@
 package io.mainframe.hacs.ssh;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.KeyPair;
+
+import org.pmw.tinylog.Logger;
 
 
 /**
  * Checks the given private key
  */
 public class CheckPrivateKeyAsync extends AsyncTask<String, Void, CheckPrivateKeyAsync.Result> {
-
-    public static class Result {
-        public final String privateKeyFile;
-        public final boolean keyFileValid;
-        public final boolean passwordMatch;
-
-        public Result(String privateKeyFile, boolean keyFileValid, boolean passwordMatch) {
-            this.privateKeyFile = privateKeyFile;
-            this.keyFileValid = keyFileValid;
-            this.passwordMatch = passwordMatch;
-        }
-    }
-
-    private static final String TAG = CheckPrivateKeyAsync.class.toString();
 
     private final SshResponse<Result> responseHandler;
 
@@ -55,7 +42,7 @@ public class CheckPrivateKeyAsync extends AsyncTask<String, Void, CheckPrivateKe
             }
 
         } catch (JSchException e) {
-            Log.d(TAG, "KeyCheck excp: " + e.getMessage(), e);
+            Logger.debug("KeyCheck excp: " + e.getMessage(), e);
             return new Result(null, false, false);
         }
     }
@@ -64,5 +51,17 @@ public class CheckPrivateKeyAsync extends AsyncTask<String, Void, CheckPrivateKe
     protected void onPostExecute(Result result) {
         super.onPostExecute(result);
         this.responseHandler.processFinish(result);
+    }
+
+    public static class Result {
+        public final String privateKeyFile;
+        public final boolean keyFileValid;
+        public final boolean passwordMatch;
+
+        public Result(String privateKeyFile, boolean keyFileValid, boolean passwordMatch) {
+            this.privateKeyFile = privateKeyFile;
+            this.keyFileValid = keyFileValid;
+            this.passwordMatch = passwordMatch;
+        }
     }
 }

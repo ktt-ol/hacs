@@ -3,6 +3,7 @@ package io.mainframe.hacs.main;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -11,29 +12,40 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
+import org.pmw.tinylog.Logger;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import io.mainframe.hacs.R;
 import io.mainframe.hacs.common.Constants;
 
 public class NetworkStatus extends BroadcastReceiver implements SharedPreferences.OnSharedPreferenceChangeListener {
-    private static final String TAG = NetworkStatus.class.getName();
-    public static final String PREFS_REQUIRE_MAINFRAME_WIFI = "requireMainframeWifi";
-
     private final Context context;
 
     private boolean requireMainframeWifi;
     private final List<NetworkStatusListener> allListener =
             Collections.synchronizedList(new ArrayList<NetworkStatusListener>());
     private boolean hasWifi, hasMobile, isInMainframeWifi, hasMachiningBssid;
+
     public NetworkStatus(Context ctx, SharedPreferences prefs) {
         context = ctx;
-        requireMainframeWifi = prefs.getBoolean(PREFS_REQUIRE_MAINFRAME_WIFI, true);
+        requireMainframeWifi = prefs.getBoolean(ctx.getString(R.string.PREFS_REQUIRE_MAINFRAME_WIFI), true);
         prefs.registerOnSharedPreferenceChangeListener(this);
+        parseResult(context);
     }
+
+    public void startListenOnConnectionChange() {
+        context.registerReceiver(this, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    public void stopListenOnConnectionChange() {
+        context.unregisterReceiver(this);
+    }
+
 
     public boolean hasNetwork() {
         return hasWifi || hasMobile;
@@ -72,7 +84,7 @@ public class NetworkStatus extends BroadcastReceiver implements SharedPreference
     @Override
     public void onReceive(Context context, Intent intent) {
         parseResult(context);
-        Log.d(TAG, String.format("onReceive %s: hasNetwork=%s, hasMobile=%s, hasWifi=%s, isInMainframeWifi=%s",
+        Logger.debug(String.format("onReceive %s: hasNetwork=%s, hasMobile=%s, hasWifi=%s, isInMainframeWifi=%s",
                 intent.getAction(), hasNetwork(), hasMobile, hasWifi, isInMainframeWifi));
         updateListener();
     }
@@ -106,18 +118,18 @@ public class NetworkStatus extends BroadcastReceiver implements SharedPreference
         }
 
         if (!hasWifi) {
-            Log.d(TAG, "No wifi connection.");
+            Logger.debug("No wifi connection.");
             return;
         }
 
         WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-        Log.d(TAG, String.format("Wifi found ssid: %s, bssid: %s", wifiInfo.getSSID(), wifiInfo.getBSSID()));
+        Logger.debug("Wifi found ssid: {}, bssid: {}", wifiInfo.getSSID(), wifiInfo.getBSSID());
 
         if (!requireMainframeWifi) {
             this.isInMainframeWifi = true;
             this.hasMachiningBssid = true;
-            Log.i(TAG, "requireMainframeWifi = false");
+            Logger.info("requireMainframeWifi = false");
             return;
         }
 
@@ -125,7 +137,7 @@ public class NetworkStatus extends BroadcastReceiver implements SharedPreference
             String quotedSsid = "\"" + ssid + "\"";
             if (quotedSsid.equals(wifiInfo.getSSID())) {
                 isInMainframeWifi = true;
-                Log.i(TAG, "Mainframe wifi found.");
+                Logger.info("Mainframe wifi found.");
                 break;
             }
         }
@@ -139,17 +151,18 @@ public class NetworkStatus extends BroadcastReceiver implements SharedPreference
                 }
             }
         } else {
-            Log.d(TAG, "Wrong wifi, you must connect to a mainframe wifi.");
+            Logger.debug("Wrong wifi, you must connect to a mainframe wifi.");
         }
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (!PREFS_REQUIRE_MAINFRAME_WIFI.equals(key)) {
+        final String prefKey = context.getString(R.string.PREFS_REQUIRE_MAINFRAME_WIFI);
+        if (!prefKey.equals(key)) {
             return;
         }
 
-        requireMainframeWifi = sharedPreferences.getBoolean(PREFS_REQUIRE_MAINFRAME_WIFI, true);
+        requireMainframeWifi = sharedPreferences.getBoolean(prefKey, true);
         parseResult(context);
         updateListener();
     }

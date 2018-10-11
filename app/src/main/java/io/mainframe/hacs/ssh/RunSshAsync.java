@@ -1,11 +1,12 @@
 package io.mainframe.hacs.ssh;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+
+import org.pmw.tinylog.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,12 +19,12 @@ import io.mainframe.hacs.common.Constants.DoorServer;
  * Created by holger on 09.11.15.
  */
 public class RunSshAsync extends AsyncTask<Void, Void, RunSshAsync.Result> {
-    private static final String TAG = "RunSSHCommand";
     private final SshResponse<Result> delegate;
     private final DoorServer server;
     private final PkCredentials credentials;
     private final DoorCommand command;
     private final boolean checkServerFingerprint;
+
     public RunSshAsync(SshResponse<Result> delegate, DoorServer server, PkCredentials credentials,
                        DoorCommand command, boolean checkServerFingerprint) {
         this.delegate = delegate;
@@ -47,13 +48,13 @@ public class RunSshAsync extends AsyncTask<Void, Void, RunSshAsync.Result> {
 
             session.connect();
             final String hostKey = session.getHostKey().getFingerPrint(jsch);
-            Log.d(TAG, "Server host key: " + hostKey);
+            Logger.debug("Server host key: " + hostKey);
 
             if (this.checkServerFingerprint && this.server.hostKey.compareToIgnoreCase(hostKey) != 0) {
                 session.disconnect();
                 String msg = String.format("Invalid host key. Expected '%s', but got '%s' instead.",
                         this.server.hostKey.toUpperCase(), hostKey.toUpperCase());
-                Log.i(TAG, msg);
+                Logger.info(msg);
 
                 return new Result(this.command.get(), Status.WRONG_HOST_KEY, msg);
             }
@@ -65,7 +66,7 @@ public class RunSshAsync extends AsyncTask<Void, Void, RunSshAsync.Result> {
             channelssh.setErrStream(errorOut);
 
             // Execute command
-            Log.d(TAG, "ssh exec: " + this.command.get());
+            Logger.debug("ssh exec: " + this.command.get());
             channelssh.setCommand(this.command.get());
             channelssh.connect();
 
@@ -77,15 +78,15 @@ public class RunSshAsync extends AsyncTask<Void, Void, RunSshAsync.Result> {
 
             String errorStr = errorOut.toString("utf8");
 
-            Log.d(TAG, "ssh output: " + resultStr);
+            Logger.debug("ssh output: " + resultStr);
             if (!errorStr.isEmpty()) {
-                Log.w(TAG, "ssh error output: " + errorStr);
+                Logger.warn("ssh error output: " + errorStr);
                 return new Result(this.command.get(), Status.UNKNOWN_ERROR, errorStr);
             }
             return new Result(this.command.get(), Status.SUCCESS, resultStr);
         } catch (Exception e) {
             String msg = "Error running ssh: " + e.getMessage();
-            Log.e(TAG, msg, e);
+            Logger.error(msg, e);
             return new Result(this.command.get(), Status.UNKNOWN_ERROR, msg);
         }
     }

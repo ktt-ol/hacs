@@ -2,9 +2,7 @@ package io.mainframe.hacs.main;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -13,9 +11,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+
+import org.pmw.tinylog.Logger;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -30,10 +29,12 @@ import io.mainframe.hacs.PageFragments.StatusFragment;
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.about.AboutActivity;
 import io.mainframe.hacs.common.Constants;
+import io.mainframe.hacs.log_view.LogViewerActivity;
 import io.mainframe.hacs.mqtt.MqttConnector;
 import io.mainframe.hacs.mqtt.MqttStatusListener;
 import io.mainframe.hacs.settings.SettingsActivity;
 import io.mainframe.hacs.ssh.DoorCommand;
+import io.mainframe.hacs.trash_notifications.TrashCalendar;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -42,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
         EasyPermissions.PermissionCallbacks,
         NavigationView.OnNavigationItemSelectedListener, BasePageFragment.BasePageFragmentInteractionListener, MqttStatusListener {
 
-    private static final String TAG = MainActivity.class.getName();
     public static final String BACK_STATE_KEY = "backsate";
 
     private NetworkStatus networkStatus = null;
@@ -166,10 +166,12 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
             }
         } else if (id == R.id.nav_abount) {
             startActivity(new Intent(this, AboutActivity.class));
+        } else if (id == R.id.nav_logs) {
+            startActivity(new Intent(this, LogViewerActivity.class));
         } else if (id == R.id.nav_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
         } else {
-            Log.w(TAG, "Unexpected id: " + id);
+            Logger.warn("Unexpected id: " + id);
             return;
         }
 
@@ -181,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
     protected void onResume() {
         super.onResume();
 
-        registerReceiver(this.networkStatus, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        networkStatus.startListenOnConnectionChange();
         mqttConnector.connect();
         mqttConnector.addListener(this, EnumSet.noneOf(Topic.class));
     }
@@ -192,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
 
         mqttConnector.removeAllListener(this);
         mqttConnector.disconnect();
-        unregisterReceiver(this.networkStatus);
+        networkStatus.stopListenOnConnectionChange();
     }
 
     @Override
@@ -211,10 +213,11 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.WAKE_LOCK,
-                Manifest.permission.READ_PHONE_STATE
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.RECEIVE_BOOT_COMPLETED
         };
         if (!EasyPermissions.hasPermissions(this, perms)) {
-            Log.w(TAG, "Requesting permission");
+            Logger.warn("Requesting permission");
             // Do not have permissions, request them now
             EasyPermissions.requestPermissions(this, getString(R.string.ask_for_permission), 1, perms);
         }
@@ -243,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
 
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
-        Log.d(TAG, "onPermissionsDenied:" + requestCode + ":" + perms.size());
+        Logger.warn("onPermissionsDenied:" + requestCode + ":" + perms.size());
 
         // (Optional) Check whether the user denied any permissions and checked "NEVER ASK AGAIN."
         // This will display a dialog directing them to enable the permission in app settings.

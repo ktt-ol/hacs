@@ -2,7 +2,6 @@ package io.mainframe.hacs.mqtt;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -13,6 +12,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.pmw.tinylog.Logger;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
+import io.mainframe.hacs.R;
 import io.mainframe.hacs.common.Constants;
 import io.mainframe.hacs.main.BackDoorStatus;
 import io.mainframe.hacs.main.Status;
@@ -31,9 +32,6 @@ import io.mainframe.hacs.mqtt.MqttStatusListener.Topic;
  * Responsible for the conneciton to the client server. The connection will be initialized automatically and ....
  */
 public class MqttConnector {
-
-    private static final String PREF_MQTT_PASSWORD = "mqttPassword";
-    private static final String TAG = MqttConnector.class.getName();
 
     private final Context ctx;
     private final SharedPreferences prefs;
@@ -60,7 +58,7 @@ public class MqttConnector {
         this.client.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable cause) {
-                Log.i(TAG, "Lost connection: " + (cause == null ? "/" : cause.getMessage()));
+                Logger.info("Lost connection: " + (cause == null ? "/" : cause.getMessage()));
                 handleError("Lost connection.", cause);
 
                 lastValues.clear();
@@ -72,7 +70,7 @@ public class MqttConnector {
             @Override
             public void messageArrived(String topicStr, MqttMessage message) throws Exception {
                 String strMsg = message.toString();
-                Log.d(TAG, "Got mqtt msg (" + topicStr + "): " + strMsg);
+                Logger.debug("Got mqtt msg (" + topicStr + "): " + strMsg);
                 Topic topic = Topic.byValue(topicStr);
 
                 Object msgValue = null;
@@ -99,7 +97,7 @@ public class MqttConnector {
                         msgValue = BackDoorStatus.byMqttValue(strMsg);
                         break;
                     default:
-                        Log.w(TAG, "Unhandled topic for saving last message. " + topicStr);
+                        Logger.warn("Unhandled topic for saving last message. " + topicStr);
                 }
                 lastValues.put(topic, msgValue);
 
@@ -150,7 +148,7 @@ public class MqttConnector {
         try {
             this.client.close();
         } catch (Exception e) {
-            Log.e(TAG, "Error during close", e);
+            Logger.error("Error during close", e);
         }
 
         this.client.unregisterResources();
@@ -172,17 +170,17 @@ public class MqttConnector {
 
         init();
 
-        Log.d(TAG, "Try to connect.");
+        Logger.debug("Try to connect.");
 
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(false);
         // reconnect doesn't work good enough (and needs cleanSession = false)
         options.setAutomaticReconnect(false);
 
-        String password = prefs.getString(PREF_MQTT_PASSWORD, "");
+        String password = prefs.getString(ctx.getString(R.string.PREFS_MQTT_PASSWORD), "");
         isPasswordSet = !password.isEmpty();
         if (isPasswordSet) {
-            Log.d(TAG, "Using password to connect");
+            Logger.debug("Using password to connect");
             options.setUserName(Constants.MQTT_USER);
             options.setPassword(password.toCharArray());
         }
@@ -201,7 +199,7 @@ public class MqttConnector {
             @Override
             public void onSuccess(IMqttToken asyncActionToken) {
                 // We are connected
-                Log.d(TAG, "connect onSuccess");
+                Logger.debug("connect onSuccess");
 
                 // the not set value is an empty string that is not shown in mqtt
                 // we have now a valid connection, thus we set not_set as default
@@ -226,7 +224,7 @@ public class MqttConnector {
     }
 
     public void send(String topic, String msg) {
-        Log.i(TAG, "Sending '" + msg + "' on " + topic);
+        Logger.info("Sending '" + msg + "' on " + topic);
         try {
             client.publish(topic, new MqttMessage(msg.getBytes()));
         } catch (MqttException e) {
@@ -239,7 +237,7 @@ public class MqttConnector {
             client.subscribe(topic, 1, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    Log.d(TAG, "Subscribed on topic " + topic);
+                    Logger.debug("Subscribed on topic " + topic);
                 }
 
                 @Override
@@ -261,7 +259,7 @@ public class MqttConnector {
         if (excp != null) {
             msgWithExcp += " (" + excp.getMessage() + ")";
         }
-        Log.e(TAG, msgWithExcp, excp);
+        Logger.error(msgWithExcp, excp);
     }
 
     private static class Listener {

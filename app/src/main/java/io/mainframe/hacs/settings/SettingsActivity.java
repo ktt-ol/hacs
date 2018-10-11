@@ -25,8 +25,6 @@ import io.mainframe.hacs.ssh.SshResponse;
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements EditTextWithScanPreference.ActivityRunner {
 
-    private static final String TAG = SettingsActivity.class.getName();
-
     private Map<Integer, EditTextWithScanPreference.ActivityResultCallback> callbacks = new ConcurrentHashMap<>();
     private int callbackIdCounter = 0;
 
@@ -119,8 +117,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
 
-            this.privateKeyFilename = findPreference("privateKeyFilename");
-            this.privateKeyPassword = findPreference("privateKeyPassword");
+            this.privateKeyFilename = findPreference(getString(R.string.PREFS_PRIVATE_KEY_FILENAME));
+            this.privateKeyPassword = findPreference(getString(R.string.PREFS_PRIVATE_KEY_PASSWORD));
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
             this.privateKeyFilename.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

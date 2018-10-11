@@ -1,10 +1,13 @@
 package io.mainframe.hacs.ssh;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import java.io.File;
 import java.util.regex.Pattern;
+
+import io.mainframe.hacs.R;
 
 /**
  * Created by holger on 29.11.15.
@@ -14,9 +17,11 @@ public class PkCredentials {
     public final String privateKeyFile;
     public final String password;
 
-    public PkCredentials(SharedPreferences sharedPreferences) {
-        this.privateKeyFile = sharedPreferences.getString("privateKeyFilename", null);
-        this.password = sharedPreferences.getString("privateKeyPassword", null);
+    public PkCredentials(SharedPreferences sharedPreferences, Context context) {
+        this.privateKeyFile = sharedPreferences.getString(
+                context.getString(R.string.PREFS_PRIVATE_KEY_FILENAME), null);
+        this.password = sharedPreferences.getString(
+                context.getString(R.string.PREFS_PRIVATE_KEY_PASSWORD), null);
     }
 
     /**

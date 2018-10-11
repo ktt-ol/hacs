@@ -38,6 +38,7 @@ https://play.google.com/apps/publish/
 # Helpful!
 
 * http://www.hivemq.com/blog/mqtt-client-library-enyclopedia-paho-android-service
+* https://developer.android.com/training/scheduling/alarms#java
 
 # Acknowledgements
 

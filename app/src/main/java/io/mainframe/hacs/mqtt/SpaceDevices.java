@@ -5,6 +5,7 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.pmw.tinylog.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,8 +16,6 @@ import java.util.List;
  */
 
 public class SpaceDevices {
-
-    private static final String TAG = SpaceDevices.class.getName();
 
     private int anonPeople;
     private int unknownDevices;
@@ -62,7 +61,7 @@ public class SpaceDevices {
             int peopleCount = json.getInt("peopleCount");
             anonPeople = peopleCount - userList.size();
         } catch (JSONException e) {
-            Log.e(TAG, "Can't parse the raw devices data: " + rawDataStr, e);
+            Logger.error("Can't parse the raw devices data: " + rawDataStr, e);
         }
     }
 

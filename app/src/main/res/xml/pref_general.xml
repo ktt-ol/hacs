@@ -4,12 +4,12 @@
     <PreferenceCategory android:title="Private key">
 
         <io.mainframe.hacs.settings.PrivateKeyChooser
-            android:key="privateKeyFilename"
+            android:key="@string/PREFS_PRIVATE_KEY_FILENAME"
             android:title="Select your private key"/>
 
         <io.mainframe.hacs.settings.EditTextWithScanPreference
             android:inputType="textPassword"
-            android:key="privateKeyPassword"
+            android:key="@string/PREFS_PRIVATE_KEY_PASSWORD"
             android:title="The password to the private key"/>
 
     </PreferenceCategory>
@@ -18,7 +18,7 @@
 
         <io.mainframe.hacs.settings.EditTextWithScanPreference
             android:inputType="textPassword"
-            android:key="mqttPassword"
+            android:key="@string/PREFS_MQTT_PASSWORD"
             android:title="The password for the mqtt server"/>
 
     </PreferenceCategory>
@@ -28,18 +28,28 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:key="requireMainframeWifi"
+            android:key="@string/PREFS_REQUIRE_MAINFRAME_WIFI"
             android:summaryOff="Accept every wifi. Risky!"
             android:summaryOn="Accept only the Mainframe wifi (recommended)."
             android:title="Require Mainframe wifi"/>
 
         <SwitchPreference
             android:defaultValue="true"
-            android:key="checkServerFingerprint"
+            android:key="@string/PREFS_CHECK_SERVER_FINGERPRINT"
             android:summaryOff="No fingerprint check. Risky!"
             android:summaryOn="The fingerprint of the door endpoint will be verified (recommended)."
             android:title="Check server fingerprint"/>
 
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Misc">
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/PREFS_WRITE_LOGFILE"
+        android:summaryOff="Disabled."
+        android:summaryOn="Logs go to sdcard/hacs_logs/ folder."
+        android:title="Write debug log file"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -8,11 +8,12 @@ import android.os.Build;
 import android.preference.EditTextPreference;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+
+import org.pmw.tinylog.Logger;
 
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.common.YesNoDialog;
@@ -27,8 +28,6 @@ public class EditTextWithScanPreference extends EditTextPreference implements Vi
 
     public static final String INTENT_QR_CODE_SCAN = "com.google.zxing.client.android.SCAN";
     public static final String MARKET_LINK_QR_CODE_SCAN = "market://details?id=com.google.zxing.client.android";
-
-    private static final String TAG = EditTextWithScanPreference.class.getName();
 
     public EditTextWithScanPreference(Context context) {
         super(context);
@@ -71,7 +70,7 @@ public class EditTextWithScanPreference extends EditTextPreference implements Vi
                 }
             });
         } catch (ActivityNotFoundException anfe) {
-            Log.i(TAG, "No QR code intent found.");
+            Logger.info("No QR code intent found.");
             YesNoDialog.show(getContext(),
                     getContext().getString(R.string.settings_qrcode_install_app_title),
                     getContext().getString(R.string.settings_qrcode_install_app),

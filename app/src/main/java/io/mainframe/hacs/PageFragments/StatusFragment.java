@@ -20,6 +20,7 @@ import io.mainframe.hacs.mqtt.MqttConnector;
 import io.mainframe.hacs.mqtt.MqttStatusListener;
 import io.mainframe.hacs.ssh.DoorCommand;
 import io.mainframe.hacs.ssh.PkCredentials;
+import io.mainframe.hacs.trash_notifications.TrashCalendar;
 
 import static io.mainframe.hacs.common.Constants.SPACE_DOOR;
 
@@ -41,17 +42,13 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
             @Override
             public void onClick(final DoorButtons.DoorButton doorButton, View view) {
                 if (doorButton.getStatus() == Status.CLOSE) {
-                    final BackDoorStatus backDoorStatus = getInteraction().getMqttConnector().getLastValue(Topic.BACK_DOOR_BOLT, BackDoorStatus.class);
-                    if (backDoorStatus == BackDoorStatus.OPEN) {
-                        YesNoDialog.show(getContext(), "Back-Door prüfen.", "Die Back-Door ist noch offen. Wirklich abschließen?", "bd", new YesNoDialog.ResultListener() {
-                            @Override
-                            public void dialogClosed(String tag, boolean resultOk) {
-                                if (resultOk) {
-                                    getInteraction().sendSshCommand(SPACE_DOOR, DoorCommand.getSwitchDoorStateCmd(doorButton.getStatus()));
-                                }
-                            }
-                        });
+                    // special action when the space is going to be closed
 
+                    if (backDoorCheck()) {
+                        return;
+                    }
+
+                    if (trashCheck()) {
                         return;
                     }
                 }
@@ -63,11 +60,50 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
         return view;
     }
 
+    private boolean trashCheck() {
+        final String trashSummaryForTomorrow = new TrashCalendar(getContext()).getTrashSummaryForTomorrow();
+        if (trashSummaryForTomorrow == null) {
+            return false;
+        }
+
+        YesNoDialog.show(getContext(), "Müll prüfen",
+                String.format("Morgen ist Müllabfuhr! Ist schon %s an die Straße gestellt?", trashSummaryForTomorrow),
+                "trash", new YesNoDialog.ResultListener() {
+                    @Override
+                    public void dialogClosed(String tag, boolean resultOk) {
+                        if (resultOk) {
+                            getInteraction().sendSshCommand(SPACE_DOOR, DoorCommand.getSwitchDoorStateCmd(Status.CLOSE));
+                        }
+                    }
+                });
+
+        return true;
+    }
+
+    private boolean backDoorCheck() {
+        final BackDoorStatus backDoorStatus =
+                getInteraction().getMqttConnector().getLastValue(Topic.BACK_DOOR_BOLT, BackDoorStatus.class);
+        if (backDoorStatus != BackDoorStatus.OPEN) {
+            return false;
+        }
+
+        YesNoDialog.show(getContext(), "Back-Door prüfen.", "Die Back-Door ist noch offen. Wirklich abschließen?", "bd", new YesNoDialog.ResultListener() {
+            @Override
+            public void dialogClosed(String tag, boolean resultOk) {
+                if (resultOk) {
+                    getInteraction().sendSshCommand(SPACE_DOOR, DoorCommand.getSwitchDoorStateCmd(Status.CLOSE));
+                }
+            }
+        });
+
+        return true;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
-        PkCredentials credentials = new PkCredentials(PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        PkCredentials credentials = new PkCredentials(PreferenceManager.getDefaultSharedPreferences(getActivity()), getContext());
         // if the ssh key password is not set
         boolean readOnlyMode = !credentials.isPasswordSet();
 

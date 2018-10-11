@@ -57,4 +57,5 @@
     <string name="overview_unknownDev">unbekannte Geräte</string>
     <string name="overview_buzzer">Tür Buzzer</string>
     <string name="machining_text">Setzte den Machining Status neu. Hierzu musst du dich im Mainframe WLan und im Keller befinden.</string>
+    <string name="title_activity_log_viewer">Log files</string>
 </resources>
