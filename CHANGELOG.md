@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.6.0
+* Shows warnings about the garbage 
+* New permission Location to get the ssid on Android 8.1
+* Bugfix for the "require Mainframe wifi" option
+
 ## 2.5.2
 * Bugfix: Fixes "become keyholder" button enable state
 
