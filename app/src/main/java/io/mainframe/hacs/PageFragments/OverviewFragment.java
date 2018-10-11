@@ -1,17 +1,8 @@
 package io.mainframe.hacs.PageFragments;
 
 
-import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -19,8 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -32,7 +21,6 @@ import io.mainframe.hacs.mqtt.MqttStatusListener;
 import io.mainframe.hacs.mqtt.SpaceDevices;
 import io.mainframe.hacs.ssh.DoorCommand;
 import io.mainframe.hacs.ssh.PkCredentials;
-import io.mainframe.hacs.trash_notifications.TrashCalendar;
 
 import static io.mainframe.hacs.common.Constants.SPACE_DOOR;
 
@@ -100,8 +88,13 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
         if (!readOnlyMode) {
             final NetworkStatus networkStatus = getInteraction().getNetworkStatus();
             networkStatus.addListener(this);
-            setButtonsEnabled(networkStatus.isInMainframeWifi(),
-                    networkStatus.isInMainframeWifi() && !networkStatus.hasMachiningBssid());
+
+            if (networkStatus.isRequireMainframeWifi()) {
+                setButtonsEnabled(networkStatus.isInMainframeWifi(),
+                        networkStatus.isInMainframeWifi() && !networkStatus.hasMachiningBssid());
+            } else {
+                setButtonsEnabled(true, true);
+            }
         } else {
             setButtonsEnabled(false, false);
         }
@@ -198,8 +191,13 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
     /* callback */
 
     @Override
-    public void onNetworkChange(boolean hasNetwork, boolean hasMobile, boolean hasWifi, boolean isInMainframeWifi, boolean hasMachiningBssid) {
-        setButtonsEnabled(isInMainframeWifi, isInMainframeWifi && !hasMachiningBssid);
+    public void onNetworkChange(boolean hasNetwork, boolean hasMobile, boolean hasWifi,
+                                boolean isInMainframeWifi, boolean hasMachiningBssid, boolean requireMainframeWifi) {
+        if (requireMainframeWifi) {
+            setButtonsEnabled(isInMainframeWifi, isInMainframeWifi && !hasMachiningBssid);
+        } else {
+            setButtonsEnabled(true, true);
+        }
     }
 
     @Override

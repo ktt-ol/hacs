@@ -10,7 +10,6 @@ import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.util.Log;
 
 import org.pmw.tinylog.Logger;
 
@@ -18,17 +17,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.common.Constants;
 
 public class NetworkStatus extends BroadcastReceiver implements SharedPreferences.OnSharedPreferenceChangeListener {
     private final Context context;
-
-    private boolean requireMainframeWifi;
     private final List<NetworkStatusListener> allListener =
             Collections.synchronizedList(new ArrayList<NetworkStatusListener>());
+    private boolean requireMainframeWifi;
     private boolean hasWifi, hasMobile, isInMainframeWifi, hasMachiningBssid;
 
     public NetworkStatus(Context ctx, SharedPreferences prefs) {
@@ -67,6 +64,10 @@ public class NetworkStatus extends BroadcastReceiver implements SharedPreference
         return hasMachiningBssid;
     }
 
+    public boolean isRequireMainframeWifi() {
+        return requireMainframeWifi;
+    }
+
     public void addListener(NetworkStatusListener listener) {
         allListener.add(listener);
     }
@@ -91,7 +92,7 @@ public class NetworkStatus extends BroadcastReceiver implements SharedPreference
 
     private void updateListener() {
         for (NetworkStatusListener listener : allListener) {
-            listener.onNetworkChange(hasNetwork(), hasMobile, hasWifi, isInMainframeWifi, hasMachiningBssid);
+            listener.onNetworkChange(hasNetwork(), hasMobile, hasWifi, isInMainframeWifi, hasMachiningBssid, requireMainframeWifi);
         }
     }
 
@@ -168,6 +169,7 @@ public class NetworkStatus extends BroadcastReceiver implements SharedPreference
     }
 
     public interface NetworkStatusListener {
-        void onNetworkChange(boolean hasNetwork, boolean hasMobile, boolean hasWifi, boolean isInMainframeWifi, boolean hasMachiningBssid);
+        void onNetworkChange(boolean hasNetwork, boolean hasMobile, boolean hasWifi,
+                             boolean isInMainframeWifi, boolean hasMachiningBssid, boolean requireMainframeWifi);
     }
 }

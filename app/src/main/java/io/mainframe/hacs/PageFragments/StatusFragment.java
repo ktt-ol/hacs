@@ -110,7 +110,12 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
         if (!readOnlyMode) {
             final NetworkStatus networkStatus = getInteraction().getNetworkStatus();
             networkStatus.addListener(this);
-            doorButtons.setEnabled(networkStatus.isInMainframeWifi() && !networkStatus.hasMachiningBssid());
+
+            if (networkStatus.isRequireMainframeWifi()) {
+                doorButtons.setEnabled(networkStatus.isInMainframeWifi() && !networkStatus.hasMachiningBssid());
+            } else {
+                doorButtons.setEnabled(true);
+            }
         } else {
             doorButtons.setEnabled(false);
         }
@@ -158,8 +163,9 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
     /* callback */
 
     @Override
-    public void onNetworkChange(boolean hasNetwork, boolean hasMobile, boolean hasWifi, boolean isInMainframeWifi, boolean hasMachiningBssid) {
-        doorButtons.setEnabled(isInMainframeWifi);
+    public void onNetworkChange(boolean hasNetwork, boolean hasMobile, boolean hasWifi,
+                                boolean isInMainframeWifi, boolean hasMachiningBssid, boolean requireMainframeWifi) {
+        doorButtons.setEnabled(!requireMainframeWifi || isInMainframeWifi);
     }
 
     @Override
