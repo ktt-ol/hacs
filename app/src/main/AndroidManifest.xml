@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <!-- for the timer -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- to get the ssid -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:name=".MainApplication"

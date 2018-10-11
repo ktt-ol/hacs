@@ -214,7 +214,9 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.WAKE_LOCK,
                 Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.RECEIVE_BOOT_COMPLETED
+                Manifest.permission.RECEIVE_BOOT_COMPLETED,
+                // to get the ssid
+                Manifest.permission.ACCESS_COARSE_LOCATION
         };
         if (!EasyPermissions.hasPermissions(this, perms)) {
             Logger.warn("Requesting permission");
