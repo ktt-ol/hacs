@@ -67,7 +67,7 @@ public class SshUiHandler extends DialogFragment implements SshResponse<RunSshAs
         show(fragmentActivity.getSupportFragmentManager(), "dialog");
 
         preferences = PreferenceManager.getDefaultSharedPreferences(fragmentActivity);
-        PkCredentials credentials = new PkCredentials(preferences, getContext());
+        PkCredentials credentials = new PkCredentials(preferences, fragmentActivity);
         new RunSshAsync(this, this.tryServer, credentials, this.tryCommand, true).execute();
     }
 

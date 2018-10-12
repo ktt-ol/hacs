@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.6.1
+* Crash bugfix.
+
 ## 2.6.0
 * Shows warnings about the garbage 
 * New permission Location to get the ssid on Android 8.1
