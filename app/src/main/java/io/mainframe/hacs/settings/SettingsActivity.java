@@ -2,7 +2,6 @@ package io.mainframe.hacs.settings;
 
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,13 +12,13 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.mainframe.hacs.R;
+import io.mainframe.hacs.common.logging.LogConfig;
 import io.mainframe.hacs.ssh.CheckPrivateKeyAsync;
 import io.mainframe.hacs.ssh.SshResponse;
 
@@ -142,6 +141,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
                     return true;
                 }
             });
+
+            findPreference(getString(R.string.PREFS_WRITE_LOGFILE))
+                    .setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue) {
+                            LogConfig.configureLogger((boolean) newValue);
+                            return true;
+                        }
+                    });
 
             // run the validation on start
             new CheckPrivateKeyAsync(GeneralPreferenceFragment.this).execute(

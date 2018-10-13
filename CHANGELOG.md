@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.6.2
+* Changes the logging when the settings change
+
 ## 2.6.1
 * Crash bugfix.
 
