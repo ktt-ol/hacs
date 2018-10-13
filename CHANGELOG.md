@@ -2,6 +2,7 @@
 
 ## 2.6.2
 * Changes the logging when the settings change
+* Bugfix: NPE in LED status
 
 ## 2.6.1
 * Crash bugfix.

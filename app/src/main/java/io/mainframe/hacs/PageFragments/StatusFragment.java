@@ -148,15 +148,12 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
     private void setLedImage(BackDoorStatus status) {
         final ImageView imageView = getView().findViewById(R.id.back_door_status);
 
-        switch (status) {
-            case OPEN:
-                imageView.setImageResource(R.drawable.ic_led_red_black);
-                break;
-            case CLOSED:
-                imageView.setImageResource(R.drawable.ic_led_blue_black);
-                break;
-            default:
-                imageView.setImageResource(R.drawable.ic_button_black);
+        if (status == BackDoorStatus.OPEN) {
+            imageView.setImageResource(R.drawable.ic_led_red_black);
+        } else if (status == BackDoorStatus.CLOSED) {
+            imageView.setImageResource(R.drawable.ic_led_blue_black);
+        } else {
+            imageView.setImageResource(R.drawable.ic_button_black);
         }
     }
 
