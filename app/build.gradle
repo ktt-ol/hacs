@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 28
     defaultConfig {
         applicationId "io.mainframe.hacs"
         minSdkVersion 21
-        targetSdkVersion 26
+        targetSdkVersion 28
         versionCode 34
         versionName '2.6.2'
     }
@@ -46,8 +46,8 @@ dependencies {
     implementation 'com.jcraft:jsch:0.1.53'
     implementation 'ch.acra:acra:4.6.2'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
     testImplementation 'junit:junit:4.12'
 
 //    implementation 'com.jakewharton.timber:timber:4.7.1'
