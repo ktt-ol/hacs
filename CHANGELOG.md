@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.6.3
+* Fixes for fdroid (repo cleanup and lint config)
+
 ## 2.6.2
 * Changes the logging when the settings change
 * Bugfix: NPE in LED status

@@ -19,15 +19,6 @@ android {
     }
 }
 
-repositories {
-    maven {
-        url "https://repo.eclipse.org/content/repositories/paho-releases/"
-    }
-}
-
-
-
-
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     // ssh
