@@ -141,13 +141,21 @@ public class StatusFragment extends BasePageFragment implements NetworkStatus.Ne
     }
 
     private void setStatusText(Status status) {
-        TextView text = getView().findViewById(R.id.status_status);
+        final View view = getView();
+        if (view == null) {
+            return;
+        }
+        TextView text = view.findViewById(R.id.status_status);
         text.setText(status == null ? getString(R.string.unknown) : status.getUiValue());
     }
 
     private void setLedImage(BackDoorStatus status) {
-        final ImageView imageView = getView().findViewById(R.id.back_door_status);
+        final View view = getView();
+        if (view == null) {
+            return;
+        }
 
+        final ImageView imageView = view.findViewById(R.id.back_door_status);
         if (status == BackDoorStatus.OPEN) {
             imageView.setImageResource(R.drawable.ic_led_red_black);
         } else if (status == BackDoorStatus.CLOSED) {

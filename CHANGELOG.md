@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.6.4
+* Bugfix: Adds several null checks. 
+
 ## 2.6.3
 * Fixes for fdroid (repo cleanup and lint config)
 

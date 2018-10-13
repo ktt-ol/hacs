@@ -84,7 +84,11 @@ public class MachiningFragment extends BasePageFragment implements NetworkStatus
     }
 
     private void setStatusText(Status status) {
-        TextView text = (TextView) getView().findViewById(R.id.machining_status);
+        final View view = getView();
+        if (view == null) {
+            return;
+        }
+        TextView text = view.findViewById(R.id.machining_status);
         text.setText(status == null ? getString(R.string.unknown) : status.getUiValue());
     }
 
@@ -94,7 +98,11 @@ public class MachiningFragment extends BasePageFragment implements NetworkStatus
         } else if (keyholderText.isEmpty()) {
             keyholderText = getString(R.string.keyholder_no_one);
         }
-        ((TextView) getView().findViewById(R.id.machining_keyholder)).setText(keyholderText);
+        final View view = getView();
+        if (view == null) {
+            return;
+        }
+        ((TextView) view.findViewById(R.id.machining_keyholder)).setText(keyholderText);
     }
 
     /* callback */

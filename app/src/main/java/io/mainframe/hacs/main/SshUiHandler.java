@@ -76,23 +76,27 @@ public class SshUiHandler extends DialogFragment implements SshResponse<RunSshAs
      */
     @Override
     public void processFinish(RunSshAsync.Result response) {
+        final Context context = getContext();
+        if (context == null) {
+            return;
+        }
         switch (response.status) {
             case SUCCESS:
-                Toast.makeText(getContext(), response.msg, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, response.msg, Toast.LENGTH_LONG).show();
                 actionDone(true);
                 break;
             case WRONG_HOST_KEY:
                 boolean checkServerFingerprint = preferences.getBoolean(
                         getString(R.string.PREFS_CHECK_SERVER_FINGERPRINT), true);
                 if (checkServerFingerprint) {
-                    Toast.makeText(getContext(), response.msg, Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, response.msg, Toast.LENGTH_LONG).show();
                     break;
                 }
                 String dialogMsg = response.msg + "\nContinue?";
-                YesNoDialog.show(getContext(), "Wrong Hostkey", dialogMsg, "hostkey", this);
+                YesNoDialog.show(context, "Wrong Hostkey", dialogMsg, "hostkey", this);
                 break;
             case UNKNOWN_ERROR:
-                Toast.makeText(getContext(), response.msg, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, response.msg, Toast.LENGTH_LONG).show();
                 actionDone(false);
                 break;
         }
