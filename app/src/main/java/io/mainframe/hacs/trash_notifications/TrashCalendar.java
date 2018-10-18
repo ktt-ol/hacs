@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.text.format.DateUtils;
 
 import org.pmw.tinylog.Logger;
 
@@ -14,9 +15,11 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -103,10 +106,9 @@ public class TrashCalendar {
         return eventList;
     }
 
-    public TrashEvent getNextEvent() {
-        final Date now = new Date();
+    public TrashEvent getNextEvent(Date targetTime) {
         for (TrashEvent trashEvent : getEventList()) {
-            if (trashEvent.startDate.after(now)) {
+            if (trashEvent.startDate.after(targetTime)) {
                 return trashEvent;
             }
         }
@@ -116,7 +118,7 @@ public class TrashCalendar {
 
     // null for no immediate trash action, the summary text else
     public String getTrashSummaryForTomorrow() {
-        final TrashEvent nextEvent = getNextEvent();
+        final TrashEvent nextEvent = getNextEvent(new Date());
         if (nextEvent == null) {
             return null;
         }
@@ -132,12 +134,30 @@ public class TrashCalendar {
     }
 
     public void setNextAlarm() {
-        final TrashEvent nextEvent = getNextEvent();
+        // the next evening at 20.03
+        GregorianCalendar nextNotificationDate = new GregorianCalendar();
+        nextNotificationDate.set(Calendar.HOUR_OF_DAY, 20);
+        nextNotificationDate.set(Calendar.MINUTE, 3);
+        if (nextNotificationDate.getTimeInMillis() < System.currentTimeMillis()) {
+            // we are after 20.03 in this evening -> add one day
+            nextNotificationDate.add(Calendar.DAY_OF_YEAR, 1);
+        }
+
+        final TrashEvent nextEvent = getNextEvent(nextNotificationDate.getTime());
         if (nextEvent == null) {
-            Logger.info("No next alarm");
+            Logger.info("No next alarm.");
             return;
         }
-        Logger.info("Setting next alarm: " + nextEvent);
+
+        // warn if the next event is 16 hours in the future of the planned notification
+        long futureThreshold = nextNotificationDate.getTimeInMillis() + (1000 * 60 * 16);
+
+        if (nextEvent.startDate.getTime() > futureThreshold) {
+            Logger.info("Next alarm ({}) not in the threshold ({}).",
+                    nextEvent, nextNotificationDate.getTime());
+            return;
+        }
+
 
         Intent notificationIntent = new Intent(context, NotificationPublisher.class);
 
@@ -148,7 +168,9 @@ public class TrashCalendar {
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, nextEvent.startDate.getTime(), pendingIntent);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, nextNotificationDate.getTimeInMillis(), pendingIntent);
+
+        Logger.info("Setting next alarm {} at {}", nextEvent, nextNotificationDate.getTime());
     }
 
     public static class TrashEvent {

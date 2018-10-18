@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.6.5
+* Bugfix: The notification time should be at 20:03 before the next event. 
+
 ## 2.6.4
 * Bugfix: Adds several null checks. 
 
