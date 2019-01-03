@@ -20,10 +20,15 @@ Copy the resulting `hacs_keystore.bks` to the `src/main/assets/keystore/` folder
 
 Must start with `mf-door.` and end with `.key` and must have a password.
 
-# Play store
+# Download
 
-https://play.google.com/apps/publish/
-
+[<img src="https://f-droid.org/badge/get-it-on.png"
+      alt="Get it on F-Droid"
+      height="80">](https://f-droid.org/packages/io.mainframe.hacs/)
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
+      alt="Get it on Google Play"
+      height="80">](https://play.google.com/store/apps/details?id=io.mainframe.hacs)
+      
 ## TODO
 
 * [ ] Save passwords more secure, e.g. https://developer.android.com/samples/BasicAndroidKeyStore/index.html
