@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.6.6
+* Bugfix: Keystore file was missing in the FDroid build.
+
 ## 2.6.5
 * Bugfix: The notification time should be at 20:03 before the next event. 
 
