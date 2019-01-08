@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.6.7
+* Increases version in meta files.
+
 ## 2.6.6
 * Bugfix: Keystore file was missing in the FDroid build.
 
