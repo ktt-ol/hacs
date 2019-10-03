@@ -75,6 +75,15 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
             }
         });
 
+        final TextView trashInfoText = view.findViewById(R.id.overview_trash_info);
+        final String trashInfo = getInteraction().getTrashCalendar().getTrashSummaryForTomorrow();
+        if (trashInfo == null) {
+            trashInfoText.setVisibility(View.GONE);
+        } else {
+            trashInfoText.setText(String.format(getString(R.string.overview_trashInfo), trashInfo));
+            trashInfoText.setVisibility(View.VISIBLE);
+        }
+
         return view;
     }
 

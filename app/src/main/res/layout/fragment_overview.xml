@@ -41,6 +41,15 @@
         </RelativeLayout>
 
         <TextView
+            android:id="@+id/overview_trash_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#FF2828"
+            android:visibility="gone"
+            />
+
+        <TextView
             style="@style/HeadlineWithSpace"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

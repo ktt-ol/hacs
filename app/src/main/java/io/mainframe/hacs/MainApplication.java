@@ -32,7 +32,7 @@ public class MainApplication extends Application {
 
         LogConfig.configureLogger(this);
 
-        new TrashCalendar(this).setNextAlarm();
+//        new TrashCalendar(this).setNextAlarm();
     }
 
     @Override

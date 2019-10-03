@@ -7,6 +7,7 @@ import io.mainframe.hacs.common.Constants;
 import io.mainframe.hacs.main.NetworkStatus;
 import io.mainframe.hacs.mqtt.MqttConnector;
 import io.mainframe.hacs.ssh.DoorCommand;
+import io.mainframe.hacs.trash_notifications.TrashCalendar;
 
 /**
  * Created by holger on 06.10.17.
@@ -48,6 +49,8 @@ public abstract class BasePageFragment extends Fragment {
         void sendSshCommand(Constants.DoorServer server, DoorCommand command);
 
         void navigateToPage(Class<? extends BasePageFragment> target);
+
+        TrashCalendar getTrashCalendar();
     }
 
 }

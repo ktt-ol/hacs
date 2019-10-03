@@ -4,7 +4,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.text.format.DateUtils;
 
 import org.pmw.tinylog.Logger;
 
@@ -43,7 +42,7 @@ public class TrashCalendar {
 
         // TESTING
 //        final GregorianCalendar cal = new GregorianCalendar();
-//        cal.set(2018, 8, 20, 20, 4, 23);
+//        cal.set(2019, 9, 1, 8, 4, 23);
 //        for (int i = 0; i < 30; i++) {
 //            final Date start = cal.getTime();
 //            final Date end = new Date(start.getTime() + 1000 * 60 * 60);
@@ -51,6 +50,12 @@ public class TrashCalendar {
 //
 //            cal.add(Calendar.DAY_OF_MONTH, 1);
 //        }
+//        Collections.sort(this.eventList, new Comparator<TrashEvent>() {
+//            @Override
+//            public int compare(TrashEvent o1, TrashEvent o2) {
+//                return o1.startDate.compareTo(o2.startDate);
+//            }
+//        });
     }
 
     private void parseIcalFile(String assetFilename) throws IOException, ParseException {
@@ -124,7 +129,7 @@ public class TrashCalendar {
         }
 
         // warn if the next event is 16 hours in the future
-        long futureThreshold = System.currentTimeMillis() + (1000 * 60 * 16);
+        long futureThreshold = System.currentTimeMillis() + (1000 * 60 * 60 * 16);
 
         if (nextEvent.startDate.getTime() < futureThreshold) {
             return nextEvent.summary;

@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
 
     private Stack<Integer> fragmentBackState = new Stack<>();
 
+    private TrashCalendar trashCalendar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         networkStatus = new NetworkStatus(getApplicationContext(), prefs);
         mqttConnector = new MqttConnector(getApplicationContext(), prefs);
+        trashCalendar = new TrashCalendar(this);
 
         setContentView(R.layout.activity_main);
 
@@ -295,5 +298,10 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
         if (StatusFragment.class == target) {
             selectBaseFragmentById(R.id.nav_status, true);
         }
+    }
+
+    @Override
+    public TrashCalendar getTrashCalendar() {
+        return trashCalendar;
     }
 }

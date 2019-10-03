@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.7.0
+* Shows on the overview an info text about garbage events. 
+* Shows a warning on closing the space if the garbage bin should be moved to the street.  
+
 ## 2.6.7
 * Increases version in meta files.
 

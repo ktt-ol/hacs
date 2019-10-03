@@ -34,7 +34,7 @@ public class NotificationPublisher extends BroadcastReceiver {
             builder = new Notification.Builder(context, CHANNEL_ID);
         } else {
             builder = new Notification.Builder(context);
-            builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            builder.setPriority(Notification.PRIORITY_DEFAULT);
         }
         builder.setContentTitle("Müll rausbringen");
         final String msg = intent.getStringExtra(EXTRA_MSG);
@@ -45,7 +45,7 @@ public class NotificationPublisher extends BroadcastReceiver {
         Logger.info("Show notification: " + msg);
         notificationManager.notify(1, builder.build());
 
-        new TrashCalendar(context).setNextAlarm();
+//        new TrashCalendar(context).setNextAlarm();
     }
 
 
