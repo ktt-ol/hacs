@@ -120,16 +120,14 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener, 
         text.text = if (status == null) getString(R.string.unknown) else status.uiValue
     }
 
-    private fun setLedImage(status: BackDoorStatus) {
+    private fun setLedImage(status: BackDoorStatus?) {
         val view = view ?: return
 
         val imageView = view.findViewById<ImageView>(R.id.back_door_status)
-        if (status == BackDoorStatus.OPEN) {
-            imageView.setImageResource(R.drawable.ic_led_red_black)
-        } else if (status == BackDoorStatus.CLOSED) {
-            imageView.setImageResource(R.drawable.ic_led_blue_black)
-        } else {
-            imageView.setImageResource(R.drawable.ic_button_black)
+        when (status) {
+            BackDoorStatus.OPEN -> imageView.setImageResource(R.drawable.ic_led_red_black)
+            BackDoorStatus.CLOSED -> imageView.setImageResource(R.drawable.ic_led_blue_black)
+            else -> imageView.setImageResource(R.drawable.ic_button_black)
         }
     }
 

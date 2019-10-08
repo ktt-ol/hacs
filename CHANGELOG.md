@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.7.1
+* Fixes a crash for a wrong mqtt password.
+
 ## 2.7.0
 * Shows on the overview an info text about garbage events. 
 * Shows a warning on closing the space if the garbage bin should be moved to the street.  
