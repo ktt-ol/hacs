@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 
 import org.pmw.tinylog.Logger;
 
@@ -21,6 +22,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import io.mainframe.hacs.R;
 
 public class TrashCalendar {
 
@@ -139,6 +142,12 @@ public class TrashCalendar {
     }
 
     public void setNextAlarm() {
+        final boolean trashNotifications = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
+                context.getString(R.string.PREFS_TRASH_NOTIFICATIONS), false);
+        if (!trashNotifications) {
+            return;
+        }
+
         // the next evening at 20.03
         GregorianCalendar nextNotificationDate = new GregorianCalendar();
         nextNotificationDate.set(Calendar.HOUR_OF_DAY, 20);
@@ -155,7 +164,7 @@ public class TrashCalendar {
         }
 
         // warn if the next event is 16 hours in the future of the planned notification
-        long futureThreshold = nextNotificationDate.getTimeInMillis() + (1000 * 60 * 16);
+        long futureThreshold = nextNotificationDate.getTimeInMillis() + (1000 * 60 * 60 * 16);
 
         if (nextEvent.startDate.getTime() > futureThreshold) {
             Logger.info("Next alarm ({}) not in the threshold ({}).",

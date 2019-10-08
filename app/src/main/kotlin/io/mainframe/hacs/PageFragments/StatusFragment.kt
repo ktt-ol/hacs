@@ -55,7 +55,7 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener, 
 
         YesNoDialog.show(context, "Müll prüfen",
                 String.format("Morgen ist Müllabfuhr! Ist schon %s an die Straße gestellt?", trashSummaryForTomorrow),
-                "trash") { tag, resultOk ->
+                "trash") { _, resultOk ->
             if (resultOk) {
                 next()
             }

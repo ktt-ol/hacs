@@ -45,7 +45,7 @@ public class NotificationPublisher extends BroadcastReceiver {
         Logger.info("Show notification: " + msg);
         notificationManager.notify(1, builder.build());
 
-//        new TrashCalendar(context).setNextAlarm();
+        new TrashCalendar(context).setNextAlarm();
     }
 
 

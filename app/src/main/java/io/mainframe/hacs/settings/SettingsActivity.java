@@ -172,15 +172,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
         public void processFinish(CheckPrivateKeyAsync.Result response) {
             boolean credentialsOk = false;
             if (!response.keyFileValid) {
-                this.privateKeyFilename.setSummary("KeyFile is invalid!");
+                this.privateKeyFilename.setSummary("Der private Schlüssel ist ungültig!");
                 this.privateKeyPassword.setSummary("");
             } else {
                 this.privateKeyFilename.setSummary(response.privateKeyFile);
                 if (!response.passwordMatch) {
-                    this.privateKeyPassword.setSummary("Password is not correct for the selected private key.");
                 } else {
+                    this.privateKeyPassword.setSummary("Das Passwort passt nicht für den gewählten privaten Schlüssel.");
                     credentialsOk = true;
-                    this.privateKeyPassword.setSummary("Password is correct.");
+                    this.privateKeyPassword.setSummary("Das Passwort ist richtig.");
                 }
             }
         }

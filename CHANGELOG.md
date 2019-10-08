@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.7.2
+* Enables the trash notification feature as a beta setting.
+
 ## 2.7.1
 * Fixes a crash for a wrong mqtt password.
 

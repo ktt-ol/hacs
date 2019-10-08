@@ -1,6 +1,7 @@
 package io.mainframe.hacs;
 
 import android.app.Application;
+import android.preference.PreferenceManager;
 
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
@@ -32,7 +33,7 @@ public class MainApplication extends Application {
 
         LogConfig.configureLogger(this);
 
-//        new TrashCalendar(this).setNextAlarm();
+        new TrashCalendar(this).setNextAlarm();
     }
 
     @Override
