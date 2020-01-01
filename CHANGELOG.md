@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.7.3
+* Trash calendar 2020
+
 ## 2.7.2
 * Enables the trash notification feature as a beta setting.
 

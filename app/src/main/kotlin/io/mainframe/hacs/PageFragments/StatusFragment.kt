@@ -69,7 +69,7 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener, 
             return
         }
 
-        YesNoDialog.show(context, "Back-Door prüfen.", "Die Back-Door ist noch offen. Wirklich abschließen?", "bd") { tag, resultOk ->
+        YesNoDialog.show(context, "Back-Door prüfen.", "Die Back-Door ist noch offen. Wirklich abschließen?", "bd") { _, resultOk ->
             if (resultOk) {
                 next()
             }
