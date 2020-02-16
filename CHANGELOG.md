@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.8.1
+* Disables Cashbox page if not im Mainframe wifi
+
 ## 2.8.0
 * Cashbox page
 

@@ -15,13 +15,12 @@ import io.mainframe.hacs.cashbox.Auth
 import io.mainframe.hacs.cashbox.CashboxInfo
 import io.mainframe.hacs.cashbox.CashboxValueTask
 import io.mainframe.hacs.cashbox.EndpointException
-import io.mainframe.hacs.main.NetworkStatus
 import org.pmw.tinylog.Logger
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class CashboxFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener {
+class CashboxFragment : BasePageFragment() {
 
     var cashbox: CashboxInfo? = null
 
@@ -67,6 +66,11 @@ class CashboxFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener 
             return
         }
 
+        val networkStatus = getInteraction().getNetworkStatus()
+        if (networkStatus.isRequireMainframeWifi && !networkStatus.isInMainframeWifi) {
+            historyView.addView(makeTextView("Du bist nicht im Mainframe WLan."))
+            return
+        }
 
         historyView.addView(makeTextView("Lade..."))
 
@@ -116,8 +120,5 @@ class CashboxFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener 
 
     override fun getTitleRes(): Int {
         return R.string.nav_cashbox
-    }
-
-    override fun onNetworkChange(hasNetwork: Boolean, hasMobile: Boolean, hasWifi: Boolean, isInMainframeWifi: Boolean, hasMachiningBssid: Boolean, requireMainframeWifi: Boolean) {
     }
 }
