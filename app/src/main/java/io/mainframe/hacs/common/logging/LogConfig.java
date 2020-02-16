@@ -46,7 +46,7 @@ public class LogConfig {
             // https://tinylog.org/configuration#LogcatWriter
             configurator
                     .writer(new RollingFileWriter(logfile, 10, new StartupPolicy(), new SizePolicy(1000 * 1000)))
-                    .level(Level.INFO);
+                    .level(Level.DEBUG);
         }
         configurator.activate();
 

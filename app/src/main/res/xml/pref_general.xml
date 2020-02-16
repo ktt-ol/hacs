@@ -5,12 +5,12 @@
 
         <io.mainframe.hacs.settings.PrivateKeyChooser
             android:key="@string/PREFS_PRIVATE_KEY_FILENAME"
-            android:title="Wähle deinen privaten Schlüssel"/>
+            android:title="Wähle deinen privaten Schlüssel" />
 
         <io.mainframe.hacs.settings.EditTextWithScanPreference
             android:inputType="textPassword"
             android:key="@string/PREFS_PRIVATE_KEY_PASSWORD"
-            android:title="Das Passwort zu dem privaten Schlüssel"/>
+            android:title="Das Passwort zu dem privaten Schlüssel" />
 
     </PreferenceCategory>
 
@@ -19,7 +19,22 @@
         <io.mainframe.hacs.settings.EditTextWithScanPreference
             android:inputType="textPassword"
             android:key="@string/PREFS_MQTT_PASSWORD"
-            android:title="Das Passwort für den MQTT Server"/>
+            android:title="Das Passwort für den MQTT Server" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Cashbox">
+
+        <EditTextPreference
+            android:key="@string/PREFS_CASHBOX_USER"
+            android:summary="(vom Shopsystem)"
+            android:title="Benutzer" />
+
+        <EditTextPreference
+            android:inputType="textPassword"
+            android:key="@string/PREFS_CASHBOX_PW"
+            android:summary="(vom Shopsystem)"
+            android:title="Passwort" />
 
     </PreferenceCategory>
 
@@ -31,32 +46,32 @@
             android:key="@string/PREFS_REQUIRE_MAINFRAME_WIFI"
             android:summaryOff="Akzeptiert jedes WLAN. Vorsicht!"
             android:summaryOn="Akzeptiert nur das Mainframe WLAN (empfohlen)."
-            android:title="Mainframe WLAN verlangen"/>
+            android:title="Mainframe WLAN verlangen" />
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="@string/PREFS_CHECK_SERVER_FINGERPRINT"
             android:summaryOff="Keine Prüfung. Vorsicht!"
             android:summaryOn="Der Fingerprint vom Tür-Server wird geprüft (empfohlen)."
-            android:title="Prüfe Server Fingerprint"/>
+            android:title="Prüfe Server Fingerprint" />
 
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Sonstiges">
 
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="@string/PREFS_TRASH_NOTIFICATIONS"
-        android:summaryOff="Abgeschaltet."
-        android:summaryOn="Du bekommt eine Erinnerungen, wenn du im Hackspace bist und eine Mülltonne an die Straße gestellt werden muss."
-        android:title="Abfallerinnerungen (BETA)"/>
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/PREFS_TRASH_NOTIFICATIONS"
+            android:summaryOff="Abgeschaltet."
+            android:summaryOn="Du bekommt eine Erinnerungen, wenn du im Hackspace bist und eine Mülltonne an die Straße gestellt werden muss."
+            android:title="Abfallerinnerungen (BETA)" />
 
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="@string/PREFS_WRITE_LOGFILE"
-        android:summaryOff="Abgeschaltet."
-        android:summaryOn="Schreibt Log Dateien nach sdcard/hacs_logs/"
-        android:title="Logging"/>
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/PREFS_WRITE_LOGFILE"
+            android:summaryOff="Abgeschaltet."
+            android:summaryOn="Schreibt Log Dateien nach sdcard/hacs_logs/"
+            android:title="Logging" />
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -8,8 +8,8 @@ android {
         applicationId "io.mainframe.hacs"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 41
-        versionName '2.7.3'
+        versionCode 42
+        versionName '2.8.0'
     }
     buildTypes {
         release {
@@ -20,36 +20,38 @@ android {
     productFlavors {
     }
 
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
     }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    // ssh
-    //ACRA https://github.com/ACRA/acra.git
-    // mqtt https://www.eclipse.org/paho/clients/android/
-    // http://www.hivemq.com/blog/mqtt-client-library-enyclopedia-paho-android-service
-    implementation('org.eclipse.paho:org.eclipse.paho.android.service:1.1.1') {
-        exclude module: 'support-v4'
-    }
+
     // for Android 6 permission request
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     dependencies {
         implementation 'pub.devrel:easypermissions:0.2.1'
     }
-    // ?
-    implementation 'com.jcraft:jsch:0.1.53'
-    implementation 'ch.acra:acra:4.6.2'
-    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
-    testImplementation 'junit:junit:4.12'
 
-//    implementation 'com.jakewharton.timber:timber:4.7.1'
-    implementation 'org.tinylog:tinylog:1.3.5'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'com.jcraft:jsch:0.1.53'
+    implementation 'ch.acra:acra:4.6.2'
+    implementation('org.eclipse.paho:org.eclipse.paho.android.service:1.1.1') {
+        exclude module: 'support-v4'
+    }
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.3.1'
+    implementation 'org.tinylog:tinylog:1.3.5'
+
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation "com.nhaarman:mockito-kotlin:1.1.0"
 }
 repositories {
     mavenCentral()

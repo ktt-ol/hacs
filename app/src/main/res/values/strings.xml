@@ -26,6 +26,7 @@
     <string name="nav_status">Status</string>
     <string name="nav_status_next">Status Next</string>
     <string name="nav_machining">Machining</string>
+    <string name="nav_cashbox">Cashbox</string>
 
     <string name="state_open">Open</string>
     <string name="state_none">Closed</string>

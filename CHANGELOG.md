@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.8.0
+* Cashbox page
+
 ## 2.7.3
 * Trash calendar 2020
 

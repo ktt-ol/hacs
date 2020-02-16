@@ -2,6 +2,9 @@
 <resources>
     <string name="PREFS_REQUIRE_MAINFRAME_WIFI">requireMainframeWifi</string>
     <string name="PREFS_MQTT_PASSWORD">mqttPassword</string>
+    <string name="PREFS_CASHBOX_USER">cashboxUser</string>
+    <string name="PREFS_CASHBOX_PW">cashboxPW</string>
+    <string name="PREFS_CASHBOX_COOKIE">cashboxCookie</string>
     <string name="PREFS_CHECK_SERVER_FINGERPRINT">checkServerFingerprint</string>
     <string name="PREFS_PRIVATE_KEY_PASSWORD">privateKeyPassword</string>
     <string name="PREFS_PRIVATE_KEY_FILENAME">privateKeyFilename</string>

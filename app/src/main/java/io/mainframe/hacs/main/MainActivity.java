@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Stack;
 
 import io.mainframe.hacs.PageFragments.BasePageFragment;
+import io.mainframe.hacs.PageFragments.CashboxFragment;
 import io.mainframe.hacs.PageFragments.MachiningFragment;
 import io.mainframe.hacs.PageFragments.NextStatusFragment;
 import io.mainframe.hacs.PageFragments.OverviewFragment;
@@ -164,6 +165,11 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
             }
         } else if (id == R.id.nav_machining) {
             loadPageFragment(new MachiningFragment());
+            if (addToBackStack) {
+                fragmentBackState.add(id);
+            }
+        } else if (id == R.id.nav_cashbox) {
+            loadPageFragment(new CashboxFragment());
             if (addToBackStack) {
                 fragmentBackState.add(id);
             }
