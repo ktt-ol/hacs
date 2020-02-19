@@ -40,7 +40,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation 'com.jcraft:jsch:0.1.53'
+    implementation 'com.jcraft:jsch:0.1.54'
     implementation 'ch.acra:acra:4.6.2'
     implementation('org.eclipse.paho:org.eclipse.paho.android.service:1.1.1') {
         exclude module: 'support-v4'
