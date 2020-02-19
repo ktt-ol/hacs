@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.8.2
+* Logging improved (and fixed)
+
 ## 2.8.1
 * Disables Cashbox page if not im Mainframe wifi
 

@@ -61,7 +61,7 @@ public class SpaceDevices {
             int peopleCount = json.getInt("peopleCount");
             anonPeople = peopleCount - userList.size();
         } catch (JSONException e) {
-            Logger.error("Can't parse the raw devices data: " + rawDataStr, e);
+            Logger.error(e, "Can't parse the raw devices data: " + rawDataStr);
         }
     }
 

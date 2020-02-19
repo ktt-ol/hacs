@@ -1,6 +1,7 @@
 package io.mainframe.hacs.common.logging;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
@@ -21,35 +22,34 @@ import io.mainframe.hacs.common.Constants;
 public class LogConfig {
 
     public static void configureLogger(Context context) {
-        final boolean writeLogfile = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
-                context.getString(R.string.PREFS_WRITE_LOGFILE), false);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final boolean writeLogfile = prefs.getBoolean(context.getString(R.string.PREFS_ENABLE_LOGGING), false);
+        final boolean debug = prefs.getBoolean(context.getString(R.string.PREFS_DEBUG_LOGGING), false);
 
-        configureLogger(writeLogfile);
+        configureLogger(writeLogfile, debug);
     }
 
-    public static void configureLogger(boolean writeLogfile) {
-        final Configurator configurator = Configurator.defaultConfig()
-                .formatPattern("{date} {level}: {class_name}.{method}()\t{message}");
-
-        if (BuildConfig.DEBUG) {
-            configurator
-                    .writer(new LogcatWriter())
-                    .level(Level.DEBUG);
+    public static void configureLogger(boolean enableLogging, boolean debugLogging) {
+        if (!enableLogging) {
+            Configurator.defaultConfig()
+                    .removeAllWriters()
+                    .activate();
+            return;
         }
 
-        if (writeLogfile) {
-            final File folder = new File(Environment.getExternalStorageDirectory(), Constants.LOG_FILE_FOLDER);
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
-            final String logfile = new File(folder, "hacs.log").toString();
-            // https://tinylog.org/configuration#LogcatWriter
-            configurator
-                    .writer(new RollingFileWriter(logfile, 10, new StartupPolicy(), new SizePolicy(1000 * 1000)))
-                    .level(Level.DEBUG);
+        final File folder = new File(Environment.getExternalStorageDirectory(), Constants.LOG_FILE_FOLDER);
+        if (!folder.exists()) {
+            folder.mkdirs();
         }
-        configurator.activate();
+        final String logfile = new File(folder, "hacs.log").toString();
 
-        Logger.info("Init logger, debug: {}, write log file: {}", BuildConfig.DEBUG, writeLogfile);
+        Configurator.defaultConfig()
+                .formatPattern("{date} {level}: {class_name}.{method}()\t{message}")
+                .writer(new LogcatWriter("FOO"))
+                .level(debugLogging ? Level.DEBUG : Level.INFO)
+                .addWriter(new RollingFileWriter(logfile, 10, new StartupPolicy(), new SizePolicy(1000 * 1000)))
+                .activate();
+
+        Logger.info("Init logger, debug enabled: {}.", debugLogging);
     }
 }

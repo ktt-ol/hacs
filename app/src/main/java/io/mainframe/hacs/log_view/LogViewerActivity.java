@@ -35,7 +35,7 @@ public class LogViewerActivity extends AppCompatActivity {
         }
 
         final boolean writeLogFiles = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
-                getString(R.string.PREFS_WRITE_LOGFILE), false);
+                getString(R.string.PREFS_ENABLE_LOGGING), false);
         if (!writeLogFiles) {
             findViewById(R.id.logs_disabled_info).setVisibility(View.VISIBLE);
         }
@@ -67,7 +67,7 @@ public class LogViewerActivity extends AppCompatActivity {
 
                         contentTextView.setText(content.toString());
                     } catch (IOException e) {
-                        Logger.error(e.getMessage(), e);
+                        Logger.error(e, e.getMessage());
                         contentTextView.setText("Error: " + e.getMessage());
                     }
                 }

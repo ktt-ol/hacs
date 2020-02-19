@@ -235,6 +235,7 @@ function showDetails() {
                 }
             }
         } catch (e: Exception) {
+            Logger.error(e, "Cashbox error: ${e.message}")
             exception = e
         }
 

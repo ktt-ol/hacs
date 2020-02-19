@@ -57,6 +57,23 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Logging">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/PREFS_ENABLE_LOGGING"
+            android:summaryOff="Abgeschaltet."
+            android:summaryOn="Schreibt Log Dateien nach Logcat und sdcard/hacs_logs/"
+            android:title="Logging" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/PREFS_DEBUG_LOGGING"
+            android:summaryOff="Nur INFO"
+            android:summaryOn="DEBUG und INFO."
+            android:title="Log Level" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="Sonstiges">
 
         <SwitchPreference
@@ -65,13 +82,6 @@
             android:summaryOff="Abgeschaltet."
             android:summaryOn="Du bekommt eine Erinnerungen, wenn du im Hackspace bist und eine Mülltonne an die Straße gestellt werden muss."
             android:title="Abfallerinnerungen (BETA)" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="@string/PREFS_WRITE_LOGFILE"
-            android:summaryOff="Abgeschaltet."
-            android:summaryOn="Schreibt Log Dateien nach sdcard/hacs_logs/"
-            android:title="Logging" />
     </PreferenceCategory>
 
 </PreferenceScreen>

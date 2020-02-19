@@ -40,7 +40,7 @@ public class TrashCalendar {
         try {
             parseIcalFile("Abfallkalender.ics");
         } catch (IOException | ParseException e) {
-            Logger.error("Can't parse trash calendar: " + e.getMessage(), e);
+            Logger.error(e, "Can't parse trash calendar: " + e.getMessage());
         }
 
         // TESTING

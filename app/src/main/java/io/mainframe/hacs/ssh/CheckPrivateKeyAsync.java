@@ -24,6 +24,7 @@ public class CheckPrivateKeyAsync extends AsyncTask<String, Void, CheckPrivateKe
     protected Result doInBackground(String... params) {
         final String privateKeyFile = params[0];
         if (privateKeyFile == null || privateKeyFile.isEmpty()) {
+            Logger.debug("No or empty private key file.");
             return new Result(privateKeyFile, false, false);
         }
 
@@ -31,6 +32,7 @@ public class CheckPrivateKeyAsync extends AsyncTask<String, Void, CheckPrivateKe
         try {
             final KeyPair keyPair = KeyPair.load(jsch, privateKeyFile);
             if (!keyPair.isEncrypted()) {
+                Logger.debug("!keyPair.isEncrypted()");
                 return new Result(privateKeyFile, false, false);
             }
 
@@ -42,7 +44,7 @@ public class CheckPrivateKeyAsync extends AsyncTask<String, Void, CheckPrivateKe
             }
 
         } catch (JSchException e) {
-            Logger.debug("KeyCheck excp: " + e.getMessage(), e);
+            Logger.debug(e,"KeyCheck excp: " + e.getMessage());
             return new Result(null, false, false);
         }
     }

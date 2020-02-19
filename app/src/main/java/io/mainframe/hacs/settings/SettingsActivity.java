@@ -142,14 +142,22 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
                 }
             });
 
-            findPreference(getString(R.string.PREFS_WRITE_LOGFILE))
-                    .setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                        @Override
-                        public boolean onPreferenceChange(Preference preference, Object newValue) {
-                            LogConfig.configureLogger((boolean) newValue);
-                            return true;
-                        }
-                    });
+            final String enableLoggingKey = getString(R.string.PREFS_ENABLE_LOGGING);
+            final String debugLoggingKey = getString(R.string.PREFS_DEBUG_LOGGING);
+            findPreference(enableLoggingKey).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    LogConfig.configureLogger((boolean) newValue, prefs.getBoolean(debugLoggingKey, false));
+                    return true;
+                }
+            });
+            findPreference(debugLoggingKey).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    LogConfig.configureLogger(prefs.getBoolean(enableLoggingKey, false), (boolean) newValue);
+                    return true;
+                }
+            });
 
             // run the validation on start
             new CheckPrivateKeyAsync(GeneralPreferenceFragment.this).execute(
@@ -157,6 +165,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
                     prefs.getString(this.privateKeyPassword.getKey(), null)
             );
         }
+
+//        private void updateLogging() {
+//
+//        }
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {

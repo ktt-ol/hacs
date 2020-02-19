@@ -86,7 +86,7 @@ public class RunSshAsync extends AsyncTask<Void, Void, RunSshAsync.Result> {
             return new Result(this.command.get(), Status.SUCCESS, resultStr);
         } catch (Exception e) {
             String msg = "Error running ssh: " + e.getMessage();
-            Logger.error(msg, e);
+            Logger.error(e, msg);
             return new Result(this.command.get(), Status.UNKNOWN_ERROR, msg);
         }
     }

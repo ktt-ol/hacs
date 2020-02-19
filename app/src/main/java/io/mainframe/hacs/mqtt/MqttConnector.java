@@ -148,7 +148,7 @@ public class MqttConnector {
         try {
             this.client.close();
         } catch (Exception e) {
-            Logger.error("Error during close", e);
+            Logger.error(e,"Error during close");
         }
 
         this.client.unregisterResources();
@@ -259,7 +259,7 @@ public class MqttConnector {
         if (excp != null) {
             msgWithExcp += " (" + excp.getMessage() + ")";
         }
-        Logger.error(msgWithExcp, excp);
+        Logger.error(excp, msgWithExcp);
     }
 
     private static class Listener {

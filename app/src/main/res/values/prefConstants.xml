@@ -8,6 +8,7 @@
     <string name="PREFS_CHECK_SERVER_FINGERPRINT">checkServerFingerprint</string>
     <string name="PREFS_PRIVATE_KEY_PASSWORD">privateKeyPassword</string>
     <string name="PREFS_PRIVATE_KEY_FILENAME">privateKeyFilename</string>
-    <string name="PREFS_WRITE_LOGFILE">writeDebugLogfile</string>
+    <string name="PREFS_ENABLE_LOGGING">enableLogging</string>
+    <string name="PREFS_DEBUG_LOGGING">debugLogging</string>
     <string name="PREFS_TRASH_NOTIFICATIONS">trashNotifications</string>
 </resources>
