@@ -18,20 +18,19 @@ data class CashboxAction(val date: String, val name: String, val amount: String)
 
 data class CashboxInfo(val value: String, val history: List<CashboxAction>, val requestedAt: Long = System.currentTimeMillis()) {}
 
-open class EndpointException(msg: String, response: Response?) : IllegalStateException(msg) {
+open class EndpointException(msg: String, val httpBody: String, response: Response?) : IllegalStateException(msg) {
     val httpStatusCode: Int = response?.code ?: 0
     val httpStatusMsg: String = response?.message ?: ""
-    val httpBody: String = response?.body?.string() ?: ""
 
     override fun toString(): String {
         return "${super.message}\n${httpStatusCode}: ${httpStatusMsg}\n${httpBody}"
     }
 }
 
-class LoginFailed(msg: String, response: Response?) : EndpointException(msg, response) {
+class LoginFailed(msg: String, httpBody: String, response: Response?) : EndpointException(msg, httpBody, response) {
 }
 
-class UnexpectedResponse(msg: String, response: Response?) : EndpointException(msg, response) {
+class UnexpectedResponse(msg: String, httpBody: String, response: Response?) : EndpointException(msg, httpBody, response) {
 }
 
 class CashboxValueTask(private val auth: Auth, private val callback: (java.lang.Exception?, CashboxInfo?, String?) -> Unit) : AsyncTask<Void, Void, Void>() {
@@ -214,7 +213,7 @@ function showDetails() {
                         Logger.debug("Got successfully cashbox data.")
                         this.result = this.parseHtml(bodyStr)
                     }
-                    401 -> {
+                    403 -> {
                         Logger.debug("Saved Cookie is invalid, do login.")
                         cookie = login(auth.user, auth.password)
                         this.createdCookie = cookie
@@ -230,7 +229,7 @@ function showDetails() {
                         }
                     }
                     else -> {
-                        throw UnexpectedResponse("Unexpected code: ${response.code}", response)
+                        throw UnexpectedResponse("Unexpected code: ${response.code}", bodyStr, response)
                     }
                 }
             }
@@ -246,7 +245,7 @@ function showDetails() {
         // find <input name"status" class="form-control" type="number" readonly="readonly" value="12.34"/>
         // and extract the value
         val valueResult = """<input name"status".* value="([\d.]+)"/>""".toRegex().find(htmlContent)
-                ?: throw UnexpectedResponse("Could not find the cashbox value", null)
+                ?: throw UnexpectedResponse("Could not find the cashbox value", "", null)
         val value = valueResult.groupValues[1]
 
         // find <tr><td>Date &amp; Time</td><td>Name</td><td>Amount</td></tr>
@@ -285,14 +284,14 @@ private fun login(user: String, password: String): String {
 
     client.newCall(request).execute().use { response ->
         if (response.code != 200) {
-            throw LoginFailed("Unexpected code ${response.code}.", response)
+            throw LoginFailed("Unexpected code ${response.code}.", response.body!!.string(), response)
         }
 
         val setCookie = response.header("Set-Cookie")
-                ?: throw LoginFailed("No cookie present", response)
+                ?: throw LoginFailed("No cookie present", response.body!!.string(), response)
 
         val cookie = Cookie.Companion.parse(request.url, setCookie)
-                ?: throw LoginFailed("Can't parse cookie: ${setCookie}", response)
+                ?: throw LoginFailed("Can't parse cookie: ${setCookie}", response.body!!.string(), response)
 
         Logger.debug("Login successful")
         return cookie.value

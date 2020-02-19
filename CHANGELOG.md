@@ -2,6 +2,8 @@
 
 ## 2.8.2
 * Logging improved (and fixed)
+* ssh lib updated
+* Cashbox bugfix
 
 ## 2.8.1
 * Disables Cashbox page if not im Mainframe wifi
