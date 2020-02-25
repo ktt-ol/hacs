@@ -1,5 +1,7 @@
 package io.mainframe.hacs.PageFragments
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -7,6 +9,7 @@ import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -22,7 +25,7 @@ import java.util.*
 
 class CashboxFragment : BasePageFragment() {
 
-    var cashbox: CashboxInfo? = null
+    private var cashbox: CashboxInfo? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -31,6 +34,13 @@ class CashboxFragment : BasePageFragment() {
         view.findViewById<ImageButton>(R.id.cashbox_refresh).setOnClickListener {
             loadCashValue(true)
         }
+        view.findViewById<Button>(R.id.cashbox_edit).setOnClickListener {
+            val ft = activity!!.supportFragmentManager.beginTransaction()
+            val dialog = CashboxEditFragment()
+            dialog.setTargetFragment(this, CashboxEditFragment.REQ_CODE)
+            dialog.show(ft, "editCashbox")
+        }
+
 
         return view
     }
@@ -39,6 +49,12 @@ class CashboxFragment : BasePageFragment() {
         super.onResume()
 
         loadCashValue(false)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == CashboxEditFragment.REQ_CODE && resultCode == Activity.RESULT_OK) {
+            loadCashValue(true)
+        }
     }
 
     private fun loadCashValue(refresh: Boolean) {
@@ -51,16 +67,19 @@ class CashboxFragment : BasePageFragment() {
         val cashboxValueView = view!!.findViewById<TextView>(R.id.cashbox_value)
         val cashboxRequestedAtView = view!!.findViewById<TextView>(R.id.cashbox_requestedTime)
         val historyView = view!!.findViewById<LinearLayout>(R.id.cashbox_history)
+        val updateView = view!!.findViewById<Button>(R.id.cashbox_edit)
+
         historyView.removeAllViews()
 
         if (cashbox != null && !refresh) {
             Logger.debug("Using cached cashbox value.")
-            updateUi(cashbox!!, cashboxValueView, cashboxRequestedAtView, historyView)
+            updateUi(cashbox!!, cashboxValueView, cashboxRequestedAtView, historyView, updateView)
             return
         }
 
         cashboxValueView.text = "..."
-        cashboxRequestedAtView.text = ""
+        cashboxRequestedAtView.text = "Stand: ?"
+        updateView.isEnabled = false
         if (user == null || pw == null) {
             historyView.addView(makeTextView("Es ist kein Benutzer/Passwort gesetzt. Das kannst du in den 'Settings' machen."))
             return
@@ -87,7 +106,7 @@ class CashboxFragment : BasePageFragment() {
 
             this.cashbox = cashbox
 
-            updateUi(cashbox!!, cashboxValueView, cashboxRequestedAtView, historyView)
+            updateUi(cashbox!!, cashboxValueView, cashboxRequestedAtView, historyView, updateView)
 
             if (createdCookie != null) {
                 Logger.debug("Saving cookie value.")
@@ -97,7 +116,7 @@ class CashboxFragment : BasePageFragment() {
         }.execute()
     }
 
-    private fun updateUi(cashbox: CashboxInfo, cashboxValueView: TextView, cashboxRequestedAtView: TextView, historyView: LinearLayout) {
+    private fun updateUi(cashbox: CashboxInfo, cashboxValueView: TextView, cashboxRequestedAtView: TextView, historyView: LinearLayout, updateView: Button) {
         cashboxValueView.text = cashbox.value
         val formattedTime = SimpleDateFormat("HH:mm:ss").format(Date(cashbox.requestedAt))
         cashboxRequestedAtView.text = "Stand: ${formattedTime}"
@@ -105,6 +124,8 @@ class CashboxFragment : BasePageFragment() {
         cashbox.history.forEach {
             historyView.addView(makeTextView("<em>${it.date}</em>: ${it.name}: ${it.amount}"))
         }
+
+        updateView.isEnabled = true
     }
 
     private fun makeTextView(text: String): TextView {

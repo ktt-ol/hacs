@@ -1,0 +1,8 @@
+<resources>
+    <string-array name="cashbox_edit_array">
+        <item>Loss (Money is missing from the cashbox)</item>
+        <item>Withdrawal (You removed money from the cashbox)</item>
+        <item>Donation (Cashbox has more money, than there should be)</item>
+        <item>Deposit (You added money to the cashbox)</item>
+    </string-array>
+</resources>

@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.8.3
+* Supports cashbox update
+
 ## 2.8.2
 * Logging improved (and fixed)
 * ssh lib updated
