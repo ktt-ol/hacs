@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.8.4
+* UI fix for wrong private key password
+
 ## 2.8.3
 * Supports cashbox update
 

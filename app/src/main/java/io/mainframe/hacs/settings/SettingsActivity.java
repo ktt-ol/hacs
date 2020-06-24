@@ -189,8 +189,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
             } else {
                 this.privateKeyFilename.setSummary(response.privateKeyFile);
                 if (!response.passwordMatch) {
-                } else {
                     this.privateKeyPassword.setSummary("Das Passwort passt nicht für den gewählten privaten Schlüssel.");
+                } else {
                     credentialsOk = true;
                     this.privateKeyPassword.setSummary("Das Passwort ist richtig.");
                 }
