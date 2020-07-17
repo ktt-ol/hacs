@@ -16,12 +16,17 @@ import io.mainframe.hacs.R;
 import io.mainframe.hacs.main.NetworkStatus;
 
 public class NotificationPublisher extends BroadcastReceiver {
+    String lastmsg = null;
 
     public static final String EXTRA_MSG = "eventMsg";
 
     private static final String CHANNEL_ID = "trashNotiChannel";
 
     public void onReceive(Context context, Intent intent) {
+        if (lastmsg.equals(intent.getStringExtra(EXTRA_MSG))) {
+            return;
+        }
+        updateValues(intent);
         final NetworkStatus status = new NetworkStatus(context, PreferenceManager.getDefaultSharedPreferences(context));
         if (!status.isInMainframeWifi()) {
             Logger.info("Skip trash notification, because I'm not in the mainfame wifi.");
@@ -37,12 +42,11 @@ public class NotificationPublisher extends BroadcastReceiver {
             builder.setPriority(Notification.PRIORITY_DEFAULT);
         }
         builder.setContentTitle("Müll rausbringen");
-        final String msg = intent.getStringExtra(EXTRA_MSG);
-        builder.setContentText(msg);
+        builder.setContentText(lastmsg);
         builder.setSmallIcon(R.drawable.ic_trash);
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Logger.info("Show notification: " + msg);
+        Logger.info("Show notification: " + lastmsg);
         notificationManager.notify(1, builder.build());
 
         new TrashCalendar(context).setNextAlarm();
@@ -68,5 +72,9 @@ public class NotificationPublisher extends BroadcastReceiver {
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
         channel.setDescription(description);
         notificationManager.createNotificationChannel(channel);
+    }
+
+    private void updateValues(Intent intent) {
+        lastmsg = intent.getStringExtra(EXTRA_MSG);
     }
 }
