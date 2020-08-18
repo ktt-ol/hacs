@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.8.5
+* Shows all events if there multiple per day
+
 ## 2.8.4
 * UI fix for wrong private key password
 

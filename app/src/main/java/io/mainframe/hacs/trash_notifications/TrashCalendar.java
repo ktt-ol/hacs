@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -61,8 +62,16 @@ public class TrashCalendar {
 //        });
     }
 
+    protected InputStream openAssetAsStream(String assetFilename) throws IOException {
+        return context.getResources().getAssets().open(assetFilename);
+    }
+
+    protected Date now() {
+        return new Date();
+    }
+
     private void parseIcalFile(String assetFilename) throws IOException, ParseException {
-        try (InputStream is = context.getResources().getAssets().open(assetFilename)) {
+        try (InputStream is = openAssetAsStream(assetFilename)) {
             final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
             // e.g. 20181029T060000Z
@@ -114,31 +123,40 @@ public class TrashCalendar {
         return eventList;
     }
 
-    public TrashEvent getNextEvent(Date targetTime) {
+    public List<TrashEvent> getEvents(Date startDate, Date endDate) {
+        ArrayList<TrashEvent> events = new ArrayList<>();
         for (TrashEvent trashEvent : getEventList()) {
-            if (trashEvent.startDate.after(targetTime)) {
-                return trashEvent;
+            if (trashEvent.startDate.after(startDate)) {
+                if (trashEvent.startDate.after(endDate)) {
+                    // not in time range anymore
+                    break;
+                }
+                events.add(trashEvent);
             }
         }
 
-        return null;
+        return events;
     }
+
 
     // null for no immediate trash action, the summary text else
     public String getTrashSummaryForTomorrow() {
-        final TrashEvent nextEvent = getNextEvent(new Date());
-        if (nextEvent == null) {
-            return null;
-        }
+        Date now = now();
 
         // warn if the next event is 16 hours in the future
-        long futureThreshold = System.currentTimeMillis() + (1000 * 60 * 60 * 16);
+        long futureThreshold = now.getTime() + (1000 * 60 * 60 * 16);
 
-        if (nextEvent.startDate.getTime() < futureThreshold) {
-            return nextEvent.summary;
+        List<TrashEvent> events = getEvents(now, new Date(futureThreshold));
+        return makeSummary(events);
+    }
+
+    private String makeSummary(List<TrashEvent> events) {
+        String summary = null;
+        for (TrashEvent event : events) {
+            summary = summary == null ? event.summary : summary + ", " + event.summary;
         }
 
-        return null;
+        return summary;
     }
 
     public void setNextAlarm() {
@@ -157,25 +175,18 @@ public class TrashCalendar {
             nextNotificationDate.add(Calendar.DAY_OF_YEAR, 1);
         }
 
-        final TrashEvent nextEvent = getNextEvent(nextNotificationDate.getTime());
-        if (nextEvent == null) {
+        Date now = now();
+        // warn if the next event is 16 hours in the future of the planned notification
+        long futureThreshold = nextNotificationDate.getTimeInMillis() + (1000 * 60 * 60 * 16);
+        List<TrashEvent> events = getEvents(nextNotificationDate.getTime(), new Date(now.getTime() + futureThreshold));
+        if (events.isEmpty()) {
             Logger.info("No next alarm.");
             return;
         }
 
-        // warn if the next event is 16 hours in the future of the planned notification
-        long futureThreshold = nextNotificationDate.getTimeInMillis() + (1000 * 60 * 60 * 16);
-
-        if (nextEvent.startDate.getTime() > futureThreshold) {
-            Logger.info("Next alarm ({}) not in the threshold ({}).",
-                    nextEvent, nextNotificationDate.getTime());
-            return;
-        }
-
-
         Intent notificationIntent = new Intent(context, NotificationPublisher.class);
 
-        String msg = String.format("%s wird morgen abgeholt. Bitte an die Straße stellen.", nextEvent.summary);
+        String msg = String.format("%s wird morgen abgeholt. Bitte an die Straße stellen.", makeSummary(events));
         notificationIntent.putExtra(NotificationPublisher.EXTRA_MSG, msg);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
@@ -184,7 +195,7 @@ public class TrashCalendar {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, nextNotificationDate.getTimeInMillis(), pendingIntent);
 
-        Logger.info("Setting next alarm {} at {}", nextEvent, nextNotificationDate.getTime());
+        Logger.info("Setting next alarm {} at {}", events, nextNotificationDate.getTime());
     }
 
     public static class TrashEvent {
