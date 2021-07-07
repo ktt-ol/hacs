@@ -14,14 +14,10 @@ public final class Constants {
      * Valid bssids for the machining page
      */
     public static final String[] MACHINING_WIFI_BSSIDS = new String[]{
-            // AP 9 - Fräsraum
-            "00:26:3e:e0:49:40", // mainframe-legacy
-            "00:26:3e:e0:49:41", // mainframe
-            // AP 8 - Radstelle
-            "00:26:3e:e0:6b:80", // mainframe-legacy
-            "00:26:3e:e0:6b:81" // mainframe
+            // AP 101 - Fräsraum
+            "c4:10:8a:7d:ef:b8", // mainframe-legacy
+            "c4:10:8a:3d:ef:bc", // mainframe
     };
-
 
     public static final DoorServer SPACE_DOOR = new DoorServer(
             "192.168.2.3", "keyholder", 22,
