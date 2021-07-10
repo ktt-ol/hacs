@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.8.6
+* SSID list update
+* Trash calendar update (2021)
+
 ## 2.8.5
 * Shows all events if there multiple per day
 
