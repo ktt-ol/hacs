@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.9.0
+* Permission refactoring for Android 11. Removed the "scan for your private key" function and uses the internal picker.
+* Logging fixed and removed the log to file function. Added an mail and clipboard export instead.
+* Fixes SSID detection for newer Android versions.
+
 ## 2.8.6
 * SSID list update
 * Trash calendar update (2021)

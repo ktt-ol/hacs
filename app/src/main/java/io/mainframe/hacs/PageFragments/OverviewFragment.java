@@ -2,7 +2,6 @@ package io.mainframe.hacs.PageFragments;
 
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -91,8 +90,7 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
     public void onResume() {
         super.onResume();
 
-        PkCredentials credentials = new PkCredentials(PreferenceManager.getDefaultSharedPreferences(getActivity()), getContext());
-        boolean readOnlyMode = !credentials.isPasswordSet();
+        boolean readOnlyMode = !PkCredentials.isPasswordSet(getContext());
 
         if (!readOnlyMode) {
             final NetworkStatus networkStatus = getInteraction().getNetworkStatus();

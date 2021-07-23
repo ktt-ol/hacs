@@ -79,9 +79,8 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener, 
     override fun onResume() {
         super.onResume()
 
-        val credentials = PkCredentials(PreferenceManager.getDefaultSharedPreferences(activity), context!!)
         // if the ssh key password is not set
-        val readOnlyMode = !credentials.isPasswordSet
+        val readOnlyMode = !PkCredentials.isPasswordSet(context!!)
 
         if (!readOnlyMode) {
             val networkStatus = interaction.networkStatus

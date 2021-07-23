@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,23 +7,14 @@
     android:orientation="vertical"
     tools:context=".log_view.LogViewerActivity">
 
-    <TextView
-        android:id="@+id/logs_disabled_info"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/logs_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Writing log files is currently disabled, but you can still see the old logs."
-        android:visibility="gone"
-        />
-
-    <android.support.design.widget.TabLayout
-        android:id="@+id/logs_tabview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:tabMode="scrollable"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp">
-
-    </android.support.design.widget.TabLayout>
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -39,8 +29,9 @@
                 android:id="@+id/logs_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="..."/>
+                android:text="Wird geladen..." />
         </RelativeLayout>
+
     </ScrollView>
 
 </LinearLayout>

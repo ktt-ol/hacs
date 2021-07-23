@@ -2,7 +2,6 @@ package io.mainframe.hacs.main;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
@@ -30,7 +29,6 @@ public class SshUiHandler extends DialogFragment implements SshResponse<RunSshAs
 
     private Constants.DoorServer tryServer;
     private DoorCommand tryCommand;
-    private SharedPreferences preferences;
 
     public SshUiHandler() {
         // Required empty public constructor
@@ -66,8 +64,7 @@ public class SshUiHandler extends DialogFragment implements SshResponse<RunSshAs
 
         show(fragmentActivity.getSupportFragmentManager(), "dialog");
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(fragmentActivity);
-        PkCredentials credentials = new PkCredentials(preferences, fragmentActivity);
+        PkCredentials credentials = PkCredentials.fromSettings(fragmentActivity);
         new RunSshAsync(this, this.tryServer, credentials, this.tryCommand, true).execute();
     }
 
@@ -86,7 +83,7 @@ public class SshUiHandler extends DialogFragment implements SshResponse<RunSshAs
                 actionDone(true);
                 break;
             case WRONG_HOST_KEY:
-                boolean checkServerFingerprint = preferences.getBoolean(
+                boolean checkServerFingerprint = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
                         getString(R.string.PREFS_CHECK_SERVER_FINGERPRINT), true);
                 if (checkServerFingerprint) {
                     Toast.makeText(context, response.msg, Toast.LENGTH_LONG).show();
@@ -106,7 +103,7 @@ public class SshUiHandler extends DialogFragment implements SshResponse<RunSshAs
     public void dialogClosed(String tag, boolean resultOk) {
         if (resultOk && tag.equals("hostkey")) {
             // try the last command again
-            PkCredentials credentials = new PkCredentials(preferences, getContext());
+            PkCredentials credentials = PkCredentials.fromSettings(getContext());
             new RunSshAsync(this, this.tryServer, credentials, this.tryCommand, false).execute();
         } else {
             actionDone(false);

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/log_copy_to_clipboard"
+        android:title="Copy to clipboard"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/log_export"
+        android:title="Export per mail"
+        app:showAsAction="never"/>
+</menu>

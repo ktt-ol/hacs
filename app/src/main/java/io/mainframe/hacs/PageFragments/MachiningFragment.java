@@ -1,7 +1,6 @@
 package io.mainframe.hacs.PageFragments;
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,6 @@ import android.widget.TextView;
 import java.util.EnumSet;
 
 import io.mainframe.hacs.R;
-import io.mainframe.hacs.common.Constants;
 import io.mainframe.hacs.components.DoorButtons;
 import io.mainframe.hacs.main.NetworkStatus;
 import io.mainframe.hacs.main.Status;
@@ -54,9 +52,8 @@ public class MachiningFragment extends BasePageFragment implements NetworkStatus
     public void onResume() {
         super.onResume();
 
-        PkCredentials credentials = new PkCredentials(PreferenceManager.getDefaultSharedPreferences(getActivity()), getContext());
         // if the ssh key password is not set
-        boolean readOnlyMode = !credentials.isPasswordSet();
+        boolean readOnlyMode = !PkCredentials.isPasswordSet(getContext());
 
         if (!readOnlyMode) {
             final NetworkStatus networkStatus = getInteraction().getNetworkStatus();

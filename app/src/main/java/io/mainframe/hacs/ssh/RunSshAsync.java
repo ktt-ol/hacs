@@ -38,7 +38,7 @@ public class RunSshAsync extends AsyncTask<Void, Void, RunSshAsync.Result> {
     protected Result doInBackground(Void... voids) {
         JSch jsch = new JSch();
         try {
-            jsch.addIdentity(this.credentials.privateKeyFile, this.credentials.password);
+            jsch.addIdentity(credentials.getPrivateKey().getName(), credentials.getPrivateKey().getData(), null, credentials.getPassword().getBytes());
             Session session = jsch.getSession(this.server.user, this.server.host, this.server.port);
 
             // Avoid asking for key confirmation

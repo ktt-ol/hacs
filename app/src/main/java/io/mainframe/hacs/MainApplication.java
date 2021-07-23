@@ -1,7 +1,6 @@
 package io.mainframe.hacs;
 
 import android.app.Application;
-import android.preference.PreferenceManager;
 
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;

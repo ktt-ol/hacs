@@ -2,10 +2,12 @@ package io.mainframe.hacs.settings;
 
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -13,6 +15,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
+import android.webkit.MimeTypeMap;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,9 +23,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.common.logging.LogConfig;
 import io.mainframe.hacs.ssh.CheckPrivateKeyAsync;
+import io.mainframe.hacs.ssh.KeyData;
+import io.mainframe.hacs.ssh.PkCredentials;
 import io.mainframe.hacs.ssh.SshResponse;
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements EditTextWithScanPreference.ActivityRunner {
+
+    public static final int RESULT_CHOOSE_PRIVATE_KEY = 2;
 
     private Map<Integer, EditTextWithScanPreference.ActivityResultCallback> callbacks = new ConcurrentHashMap<>();
     private int callbackIdCounter = 0;
@@ -120,12 +127,27 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
             this.privateKeyPassword = findPreference(getString(R.string.PREFS_PRIVATE_KEY_PASSWORD));
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
+            privateKeyFilename.setOnPreferenceClickListener(preference -> {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("*/*");
+
+                String keyMimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension("key");
+                if (keyMimeType != null) {
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{keyMimeType});
+                }
+
+                startActivityForResult(intent, RESULT_CHOOSE_PRIVATE_KEY);
+                return true;
+            });
+
             this.privateKeyFilename.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    String passwordValue = prefs
-                            .getString(GeneralPreferenceFragment.this.privateKeyPassword.getKey(), null);
-                    new CheckPrivateKeyAsync(GeneralPreferenceFragment.this).execute((String) newValue, passwordValue);
+                    String passwordValue = prefs.getString(
+                            GeneralPreferenceFragment.this.privateKeyPassword.getKey(), null);
+                    new CheckPrivateKeyAsync(GeneralPreferenceFragment.this)
+                            .execute(new PkCredentials(KeyData.fromUri(Uri.parse((String) newValue), getActivity()), passwordValue));
 
                     return true;
                 }
@@ -134,41 +156,56 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
             this.privateKeyPassword.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    String privateKeyFilenameValue = prefs
-                            .getString(GeneralPreferenceFragment.this.privateKeyFilename.getKey(), null);
-                    new CheckPrivateKeyAsync(GeneralPreferenceFragment.this).execute(privateKeyFilenameValue, (String) newValue);
+                    String privateKeyFilenameValue = prefs.getString(
+                            GeneralPreferenceFragment.this.privateKeyFilename.getKey(), null);
+
+                    new CheckPrivateKeyAsync(GeneralPreferenceFragment.this)
+                            .execute(new PkCredentials(KeyData.fromUri(Uri.parse(privateKeyFilenameValue), getActivity()), (String) newValue));
 
                     return true;
                 }
             });
 
-            final String enableLoggingKey = getString(R.string.PREFS_ENABLE_LOGGING);
             final String debugLoggingKey = getString(R.string.PREFS_DEBUG_LOGGING);
-            findPreference(enableLoggingKey).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    LogConfig.configureLogger((boolean) newValue, prefs.getBoolean(debugLoggingKey, false));
-                    return true;
-                }
-            });
             findPreference(debugLoggingKey).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    LogConfig.configureLogger(prefs.getBoolean(enableLoggingKey, false), (boolean) newValue);
+                    LogConfig.configureLogger((boolean) newValue);
                     return true;
                 }
             });
 
             // run the validation on start
-            new CheckPrivateKeyAsync(GeneralPreferenceFragment.this).execute(
-                    prefs.getString(this.privateKeyFilename.getKey(), null),
-                    prefs.getString(this.privateKeyPassword.getKey(), null)
-            );
+            new CheckPrivateKeyAsync(GeneralPreferenceFragment.this)
+                    .execute(PkCredentials.fromSettings(getActivity()));
         }
 
-//        private void updateLogging() {
-//
-//        }
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if (requestCode == RESULT_CHOOSE_PRIVATE_KEY && resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    Uri uri = data.getData();
+                    if (uri != null) {
+                        getActivity().getContentResolver().takePersistableUriPermission(
+                                uri,
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        );
+
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                        prefs
+                                .edit()
+                                .putString(this.privateKeyFilename.getKey(), uri.toString())
+                                .apply();
+
+                        String passwordValue = prefs.getString(
+                                GeneralPreferenceFragment.this.privateKeyPassword.getKey(), null);
+                        new CheckPrivateKeyAsync(GeneralPreferenceFragment.this)
+                                .execute(new PkCredentials(KeyData.fromUri(uri, getActivity()), passwordValue));
+
+                    }
+                }
+            }
+        }
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
@@ -182,16 +219,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
 
         @Override
         public void processFinish(CheckPrivateKeyAsync.Result response) {
-            boolean credentialsOk = false;
-            if (!response.keyFileValid) {
+            if (!response.getKeyFileValid()) {
                 this.privateKeyFilename.setSummary("Der private Schlüssel ist ungültig!");
                 this.privateKeyPassword.setSummary("");
             } else {
-                this.privateKeyFilename.setSummary(response.privateKeyFile);
-                if (!response.passwordMatch) {
+                this.privateKeyFilename.setSummary(response.getPrivateKeyFile());
+                if (!response.getPasswordMatch()) {
                     this.privateKeyPassword.setSummary("Das Passwort passt nicht für den gewählten privaten Schlüssel.");
                 } else {
-                    credentialsOk = true;
                     this.privateKeyPassword.setSummary("Das Passwort ist richtig.");
                 }
             }
