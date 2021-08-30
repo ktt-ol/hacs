@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.1
+* Changes the cert handling for the cashbox
+* Always show all status buttons
+
 ## 2.9.0
 * Permission refactoring for Android 11. Removed the "scan for your private key" function and uses the internal picker.
 * Logging fixed and removed the log to file function. Added an mail and clipboard export instead.
