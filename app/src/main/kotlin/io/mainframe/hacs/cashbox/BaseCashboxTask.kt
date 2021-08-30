@@ -119,24 +119,9 @@ abstract class BaseCashboxTask<Result>(private val auth: Auth, private val callb
     }
 
     private fun getCaCertSSLClient(): OkHttpClient {
-//        return getCaCertSSLClientAcceptAll()
-
-        val certs = Buffer()
-                .writeUtf8(CA_CERT_PEM)
-                .writeUtf8("\n")
-                .writeUtf8(CA_CERT_INTER_PEM)
-                .inputStream()
-
-        val (keyManagers, trustManagers) = trustManagerForCertificates(certs)
-        val sslContext = SSLContext.getInstance("TLS")
-        sslContext.init(keyManagers, trustManagers, null)
-        val sslSocketFactory = sslContext.socketFactory
-
         return OkHttpClient.Builder()
-                .sslSocketFactory(sslSocketFactory, trustManagers[0] as X509TrustManager)
                 .build()
     }
-
 
     private fun trustManagerForCertificates(inputStream: InputStream): Pair<Array<KeyManager>, Array<TrustManager>> {
         val certificateFactory = CertificateFactory.getInstance("X.509")
