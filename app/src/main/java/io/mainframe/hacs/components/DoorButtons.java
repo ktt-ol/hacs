@@ -41,6 +41,12 @@ public class DoorButtons extends LinearLayout implements View.OnClickListener {
 
         inflater.inflate(R.layout.component_door_buttons, this);
 
+        if (extendedStatus) {
+            // show always all buttons...
+            findViewById(R.id.doorButtons_moreButtons).setVisibility(View.VISIBLE);
+            findViewById(R.id.doorButtons_more).setVisibility(View.GONE);
+        }
+
         doorButtons = new View[DoorButton.values().length];
         for (DoorButton doorButton : DoorButton.values()) {
             doorButtons[doorButton.ordinal()] = findViewById(doorButton.getId());
