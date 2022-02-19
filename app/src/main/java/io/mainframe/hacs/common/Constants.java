@@ -14,9 +14,9 @@ public final class Constants {
      * Valid bssids for the machining page
      */
     public static final String[] MACHINING_WIFI_BSSIDS = new String[]{
-            // AP 101 - Fräsraum
-            "c4:10:8a:7d:ef:b8", // mainframe-legacy
-            "c4:10:8a:3d:ef:bc", // mainframe
+            // AP 111 - Fräsraum
+            "e0:63:da:ba:8e:76", // mainframe-legacy
+            "e6:63:da:bb:8e:76", // mainframe
     };
 
     public static final DoorServer SPACE_DOOR = new DoorServer(
@@ -24,7 +24,7 @@ public final class Constants {
             "C1:28:56:42:2B:8D:45:30:B7:43:EB:F6:A7:36:43:5D");
 
     public static final DoorServer MACHINING_DOOR = new DoorServer(
-            "acs-machining.mainframe.lan", "keyholder", 22,
+            "acs-machining.lan.mainframe.io", "keyholder", 22,
             "B9:24:BC:26:8B:27:CE:0A:B5:8A:4E:BA:F4:CD:0C:84");
 
     public static final String KEYSTORE_FILE = "keystore/hacs_keystore.bks";
