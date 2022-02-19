@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.2
+* SSID list update
+* Trash calendar update (2022)
+
 ## 2.9.1
 * Changes the cert handling for the cashbox
 * Always show all status buttons
