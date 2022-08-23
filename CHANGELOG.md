@@ -1,5 +1,9 @@
 # Changelog
 
+
+## 2.9.5
+* Removes any filename restrictions for selected the private key
+
 ## 2.9.4
 * Fix machining 5GHz BSSID
 

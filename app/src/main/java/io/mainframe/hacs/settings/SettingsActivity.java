@@ -15,7 +15,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
-import android.webkit.MimeTypeMap;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -131,12 +130,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("*/*");
-
-                String keyMimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension("key");
-                if (keyMimeType != null) {
-                    intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{keyMimeType});
-                }
-
                 startActivityForResult(intent, RESULT_CHOOSE_PRIVATE_KEY);
                 return true;
             });
