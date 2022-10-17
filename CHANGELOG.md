@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.9.3
+* SSID list update
+
 ## 2.9.2
 * SSID list update
 * Trash calendar update (2022)
