@@ -14,7 +14,10 @@ public final class Constants {
      * Valid bssids for the machining page
      */
     public static final String[] MACHINING_WIFI_BSSIDS = new String[]{
-            // AP 111 - Fräsraum
+            // AP 111 - Fräsraum (neu)
+            "80:2a:a8:47:64:2d", // mainframe-legacy
+            "80:2a:a8:48:64:2d", // mainframe
+            // AP 111 - Fräsraum (alt)
             "e0:63:da:ba:8e:76", // mainframe-legacy
             "e6:63:da:bb:8e:76", // mainframe
     };
