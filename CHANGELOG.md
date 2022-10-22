@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.9.4
+* Fix machining 5GHz BSSID
+
 ## 2.9.3
 * SSID list update
 
