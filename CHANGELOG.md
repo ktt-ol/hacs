@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.5
+* Trash calendar update (2023)
+* Fix machining 5GHz BSSID
+
 ## 2.9.4
 * Fix machining 5GHz BSSID
 
