@@ -16,7 +16,7 @@ public final class Constants {
     public static final String[] MACHINING_WIFI_BSSIDS = new String[]{
             // AP 111 - Fräsraum
             "80:2a:a8:47:64:2d", // mainframe-legacy
-            "86:2a:a8:48:64:2d", // mainframe
+            "80:2a:a8:48:64:2d", // mainframe
     };
 
     public static final DoorServer SPACE_DOOR = new DoorServer(
