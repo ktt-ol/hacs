@@ -75,7 +75,7 @@ public class TrashCalendar {
             final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
             // e.g. 20181029T060000Z
-            SimpleDateFormat parser = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'", Locale.getDefault());
+            SimpleDateFormat parser = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.getDefault());
             parser.setTimeZone(TimeZone.getTimeZone("utc"));
 
             boolean inEvent = false;
