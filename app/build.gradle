@@ -8,8 +8,8 @@ android {
         applicationId "io.mainframe.hacs"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 58
-        versionName '2.9.6'
+        versionCode 59
+        versionName '2.9.7'
     }
     buildTypes {
         release {
@@ -42,9 +42,6 @@ dependencies {
 
     implementation 'com.jcraft:jsch:0.1.54'
     implementation 'ch.acra:acra:4.6.2'
-    implementation('org.eclipse.paho:org.eclipse.paho.android.service:1.1.1') {
-        exclude module: 'support-v4'
-    }
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
     implementation 'com.squareup.okhttp3:okhttp:4.3.1'
     implementation 'org.tinylog:tinylog:1.3.5'

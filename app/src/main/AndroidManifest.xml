@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- for mqtt -->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <!-- not needed? -->
     <!--    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>-->
     <!-- for the timer -->

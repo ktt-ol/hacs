@@ -36,6 +36,7 @@ Must start with `mf-door.` and end with `.key` and must have a password.
 # Libs
 
 * https://www.eclipse.org/paho/clients/android/
+  * mqtt fix for Android 12: https://github.com/eclipse/paho.mqtt.android/issues/485#issue-1384943553
 * https://github.com/googlesamples/easypermissions
 * https://github.com/ACRA/acra.git
 * http://www.jcraft.com/jsch/

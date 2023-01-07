@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.9.7
+* Bugfix for Android 12
+
 ## 2.9.6
 * Removes any filename restrictions for selected the private key
 
