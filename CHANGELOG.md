@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.9.9
+* Fixes Trash calendar for Android 12
+
 ## 2.9.8
 * Trash calendar date parse fix
 
