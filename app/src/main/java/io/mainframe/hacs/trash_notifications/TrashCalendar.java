@@ -189,8 +189,12 @@ public class TrashCalendar {
         String msg = String.format("%s wird morgen abgeholt. Bitte an die Straße stellen.", makeSummary(events));
         notificationIntent.putExtra(NotificationPublisher.EXTRA_MSG, msg);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
-                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = null;
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, flags);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, nextNotificationDate.getTimeInMillis(), pendingIntent);
