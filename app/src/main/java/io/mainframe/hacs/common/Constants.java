@@ -20,7 +20,7 @@ public final class Constants {
     };
 
     public static final DoorServer SPACE_DOOR = new DoorServer(
-            "192.168.2.3", "keyholder", 22,
+            "acs.lan.mainframe.io", "keyholder", 22,
             "C1:28:56:42:2B:8D:45:30:B7:43:EB:F6:A7:36:43:5D");
 
     public static final DoorServer MACHINING_DOOR = new DoorServer(
