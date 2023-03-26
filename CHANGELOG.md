@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.10.0
+* Updates cashbox api
+
 ## 2.9.9
 * Fixes Trash calendar for Android 12
 

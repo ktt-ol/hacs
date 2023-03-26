@@ -6,10 +6,10 @@ android {
     compileSdkVersion 31
     defaultConfig {
         applicationId "io.mainframe.hacs"
-        minSdkVersion 21
+        minSdkVersion 28
         targetSdkVersion 31
-        versionCode 61
-        versionName '2.9.9'
+        versionCode 62
+        versionName '2.10.0'
     }
     buildTypes {
         release {
