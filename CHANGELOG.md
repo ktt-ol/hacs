@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.10.1
+* Fixes cashbox crash
+
 ## 2.10.0
 * Updates cashbox api
 

@@ -1,6 +1,7 @@
 package io.mainframe.hacs.PageFragments
 
 import android.app.Activity
+import android.arch.lifecycle.Lifecycle
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -106,7 +107,9 @@ class CashboxFragment : BasePageFragment() {
 
             this.cashbox = cashbox
 
-            updateUi(cashbox!!, cashboxValueView, cashboxRequestedAtView, historyView, updateView)
+            if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                updateUi(cashbox!!, cashboxValueView, cashboxRequestedAtView, historyView, updateView)
+            }
 
             if (createdCookie != null) {
                 Logger.debug("Saving cookie value.")
