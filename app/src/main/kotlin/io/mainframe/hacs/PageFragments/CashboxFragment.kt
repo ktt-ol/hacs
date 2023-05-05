@@ -133,11 +133,7 @@ class CashboxFragment : BasePageFragment() {
 
     private fun makeTextView(text: String): TextView {
         val textView = TextView(this.context)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            textView.text = Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT)
-        } else {
-            textView.text = Html.fromHtml(text)
-        }
+        textView.text = Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT)
         textView.textSize = 16f
         return textView
     }

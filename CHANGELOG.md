@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.10.2
+* Reduces minSdkVersion to 26 (Android 8.0)
+
 ## 2.10.1
 * Fixes cashbox crash
 
