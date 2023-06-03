@@ -13,7 +13,8 @@ public class LocationColor {
     private Pair<String, String>[] colors = new Pair[]{
             new Pair("Space", "#008000"),
             new Pair("Radstelle", "#9696fd"),
-            new Pair("Fräse", "#fdca96")
+            new Pair("Fräse", "#fdca96"),
+            new Pair("Holz", "#761c19")
     };
 
     public String getColor(String location) {
