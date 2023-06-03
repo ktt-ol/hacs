@@ -49,13 +49,13 @@ class CashboxEditFragment : DialogFragment() {
 
             controlsEnabled(false)
 
-            UpdateCashboxTask(params, Auth(user, pw, cookie)) { excp, ok, createdCookie ->
-                if (createdCookie != null) {
+            UpdateCashboxTask(params, Auth(user, pw, cookie)) { result ->
+                if (result.createdCookie != cookie) {
                     Logger.debug("Saving cookie value.")
-                    prefs.edit().putString(context!!.getString(R.string.PREFS_CASHBOX_COOKIE), createdCookie).apply()
+                    prefs.edit().putString(context!!.getString(R.string.PREFS_CASHBOX_COOKIE), result.createdCookie).apply()
                 }
 
-                if (ok == true) {
+                if (result.exception == null) {
                     Logger.info("Cashbox update successful.")
                     targetFragment!!.onActivityResult(REQ_CODE, Activity.RESULT_OK, activity!!.intent)
                     dismiss()
@@ -63,7 +63,7 @@ class CashboxEditFragment : DialogFragment() {
                 }
 
                 view.findViewById<TextView>(R.id.cashbox_error_msg).also {
-                    it.text = excp?.message ?: "Unbekannter Fehler :("
+                    it.text = result.exception.message ?: "Unbekannter Fehler :("
                     it.visibility = View.VISIBLE
                 }
                 controlsEnabled(true)

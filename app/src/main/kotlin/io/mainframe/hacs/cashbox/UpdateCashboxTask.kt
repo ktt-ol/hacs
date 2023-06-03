@@ -1,8 +1,10 @@
 package io.mainframe.hacs.cashbox
 
+import android.os.AsyncTask
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.pmw.tinylog.Logger
 
 enum class UpdateType {
     // don't change the name, the endpoint expect exact those values
@@ -13,25 +15,36 @@ data class UpdateParam(val type: UpdateType, val amount: Int)
 
 class UpdateCashboxTask(
     private val params: UpdateParam,
-    auth: Auth,
-    callback: (java.lang.Exception?, Boolean?, String?) -> Unit
-) : BaseCashboxTask<Boolean>(auth, callback) {
+    private val auth: Auth,
+    private val callback: (TaskResult<Unit>) -> Unit
+) : AsyncTask<Void, Void, Void>() {
 
-    override fun buildRequests(): List<Request> {
-        val cookie = getCookie() ?: throw java.lang.IllegalStateException("No cookie")
+    private var result: TaskResult<Unit>? = null
+
+    @Deprecated("Deprecated in Java")
+    override fun doInBackground(vararg _params: Void?): Void? {
         val jsonBody = """{"update_type": "${params.type.name}", "amount": ${params.amount}}"""
             .toRequestBody("application/json".toMediaType())
 
-        return listOf(
-            Request.Builder()
-                .url(CASHBOX_UPDATE_URL)
-                .addHeader("Cookie", "sessionid=${cookie}")
-                .post(jsonBody)
-                .build()
-        )
+        try {
+            CashBoxRequester.withCookieAuth(auth) { cookieValue ->
+                Request.Builder()
+                    .url(CASHBOX_UPDATE_URL)
+                    .addHeader("Cookie", "sessionid=${cookieValue}")
+                    .post(jsonBody)
+                    .build()
+
+                result = TaskResult(null, null, cookieValue)
+            }
+        } catch (e: Exception) {
+            Logger.error(e, "Cashbox update error: ${e.message}")
+            result = TaskResult(e, null, null)
+        }
+        return null
     }
 
-    override fun handleSuccess(responses: List<RequestWithResponse>): Boolean {
-        return true
+    @Deprecated("Deprecated in Java")
+    override fun onPostExecute(result: Void?) {
+        this.callback(checkNotNull(this.result) { "Missing result object!" })
     }
 }

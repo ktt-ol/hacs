@@ -94,26 +94,26 @@ class CashboxFragment : BasePageFragment() {
 
         historyView.addView(makeTextView("Lade..."))
 
-        CashboxValueTask(Auth(user, pw, cookie)) { excp, cashbox, createdCookie ->
+        CashboxValueTask(Auth(user, pw, cookie)) { result ->
             historyView.removeAllViews()
-            if (excp != null) {
-                Logger.error("Can't load cashbox.", excp)
-                if (excp is EndpointException) {
-                    Logger.info("Error Details:\n$excp")
+            if (result.exception != null) {
+                Logger.error("Can't load cashbox.", result.exception)
+                if (result.exception is EndpointException) {
+                    Logger.info("Error Details:\n$result.exception")
                 }
-                historyView.addView(makeTextView("Fehler beim Cashbox auslesen: ${excp.message}"))
+                historyView.addView(makeTextView("Fehler beim Cashbox auslesen: ${result.exception.message}"))
                 return@CashboxValueTask
             }
 
-            this.cashbox = cashbox
+            this.cashbox = result.result
 
             if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
                 updateUi(cashbox!!, cashboxValueView, cashboxRequestedAtView, historyView, updateView)
             }
 
-            if (createdCookie != null) {
+            if (result.createdCookie != cookie) {
                 Logger.debug("Saving cookie value.")
-                prefs.edit().putString(context!!.getString(R.string.PREFS_CASHBOX_COOKIE), createdCookie).apply()
+                prefs.edit().putString(context!!.getString(R.string.PREFS_CASHBOX_COOKIE), result.createdCookie).apply()
             }
 
         }.execute()

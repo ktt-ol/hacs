@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.11.0
+* Refactoring of the Cashbox part. Fixes session handling.
+
 ## 2.10.2
 * Reduces minSdkVersion to 26 (Android 8.0)
 

@@ -1,5 +1,6 @@
 package io.mainframe.hacs.cashbox
 
+import android.os.AsyncTask
 import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONException
@@ -8,6 +9,8 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+data class CashboxAction(val date: String, val name: String, val amount: Int)
+
 data class CashboxInfo(
     val value: String,
     val history: List<CashboxAction>,
@@ -15,41 +18,46 @@ data class CashboxInfo(
 )
 
 class CashboxValueTask(
-    auth: Auth,
-    callback: (java.lang.Exception?, CashboxInfo?, String?) -> Unit
-) : BaseCashboxTask<CashboxInfo>(auth, callback) {
+    private val auth: Auth,
+    private val callback: (TaskResult<CashboxInfo>) -> Unit
+) : AsyncTask<Void, Void, Void>() {
 
-    override fun buildRequests(): List<Request> {
-        val cookie = getCookie() ?: throw java.lang.IllegalStateException("No cookie")
-        return listOf(
-            Request.Builder().url(CASHBOX_STATUS_URL)
-                .addHeader("Cookie", "sessionid=${cookie}")
-                .build(),
-            Request.Builder().url(CASHBOX_HISTORY_URL)
-                .addHeader("Cookie", "sessionid=${cookie}")
-                .build(),
-        )
-    }
+    private var result: TaskResult<CashboxInfo>? = null
 
-    override fun handleSuccess(responses: List<RequestWithResponse>): CashboxInfo {
-        var value: String? = null
-        var history: List<CashboxAction>? = null
-        responses.forEach { resp ->
-            when (resp.request.url.toString()) {
-                CASHBOX_STATUS_URL -> {
-                    value = resp.bodyStr
-                }
-                CASHBOX_HISTORY_URL -> {
-                    history = parseHistoryJson(resp.bodyStr)
-                }
+    @Deprecated("Deprecated in Java")
+    override fun doInBackground(vararg params: Void?): Void? {
+        try {
+            val (currentCookie, cashboxStatus) = CashBoxRequester.withCookieAuth(auth) { cookieValue ->
+                val data = CashBoxRequester.executeRequest(
+                    Request.Builder().url(CASHBOX_STATUS_URL)
+                        .addHeader("Cookie", "sessionid=${cookieValue}")
+                        .build()
+                )
+                cookieValue to data
             }
+
+            val history = parseHistoryJson(
+                CashBoxRequester.executeRequest(
+                    Request.Builder().url(CASHBOX_HISTORY_URL)
+                        .addHeader("Cookie", "sessionid=${currentCookie}")
+                        .build()
+                )
+            )
+            result = TaskResult(null, CashboxInfo(cashboxStatus, history), currentCookie)
+        } catch (e: Exception) {
+            Logger.error(e, "Cashbox info error: ${e.message}")
+            result = TaskResult(e, null, null)
         }
 
-        return CashboxInfo(
-            checkNotNull(value) { "Missing status value" },
-            checkNotNull(history) { "Missing history value" }
-        )
+
+        return null
     }
+
+    @Deprecated("Deprecated in Java")
+    override fun onPostExecute(result: Void?) {
+        this.callback(checkNotNull(this.result) { "Missing result object!" })
+    }
+
 
     internal fun parseHistoryJson(jsonContent: String): List<CashboxAction> {
         val result = mutableListOf<CashboxAction>()
