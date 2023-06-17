@@ -11,10 +11,12 @@ import java.util.Arrays;
 public class LocationColor {
 
     private Pair<String, String>[] colors = new Pair[]{
-            new Pair("Space", "#008000"),
-            new Pair("Radstelle", "#9696fd"),
-            new Pair("Fräse", "#fdca96"),
-            new Pair("Holz", "#761c19")
+            new Pair("Space", "#2ecc71"),
+            new Pair("Radstelle", "#1f3a93"),
+            new Pair("Fräse", "#fcb900"),
+            new Pair("Holz", "#96411b"),
+            new Pair("Lager", "#19b5fe"),
+            new Pair("Grillplatz", "#d91e18")
     };
 
     public String getColor(String location) {

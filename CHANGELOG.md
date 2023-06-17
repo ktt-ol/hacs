@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.12.0
+* New places, new places colors
+
 ## 2.11.0
 * Refactoring of the Cashbox part. Fixes session handling.
 * Adds "Holz" as location.
