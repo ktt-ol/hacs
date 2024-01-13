@@ -3,13 +3,13 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
     defaultConfig {
         applicationId "io.mainframe.hacs"
         minSdkVersion 26
-        targetSdkVersion 31
-        versionCode 66
-        versionName '2.12.0'
+        targetSdkVersion 33
+        versionCode 67
+        versionName '2.13.0'
         resValue "string", "app_name", "HACS"
     }
     buildTypes {
@@ -48,7 +48,8 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation 'com.jcraft:jsch:0.1.54'
+    // https://github.com/mwiede/jsch
+    implementation 'com.github.mwiede:jsch:0.2.15'
     implementation 'ch.acra:acra:4.6.2'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
     implementation 'com.squareup.okhttp3:okhttp:4.3.1'

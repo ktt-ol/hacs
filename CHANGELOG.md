@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.13.0
+* Trash calendar update (2024)
+* Fix for CVE-2023-48795 (SSH)
+
 ## 2.12.0
 * New places, new places colors
 
