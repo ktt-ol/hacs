@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.13.2
+* Android permission fixes.
+
 ## 2.13.1
 * Rollback of the ssh lib to hopefully fix a regression
 

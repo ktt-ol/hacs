@@ -48,7 +48,7 @@ public final class Constants {
         public final int port;
         public final String hostKey;
 
-        DoorServer(String host, String user, int port, String hostKey) {
+        public DoorServer(String host, String user, int port, String hostKey) {
             this.host = host;
             this.user = user;
             this.port = port;

@@ -11,12 +11,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
 import org.pmw.tinylog.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Stack;
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
 
     public static final String BACK_STATE_KEY = "backsate";
 
+    private final String[] permissions;
+
     private NetworkStatus networkStatus = null;
     private MqttConnector mqttConnector;
 
@@ -53,10 +57,50 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
 
     private TrashCalendar trashCalendar;
 
+
+    public MainActivity() {
+        super();
+        List<String> basePermissions = new ArrayList<>();
+        basePermissions.add(Manifest.permission.ACCESS_NETWORK_STATE);
+        basePermissions.add(Manifest.permission.ACCESS_WIFI_STATE);
+        basePermissions.add(Manifest.permission.INTERNET);
+        basePermissions.add(Manifest.permission.WAKE_LOCK);
+        basePermissions.add(Manifest.permission.RECEIVE_BOOT_COMPLETED);
+        basePermissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        basePermissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            basePermissions.add(Manifest.permission.USE_EXACT_ALARM);
+        }
+
+        permissions = basePermissions.toArray(new String[]{});
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (ensurePermission()) {
+            afterPermissionInit(false);
+        } else {
+            return;
+        }
+
+        // However, if we're being restored from a previous state,
+        // then we don't need to do anything and should return or else
+        // we could end up with overlapping fragments.
+        if (savedInstanceState == null) {
+            selectBaseFragmentById(R.id.nav_overview, true);
+        } else {
+            ArrayList<Integer> backState = savedInstanceState.getIntegerArrayList(BACK_STATE_KEY);
+            if (backState != null) {
+                fragmentBackState = new Stack<>();
+                fragmentBackState.addAll(backState);
+            }
+        }
+    }
+
+    private void afterPermissionInit(boolean afterPermission) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         networkStatus = new NetworkStatus(getApplicationContext(), prefs);
         mqttConnector = new MqttConnector(getApplicationContext(), prefs);
@@ -84,19 +128,9 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
             }
         });
 
-        ensurePermission();
-
-        // However, if we're being restored from a previous state,
-        // then we don't need to do anything and should return or else
-        // we could end up with overlapping fragments.
-        if (savedInstanceState == null) {
+        // if the user gives us new permission we have to navigate to somewhere
+        if (afterPermission) {
             selectBaseFragmentById(R.id.nav_overview, true);
-        } else {
-            ArrayList<Integer> backState = savedInstanceState.getIntegerArrayList(BACK_STATE_KEY);
-            if (backState != null) {
-                fragmentBackState = new Stack<>();
-                fragmentBackState.addAll(backState);
-            }
         }
     }
 
@@ -192,6 +226,9 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
     protected void onResume() {
         super.onResume();
 
+        if (networkStatus == null) {
+            return;
+        }
         networkStatus.startListenOnConnectionChange();
         mqttConnector.connect();
         mqttConnector.addListener(this, EnumSet.noneOf(Topic.class));
@@ -201,6 +238,9 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
     protected void onPause() {
         super.onPause();
 
+        if (networkStatus == null) {
+            return;
+        }
         mqttConnector.removeAllListener(this);
         mqttConnector.disconnect();
         networkStatus.stopListenOnConnectionChange();
@@ -214,22 +254,14 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
-    private void ensurePermission() {
-        String[] perms = {
-                Manifest.permission.ACCESS_NETWORK_STATE,
-                Manifest.permission.ACCESS_WIFI_STATE,
-                Manifest.permission.INTERNET,
-                Manifest.permission.WAKE_LOCK,
-//                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.RECEIVE_BOOT_COMPLETED,
-                // to get the ssid
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-        };
-        if (!EasyPermissions.hasPermissions(this, perms)) {
-            Logger.warn("Requesting permission");
+    private boolean ensurePermission() {
+        if (EasyPermissions.hasPermissions(this, permissions)) {
+            return true;
+        } else {
+            Logger.info("Requesting permission");
             // Do not have permissions, request them now
-            EasyPermissions.requestPermissions(this, getString(R.string.ask_for_permission), 1, perms);
+            EasyPermissions.requestPermissions(this, getString(R.string.ask_for_permission), 1, permissions);
+            return false;
         }
     }
 
@@ -273,7 +305,12 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
 
     @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
-        // ignored
+        Logger.info("Permission ({}) granted, continue with init.", perms);
+        if (perms.size() != permissions.length) {
+            Logger.warn("Got not all permissions, skipping init.");
+            return;
+        }
+        afterPermissionInit(true);
     }
 
 
