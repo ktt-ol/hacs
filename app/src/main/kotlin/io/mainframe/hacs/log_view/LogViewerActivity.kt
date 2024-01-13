@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
+import io.mainframe.hacs.BuildConfig
 import io.mainframe.hacs.R
 import io.mainframe.hacs.common.logging.LogConfig
 import org.pmw.tinylog.Logger
@@ -89,8 +90,8 @@ class LogViewerActivity : AppCompatActivity() {
         logOutput.parentFile!!.mkdirs()
         val logsView = findViewById<TextView>(R.id.logs_content)
         logOutput.writeText(logsView.text.toString())
-        val logUri = FileProvider.getUriForFile(applicationContext, "io.mainframe.hacs.fileprovider", logOutput)
-
+        val logUri = FileProvider.getUriForFile(applicationContext,
+            "${BuildConfig.APPLICATION_ID}.fileprovider", logOutput)
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "plain/text"
             putExtra(Intent.EXTRA_EMAIL, arrayOf("holgercremer@gmail.com"))
