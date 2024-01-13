@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.13.1
+* Rollback of the ssh lib to hopefully fix a regression
+
 ## 2.13.0
 * Trash calendar update (2024)
 * Fix for CVE-2023-48795 (SSH)
