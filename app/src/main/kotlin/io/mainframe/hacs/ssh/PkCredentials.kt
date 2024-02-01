@@ -72,7 +72,11 @@ data class KeyData(val name: String, val data: ByteArray) {
 
                     // Note it's called "Display Name". This is
                     // provider-specific, and might not necessarily be the file name.
-                    return it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                    val columnIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (columnIndex == -1) {
+                        return null;
+                    }
+                    return it.getString(columnIndex)
                 }
             }
 

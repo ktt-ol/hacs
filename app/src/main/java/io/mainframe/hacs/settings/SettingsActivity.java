@@ -16,6 +16,8 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
+import org.pmw.tinylog.Logger;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -139,6 +141,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     String passwordValue = prefs.getString(
                             GeneralPreferenceFragment.this.privateKeyPassword.getKey(), null);
+
+                    if (passwordValue == null) {
+                        Logger.warn("passwordValue is 'null'!");
+                        return false;
+                    }
+
                     new CheckPrivateKeyAsync(GeneralPreferenceFragment.this)
                             .execute(new PkCredentials(KeyData.fromUri(Uri.parse((String) newValue), getActivity()), passwordValue));
 
@@ -151,6 +159,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     String privateKeyFilenameValue = prefs.getString(
                             GeneralPreferenceFragment.this.privateKeyFilename.getKey(), null);
+                    if (privateKeyFilenameValue == null) {
+                        Logger.warn("privateKeyFilenameValue is 'null'!");
+                        return false;
+                    }
 
                     new CheckPrivateKeyAsync(GeneralPreferenceFragment.this)
                             .execute(new PkCredentials(KeyData.fromUri(Uri.parse(privateKeyFilenameValue), getActivity()), (String) newValue));

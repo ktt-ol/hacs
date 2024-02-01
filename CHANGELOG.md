@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.13.3
+* Fixes some possible NPE.
+
 ## 2.13.2
 * Android permission fixes.
 
