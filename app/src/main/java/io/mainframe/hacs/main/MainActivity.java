@@ -69,6 +69,9 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
         basePermissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         basePermissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            basePermissions.add(Manifest.permission.SCHEDULE_EXACT_ALARM);
+        }
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             basePermissions.add(Manifest.permission.USE_EXACT_ALARM);
         }

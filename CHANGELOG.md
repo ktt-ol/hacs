@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.14.0
+* Requests permission SCHEDULE_EXACT_ALARM to fix crashes on Android 12+ 
+
 ## 2.13.3
 * Fixes some possible NPE.
 
