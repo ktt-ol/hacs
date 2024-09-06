@@ -9,25 +9,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.EnumSet;
+import org.pmw.tinylog.Logger;
+
 import java.util.List;
+import java.util.Objects;
 
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.main.NetworkStatus;
 import io.mainframe.hacs.main.Status;
-import io.mainframe.hacs.mqtt.MqttConnector;
-import io.mainframe.hacs.mqtt.MqttStatusListener;
-import io.mainframe.hacs.mqtt.SpaceDevices;
 import io.mainframe.hacs.ssh.DoorCommand;
 import io.mainframe.hacs.ssh.PkCredentials;
+import io.mainframe.hacs.status.StatusEvent;
+import io.mainframe.hacs.status.SpaceDevices;
+import io.mainframe.hacs.status.SpaceStatusService;
+import io.mainframe.hacs.status.Subscription;
 
 import static io.mainframe.hacs.common.Constants.SPACE_DOOR;
 
 /**
+ *
  */
-public class OverviewFragment extends BasePageFragment implements NetworkStatus.NetworkStatusListener, MqttStatusListener {
+public class OverviewFragment extends BasePageFragment implements NetworkStatus.NetworkStatusListener {
 
     private LocationColor locationColor = new LocationColor();
+    private Subscription subscription;
 
     public OverviewFragment() {
         // Required empty public constructor
@@ -36,6 +41,7 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_overview, container, false);
 
@@ -67,7 +73,7 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
             @Override
             public void onClick(View v) {
                 // TODO: there should be an extra command to become keyholder
-                final Status lastStatus = getInteraction().getMqttConnector().getLastValue(Topic.STATUS, Status.class);
+                Status lastStatus = getInteraction().getStatusService().getLastStatusValue(StatusEvent.SPACE_STATUS);
                 if (lastStatus != null) {
                     getInteraction().sendSshCommand(SPACE_DOOR, DoorCommand.getSwitchDoorStateCmd(lastStatus));
                 }
@@ -91,7 +97,6 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
         super.onResume();
 
         boolean readOnlyMode = !PkCredentials.isPasswordSet(getContext());
-
         if (!readOnlyMode) {
             final NetworkStatus networkStatus = getInteraction().getNetworkStatus();
             networkStatus.addListener(this);
@@ -106,19 +111,40 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
             setButtonsEnabled(false, false);
         }
 
-        final MqttConnector mqtt = getInteraction().getMqttConnector();
-        mqtt.addListener(this, EnumSet.of(Topic.STATUS, Topic.KEYHOLDER, Topic.DEVICES));
+        SpaceStatusService statusService = getInteraction().getStatusService();
+        this.subscription = statusService.subscribe((event, value) -> {
+            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                switch (event) {
+                    case SPACE_STATUS:
+                        setStatusText(Status.byEventStatusValue(value));
+                        break;
+                    case KEYHOLDER:
+                        setKeyholderText(value);
+                        break;
+                    case DEVICES:
+                        setDevicesText(new SpaceDevices(value));
+                        break;
+                }
+            });
+            return null;
+        });
 
-        setStatusText(mqtt.getLastValue(Topic.STATUS, Status.class));
-        setKeyholderText(mqtt.getLastValue(Topic.KEYHOLDER, String.class));
-        setDevicesText(mqtt.getLastValue(Topic.DEVICES, SpaceDevices.class));
+        setStatusText(statusService.getLastStatusValue(StatusEvent.SPACE_STATUS));
+        setKeyholderText(statusService.getLastValue(StatusEvent.KEYHOLDER));
+        String devices = statusService.getLastValue(StatusEvent.DEVICES);
+        if (devices != null) {
+            setDevicesText(new SpaceDevices(devices));
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        getInteraction().getMqttConnector().removeAllListener(this);
+        if (subscription != null) {
+            subscription.unsubscribe();
+            subscription = null;
+        }
         getInteraction().getNetworkStatus().removeListener(this);
     }
 
@@ -205,31 +231,5 @@ public class OverviewFragment extends BasePageFragment implements NetworkStatus.
         } else {
             setButtonsEnabled(true, true);
         }
-    }
-
-    @Override
-    public void onNewMsg(Topic topic, Object msg) {
-        if (topic == Topic.STATUS) {
-            setStatusText((Status) msg);
-        } else if (topic == Topic.KEYHOLDER) {
-            setKeyholderText((String) msg);
-        } else if (topic == Topic.DEVICES) {
-            setDevicesText((SpaceDevices) msg);
-        }
-    }
-
-    @Override
-    public void onMqttConnected() {
-        final MqttConnector mqtt = getInteraction().getMqttConnector();
-        setStatusText(mqtt.getLastValue(Topic.STATUS, Status.class));
-        setKeyholderText(mqtt.getLastValue(Topic.KEYHOLDER, String.class));
-        setDevicesText(mqtt.getLastValue(Topic.DEVICES, SpaceDevices.class));
-    }
-
-    @Override
-    public void onMqttConnectionLost() {
-        setStatusText(null);
-        setKeyholderText(null);
-        setDevicesText(null);
     }
 }

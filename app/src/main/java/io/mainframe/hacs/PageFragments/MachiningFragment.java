@@ -6,16 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.EnumSet;
+import java.util.Objects;
 
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.components.DoorButtons;
 import io.mainframe.hacs.main.NetworkStatus;
 import io.mainframe.hacs.main.Status;
-import io.mainframe.hacs.mqtt.MqttConnector;
-import io.mainframe.hacs.mqtt.MqttStatusListener;
 import io.mainframe.hacs.ssh.DoorCommand;
 import io.mainframe.hacs.ssh.PkCredentials;
+import io.mainframe.hacs.status.StatusEvent;
+import io.mainframe.hacs.status.SpaceStatusService;
+import io.mainframe.hacs.status.Subscription;
 
 import static io.mainframe.hacs.common.Constants.MACHINING_DOOR;
 
@@ -23,11 +24,12 @@ import static io.mainframe.hacs.common.Constants.MACHINING_DOOR;
  * Created by holger on 21.05.18.
  */
 
-public class MachiningFragment extends BasePageFragment implements NetworkStatus.NetworkStatusListener, MqttStatusListener {
+public class MachiningFragment extends BasePageFragment implements NetworkStatus.NetworkStatusListener {
 
     private DoorButtons doorButtons;
     // if the mqtt password is not set
     private boolean readOnlyMode = false;
+    private Subscription subscription;
 
     public MachiningFragment() {
         // Required empty public constructor
@@ -68,11 +70,29 @@ public class MachiningFragment extends BasePageFragment implements NetworkStatus
             doorButtons.setEnabled(false);
         }
 
-        final MqttConnector mqtt = getInteraction().getMqttConnector();
-        mqtt.addListener(this, EnumSet.of(Topic.STATUS_MACHINING, Topic.KEYHOLDER_MACHINING));
+        SpaceStatusService statusService = getInteraction().getStatusService();
+        this.subscription = statusService.subscribe((event, value) -> {
+            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                if (Objects.requireNonNull(event) == StatusEvent.STATUS_MACHINING) {
+                    setStatusText(Status.byEventStatusValue(value));
+                }
+            });
+            return null;
+        });
+        setStatusText(statusService.getLastStatusValue(StatusEvent.STATUS_MACHINING));
 
-        setStatusText(mqtt.getLastValue(Topic.STATUS_MACHINING, Status.class));
-        setKeyholderText(mqtt.getLastValue(Topic.KEYHOLDER_MACHINING, String.class));
+        // Not supported by Status
+//        setKeyholderText(statusService.getLastValue(Event.KEYHOLDER_MACHINING));
+        setKeyholderText(null);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (subscription != null) {
+            subscription.unsubscribe();
+            subscription = null;
+        }
     }
 
     @Override
@@ -112,26 +132,5 @@ public class MachiningFragment extends BasePageFragment implements NetworkStatus
         } else {
             doorButtons.setEnabled(true);
         }
-    }
-
-    @Override
-    public void onNewMsg(Topic topic, Object msg) {
-        if (topic == Topic.STATUS_MACHINING) {
-            setStatusText((Status) msg);
-            return;
-        }
-        if (topic == Topic.KEYHOLDER_MACHINING) {
-            setKeyholderText((String) msg);
-        }
-    }
-
-    @Override
-    public void onMqttConnected() {
-        // not needed
-    }
-
-    @Override
-    public void onMqttConnectionLost() {
-        setStatusText(null);
     }
 }

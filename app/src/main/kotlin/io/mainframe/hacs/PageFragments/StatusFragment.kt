@@ -1,7 +1,6 @@
 package io.mainframe.hacs.PageFragments
 
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,32 +13,42 @@ import io.mainframe.hacs.components.DoorButtons
 import io.mainframe.hacs.main.BackDoorStatus
 import io.mainframe.hacs.main.NetworkStatus
 import io.mainframe.hacs.main.Status
-import io.mainframe.hacs.mqtt.MqttStatusListener
 import io.mainframe.hacs.ssh.DoorCommand
 import io.mainframe.hacs.ssh.PkCredentials
+import io.mainframe.hacs.status.StatusEvent
+import io.mainframe.hacs.status.Subscription
 import io.mainframe.hacs.trash_notifications.TrashCalendar
-import java.util.*
+import org.pmw.tinylog.Logger
 
-class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener, MqttStatusListener {
+class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener {
 
+    private var subscription: Subscription? = null
     private lateinit var doorButtons: DoorButtons
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_status, container, false)
 
         doorButtons = view.findViewById(R.id.status_doorButtons)
         doorButtons.setOnButtonClickListener { doorButton, _ ->
             if (doorButton.status == Status.CLOSE) {
                 // special action when the space is going to be closed
-                withBackDoorCheck {
+//                withBackDoorCheck {
                     withTrashCheck {
-                        interaction.sendSshCommand(SPACE_DOOR, DoorCommand.getSwitchDoorStateCmd(doorButton.status))
+                        interaction.sendSshCommand(
+                            SPACE_DOOR,
+                            DoorCommand.getSwitchDoorStateCmd(doorButton.status)
+                        )
                     }
-                }
+//                }
 
             } else {
-                interaction.sendSshCommand(SPACE_DOOR, DoorCommand.getSwitchDoorStateCmd(doorButton.status))
+                interaction.sendSshCommand(
+                    SPACE_DOOR,
+                    DoorCommand.getSwitchDoorStateCmd(doorButton.status)
+                )
             }
         }
 
@@ -53,9 +62,14 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener, 
             return
         }
 
-        YesNoDialog.show(context, "Müll prüfen",
-                String.format("Morgen ist Müllabfuhr! Ist schon %s an die Straße gestellt?", trashSummaryForTomorrow),
-                "trash") { _, resultOk ->
+        YesNoDialog.show(
+            context, "Müll prüfen",
+            String.format(
+                "Morgen ist Müllabfuhr! Ist schon %s an die Straße gestellt?",
+                trashSummaryForTomorrow
+            ),
+            "trash"
+        ) { _, resultOk ->
             if (resultOk) {
                 next()
             }
@@ -63,13 +77,18 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener, 
     }
 
     private fun withBackDoorCheck(next: () -> Unit) {
-        val backDoorStatus = interaction.mqttConnector.getLastValue<BackDoorStatus>(MqttStatusListener.Topic.BACK_DOOR_BOLT, BackDoorStatus::class.java)
-        if (backDoorStatus != BackDoorStatus.OPEN) {
-            next()
-            return
-        }
+//        val backDoorStatus = interaction.mqttConnector.getLastValue<BackDoorStatus>(MqttStatusListener.Topic.BACK_DOOR_BOLT, BackDoorStatus::class.java)
+//        if (backDoorStatus != BackDoorStatus.OPEN) {
+//            next()
+//            return
+//        }
 
-        YesNoDialog.show(context, "Back-Door prüfen.", "Die Back-Door ist noch offen. Wirklich abschließen?", "bd") { _, resultOk ->
+        YesNoDialog.show(
+            context,
+            "Back-Door prüfen.",
+            "Die Back-Door ist noch offen. Wirklich abschließen?",
+            "bd"
+        ) { _, resultOk ->
             if (resultOk) {
                 next()
             }
@@ -87,7 +106,8 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener, 
             networkStatus.addListener(this)
 
             if (networkStatus.isRequireMainframeWifi) {
-                doorButtons.isEnabled = networkStatus.isInMainframeWifi && !networkStatus.hasMachiningBssid()
+                doorButtons.isEnabled =
+                    networkStatus.isInMainframeWifi && !networkStatus.hasMachiningBssid()
             } else {
                 doorButtons.isEnabled = true
             }
@@ -95,17 +115,24 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener, 
             doorButtons.isEnabled = false
         }
 
-        val mqtt = interaction.mqttConnector
-        mqtt.addListener(this, EnumSet.of<MqttStatusListener.Topic>(MqttStatusListener.Topic.STATUS, MqttStatusListener.Topic.BACK_DOOR_BOLT))
+        val statusService = interaction.statusService
+        subscription = statusService.subscribe { event: StatusEvent, value: String ->
+            if (event == StatusEvent.SPACE_STATUS) {
+                activity?.runOnUiThread {
+                    setStatusText(Status.byEventStatusValue(value))
+                }
+            }
+        }
 
-        setStatusText(mqtt.getLastValue<Status>(MqttStatusListener.Topic.STATUS, Status::class.java))
-        setLedImage(mqtt.getLastValue(MqttStatusListener.Topic.BACK_DOOR_BOLT, BackDoorStatus::class.java))
+        setStatusText(statusService.getLastStatusValue(StatusEvent.SPACE_STATUS))
+        // not supported by Status
+//        setLedImage(mqtt.getLastValue(MqttStatusListener.Topic.BACK_DOOR_BOLT, BackDoorStatus::class.java))
     }
 
     override fun onPause() {
         super.onPause()
 
-        interaction.mqttConnector.removeAllListener(this)
+        subscription?.unsubscribe()
         interaction.networkStatus.removeListener(this)
     }
 
@@ -132,25 +159,10 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener, 
 
     /* callback */
 
-    override fun onNetworkChange(hasNetwork: Boolean, hasMobile: Boolean, hasWifi: Boolean,
-                                 isInMainframeWifi: Boolean, hasMachiningBssid: Boolean, requireMainframeWifi: Boolean) {
+    override fun onNetworkChange(
+        hasNetwork: Boolean, hasMobile: Boolean, hasWifi: Boolean,
+        isInMainframeWifi: Boolean, hasMachiningBssid: Boolean, requireMainframeWifi: Boolean
+    ) {
         doorButtons.isEnabled = !requireMainframeWifi || isInMainframeWifi
-    }
-
-    override fun onNewMsg(topic: MqttStatusListener.Topic, msg: Any) {
-        if (topic == MqttStatusListener.Topic.STATUS) {
-            setStatusText(msg as Status)
-        } else if (topic == MqttStatusListener.Topic.BACK_DOOR_BOLT) {
-            setLedImage(msg as BackDoorStatus)
-        }
-    }
-
-    override fun onMqttConnected() {
-        // not needed
-    }
-
-    override fun onMqttConnectionLost() {
-        setStatusText(null)
-        setLedImage(BackDoorStatus.UNKNOWN)
     }
 }

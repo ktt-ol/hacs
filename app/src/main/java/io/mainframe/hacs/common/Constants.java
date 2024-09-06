@@ -30,16 +30,7 @@ public final class Constants {
     public static final String KEYSTORE_FILE = "keystore/hacs_keystore.bks";
     public static final String KEYSTORE_PW = "keystorepw";
 
-    public static final String MQTT_USER = "hacs_app";
-    public static final String MQTT_SERVER = "ssl://mainframe.io:8883";
-    public static final String MQTT_TOPIC_STATUS = "/access-control-system/space-state";
-    public static final String MQTT_TOPIC_STATUS_NEXT = "/access-control-system/space-state-next";
-    public static final String MQTT_TOPIC_KEYHOLDER = "/access-control-system/keyholder/name";
-    public static final String MQTT_TOPIC_DEVICES = "/net/devices";
-    public static final String MQTT_TOPIC_MACHINING_STATUS = "/access-control-system/machining/state";
-    public static final String MQTT_TOPIC_MACHINING_KEYHOLDER = "/access-control-system/machining/keyholder/name";
-    public static final String MQTT_TOPIC_BACK_DOOR_BOLT = "/access-control-system/back-door/bolt-contact";
-
+    public static final String STATUS_SSE_URL = "https://status.mainframe.io/api/statusStream?spaceOpen=1&machining=1&spaceDevices=1&mqtt=1&keyholder=1";
     public static final String LOG_FILE_FOLDER = "hacs_logs";
 
     public static final class DoorServer {

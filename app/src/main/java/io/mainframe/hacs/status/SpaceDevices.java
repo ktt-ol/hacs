@@ -1,6 +1,4 @@
-package io.mainframe.hacs.mqtt;
-
-import android.util.Log;
+package io.mainframe.hacs.status;
 
 import org.json.JSONArray;
 import org.json.JSONException;

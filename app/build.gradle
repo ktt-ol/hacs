@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 
 android {
@@ -8,14 +7,21 @@ android {
         applicationId "io.mainframe.hacs"
         minSdkVersion 26
         targetSdkVersion 34
-        versionCode 71
-        versionName '2.14.0'
+        versionCode 72
+        versionName '2.15.0'
         resValue "string", "app_name", "HACS"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        beta {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            applicationIdSuffix ".beta"
+            versionNameSuffix "-beta"
+            resValue "string", "app_name", "HACS-Beta"
         }
         debug {
             applicationIdSuffix ".debug"
@@ -27,6 +33,13 @@ android {
     productFlavors {
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -35,29 +48,30 @@ android {
     namespace 'io.mainframe.hacs'
 }
 
+
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // for Android 6 permission request
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    dependencies {
-        implementation 'pub.devrel:easypermissions:0.2.1'
-    }
+    implementation 'pub.devrel:easypermissions:0.2.1'
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
+
     implementation 'com.jcraft:jsch:0.1.54'
     implementation 'ch.acra:acra:4.6.2'
-    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
-    implementation 'com.squareup.okhttp3:okhttp:4.3.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'com.launchdarkly:okhttp-eventsource:2.5.0'
     implementation 'org.tinylog:tinylog:1.3.5'
-
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation "com.nhaarman:mockito-kotlin:1.1.0"
 }
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }

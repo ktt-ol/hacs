@@ -1,5 +1,8 @@
 package io.mainframe.hacs.main;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by holger on 23.08.16.
  */
@@ -24,14 +27,20 @@ public enum Status {
         this.uiValue = uiValue;
     }
 
-    public static Status byMqttValue(String value) {
-        for (Status status : values()) {
-            if (status.getMqttValue().equals(value)) {
-                return status;
+    public static Status byEventStatusValue(String jsonValue) {
+        try {
+            JSONObject json = new JSONObject(jsonValue);
+            String value = json.getString("state");
+            for (Status status : values()) {
+                if (status.getMqttValue().equals(value)) {
+                    return status;
+                }
             }
-        }
 
-        throw new IllegalArgumentException("Unsupported mqttValue: " + value);
+            throw new IllegalArgumentException("Unsupported mqttValue: " + value);
+        } catch (JSONException e) {
+            throw new IllegalArgumentException("Unexpected json for Status: " + jsonValue);
+        }
     }
 
     public String getMqttValue() {

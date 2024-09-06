@@ -11,32 +11,26 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 
 import org.pmw.tinylog.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Stack;
 
 import io.mainframe.hacs.PageFragments.BasePageFragment;
 import io.mainframe.hacs.PageFragments.CashboxFragment;
 import io.mainframe.hacs.PageFragments.MachiningFragment;
-import io.mainframe.hacs.PageFragments.NextStatusFragment;
 import io.mainframe.hacs.PageFragments.OverviewFragment;
 import io.mainframe.hacs.PageFragments.StatusFragment;
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.about.AboutActivity;
 import io.mainframe.hacs.common.Constants;
 import io.mainframe.hacs.log_view.LogViewerActivity;
-import io.mainframe.hacs.mqtt.MqttConnector;
-import io.mainframe.hacs.mqtt.MqttStatusListener;
 import io.mainframe.hacs.settings.SettingsActivity;
 import io.mainframe.hacs.ssh.DoorCommand;
+import io.mainframe.hacs.status.SpaceStatusService;
 import io.mainframe.hacs.trash_notifications.TrashCalendar;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -44,18 +38,19 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements SshUiHandler.OnShhCommandHandler,
         EasyPermissions.PermissionCallbacks,
-        NavigationView.OnNavigationItemSelectedListener, BasePageFragment.BasePageFragmentInteractionListener, MqttStatusListener {
+        NavigationView.OnNavigationItemSelectedListener, BasePageFragment.BasePageFragmentInteractionListener {
 
     public static final String BACK_STATE_KEY = "backsate";
 
     private final String[] permissions;
 
     private NetworkStatus networkStatus = null;
-    private MqttConnector mqttConnector;
 
     private Stack<Integer> fragmentBackState = new Stack<>();
 
     private TrashCalendar trashCalendar;
+
+    private SpaceStatusService spaceStatusService;
 
 
     public MainActivity() {
@@ -64,17 +59,9 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
         basePermissions.add(Manifest.permission.ACCESS_NETWORK_STATE);
         basePermissions.add(Manifest.permission.ACCESS_WIFI_STATE);
         basePermissions.add(Manifest.permission.INTERNET);
-        basePermissions.add(Manifest.permission.WAKE_LOCK);
         basePermissions.add(Manifest.permission.RECEIVE_BOOT_COMPLETED);
         basePermissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         basePermissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            basePermissions.add(Manifest.permission.SCHEDULE_EXACT_ALARM);
-        }
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            basePermissions.add(Manifest.permission.USE_EXACT_ALARM);
-        }
 
         permissions = basePermissions.toArray(new String[]{});
     }
@@ -106,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
     private void afterPermissionInit(boolean afterPermission) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         networkStatus = new NetworkStatus(getApplicationContext(), prefs);
-        mqttConnector = new MqttConnector(getApplicationContext(), prefs);
+        spaceStatusService = new SpaceStatusService();
         trashCalendar = new TrashCalendar(this);
 
         setContentView(R.layout.activity_main);
@@ -123,13 +110,9 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        findViewById(R.id.mqttReconnect).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mqttConnector.connect();
-                findViewById(R.id.mqttOverlay).setVisibility(View.GONE);
-            }
-        });
+//        findViewById(R.id.mqttReconnect).setOnClickListener(v -> {
+//            findViewById(R.id.mqttOverlay).setVisibility(View.GONE);
+//        });
 
         // if the user gives us new permission we have to navigate to somewhere
         if (afterPermission) {
@@ -195,11 +178,11 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
             if (addToBackStack) {
                 fragmentBackState.add(id);
             }
-        } else if (id == R.id.nav_statusNext) {
-            loadPageFragment(new NextStatusFragment());
-            if (addToBackStack) {
-                fragmentBackState.add(id);
-            }
+//        } else if (id == R.id.nav_statusNext) {
+//            loadPageFragment(new NextStatusFragment());
+//            if (addToBackStack) {
+//                fragmentBackState.add(id);
+//            }
         } else if (id == R.id.nav_machining) {
             loadPageFragment(new MachiningFragment());
             if (addToBackStack) {
@@ -233,8 +216,7 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
             return;
         }
         networkStatus.startListenOnConnectionChange();
-        mqttConnector.connect();
-        mqttConnector.addListener(this, EnumSet.noneOf(Topic.class));
+        spaceStatusService.connect();
     }
 
     @Override
@@ -244,8 +226,7 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
         if (networkStatus == null) {
             return;
         }
-        mqttConnector.removeAllListener(this);
-        mqttConnector.disconnect();
+        spaceStatusService.disconnect();
         networkStatus.stopListenOnConnectionChange();
     }
 
@@ -267,25 +248,6 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
             return false;
         }
     }
-
-    /* mqtt callbacks */
-
-    @Override
-    public void onNewMsg(Topic topic, Object msg) {
-        // ignored
-    }
-
-    @Override
-    public void onMqttConnected() {
-        findViewById(R.id.mqttOverlay).setVisibility(View.GONE);
-    }
-
-
-    @Override
-    public void onMqttConnectionLost() {
-        findViewById(R.id.mqttOverlay).setVisibility(View.VISIBLE);
-    }
-
 
     /* EasyPermissions.PermissionCallbacks */
 
@@ -334,8 +296,8 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
     }
 
     @Override
-    public MqttConnector getMqttConnector() {
-        return mqttConnector;
+    public SpaceStatusService getStatusService() {
+        return spaceStatusService;
     }
 
     @Override

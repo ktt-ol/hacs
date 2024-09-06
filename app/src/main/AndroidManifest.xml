@@ -6,11 +6,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
-    <!-- for mqtt -->
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-
 
     <!-- for the timer -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -57,9 +52,6 @@
             android:launchMode="singleInstance"
             android:process=":error_report"
             android:theme="@style/Theme.Dialog"/>
-
-        <service android:name="org.eclipse.paho.android.service.MqttService">
-        </service>
 
         <receiver android:name=".trash_notifications.NotificationPublisher"/>
         <receiver android:name=".trash_notifications.BootReceiver" android:exported="true">

@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.15.0
+* Removes the mqtt implementation and replaces it with http server send events to our Status page. Not all previous features are supported anymore.
+
 ## 2.14.0
 * Requests permission SCHEDULE_EXACT_ALARM to fix crashes on Android 12+ 
 

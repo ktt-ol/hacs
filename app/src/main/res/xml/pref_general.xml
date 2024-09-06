@@ -14,15 +14,6 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="MQTT">
-
-        <io.mainframe.hacs.settings.EditTextWithScanPreference
-            android:inputType="textPassword"
-            android:key="@string/PREFS_MQTT_PASSWORD"
-            android:title="Das Passwort für den MQTT Server" />
-
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="Cashbox">
 
         <EditTextPreference

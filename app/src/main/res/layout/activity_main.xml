@@ -37,6 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+        <!--
         <RelativeLayout
             android:id="@+id/mqttOverlay"
             android:layout_width="match_parent"
@@ -62,8 +63,8 @@
                 android:layout_alignParentRight="true"
                 android:text="@string/reconnect"
                 />
-
         </RelativeLayout>
+        -->
 
     </android.support.design.widget.CoordinatorLayout>
 

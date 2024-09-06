@@ -112,7 +112,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Edi
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment implements SshResponse<CheckPrivateKeyAsync.Result> {
 
         private Preference privateKeyFilename;

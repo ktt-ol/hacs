@@ -5,8 +5,8 @@ import android.support.v4.app.Fragment;
 
 import io.mainframe.hacs.common.Constants;
 import io.mainframe.hacs.main.NetworkStatus;
-import io.mainframe.hacs.mqtt.MqttConnector;
 import io.mainframe.hacs.ssh.DoorCommand;
+import io.mainframe.hacs.status.SpaceStatusService;
 import io.mainframe.hacs.trash_notifications.TrashCalendar;
 
 /**
@@ -44,7 +44,7 @@ public abstract class BasePageFragment extends Fragment {
     public interface BasePageFragmentInteractionListener {
         NetworkStatus getNetworkStatus();
 
-        MqttConnector getMqttConnector();
+        SpaceStatusService getStatusService();
 
         void sendSshCommand(Constants.DoorServer server, DoorCommand command);
 
