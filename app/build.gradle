@@ -19,7 +19,6 @@ android {
         beta {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            applicationIdSuffix ".beta"
             versionNameSuffix "-beta"
             resValue "string", "app_name", "HACS-Beta"
         }
