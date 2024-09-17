@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import io.mainframe.hacs.R
-import io.mainframe.hacs.common.Constants.MACHINING_DOOR
+import io.mainframe.hacs.common.Constants.WOODWORKING_DOOR
 import io.mainframe.hacs.components.DoorButtons
 import io.mainframe.hacs.main.NetworkStatusListener
 import io.mainframe.hacs.main.NetworkStatusValues
@@ -17,23 +17,23 @@ import io.mainframe.hacs.status.StatusEvent
 import io.mainframe.hacs.status.Subscription
 
 /**
- * Created by holger on 21.05.18.
+ * Aka Holzwerkstatt
  */
-class MachiningFragment : BasePageFragment(), NetworkStatusListener {
+class WoodworkingFragment : BasePageFragment(), NetworkStatusListener {
     private var subscription: Subscription? = null
 
-    private val doorButtons: DoorButtons? get() = view?.findViewById(R.id.machining_doorButtons)
+    private val doorButtons: DoorButtons? get() = view?.findViewById(R.id.woodworking_doorButtons)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_machining, container, false)
-        view.findViewById<DoorButtons>(R.id.machining_doorButtons)
+        val view = inflater.inflate(R.layout.fragment_woodworking, container, false)
+        view.findViewById<DoorButtons>(R.id.woodworking_doorButtons)
             .setOnButtonClickListener { doorButton, _ ->
                 interaction.sendSshCommand(
-                    MACHINING_DOOR,
+                    WOODWORKING_DOOR,
                     DoorCommand.getSwitchDoorStateCmd(doorButton.status)
                 )
             }
@@ -51,7 +51,7 @@ class MachiningFragment : BasePageFragment(), NetworkStatusListener {
             networkStatus.addListener(this)
 
             if (networkStatus.requireMainframeWifi) {
-                doorButtons?.isEnabled = networkStatus.hasMachiningBssid
+                doorButtons?.isEnabled = networkStatus.hasWoodworkingBssid
             } else {
                 doorButtons?.isEnabled = true
             }
@@ -62,13 +62,13 @@ class MachiningFragment : BasePageFragment(), NetworkStatusListener {
         val statusService = interaction.statusService
         this.subscription = statusService.subscribe { event: StatusEvent, value: String? ->
             checkNotNull(activity).runOnUiThread {
-                if (event == StatusEvent.STATUS_MACHINING) {
+                if (event == StatusEvent.STATUS_WOODWORKING) {
                     setStatusText(Status.byEventStatusValue(value))
                 }
             }
         }
-        setStatusText(statusService.getLastStatusValue(StatusEvent.STATUS_MACHINING))
-        setKeyholderText(statusService.getLastValue(StatusEvent.KEYHOLDER_MACHINING))
+        setStatusText(statusService.getLastStatusValue(StatusEvent.STATUS_WOODWORKING))
+        setKeyholderText(statusService.getLastValue(StatusEvent.KEYHOLDER_WOODWORKING))
     }
 
     override fun onPause() {
@@ -79,16 +79,17 @@ class MachiningFragment : BasePageFragment(), NetworkStatusListener {
         }
     }
 
-    override fun getTitleRes(): Int = R.string.nav_machining
+    override fun getTitleRes(): Int = R.string.nav_woodworking
 
     private fun setStatusText(status: Status?) {
         val view = view ?: return
-        val text = view.findViewById<TextView>(R.id.machining_status)
+        val text = view.findViewById<TextView>(R.id.woodworking_status)
         text.text = if (status == null) getString(R.string.unknown) else status.uiValue
     }
 
     private fun setKeyholderText(keyholderText: String?) {
-        val keyholder = (view?.findViewById<View>(R.id.machining_keyholder) as? TextView) ?: return
+        val keyholder =
+            (view?.findViewById<View>(R.id.woodworking_keyholder) as? TextView) ?: return
         keyholder.text = when {
             keyholderText == null -> getString(R.string.unknown)
             keyholderText.isEmpty() -> getString(R.string.keyholder_no_one)
@@ -99,7 +100,7 @@ class MachiningFragment : BasePageFragment(), NetworkStatusListener {
     /* callback */
     override fun onNetworkChange(status: NetworkStatusValues) {
         if (status.requireMainframeWifi) {
-            doorButtons?.isEnabled = status.hasMachiningBssid
+            doorButtons?.isEnabled = status.hasWoodworkingBssid
         } else {
             doorButtons?.isEnabled = true
         }

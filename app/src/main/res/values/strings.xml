@@ -25,6 +25,7 @@
     <string name="nav_status">Status</string>
     <string name="nav_status_next">Status Next</string>
     <string name="nav_machining">Machining</string>
+    <string name="nav_woodworking">Holzwerkstatt</string>
     <string name="nav_cashbox">Cashbox</string>
 
     <string name="state_open">Open</string>
@@ -59,6 +60,7 @@
     <string name="overview_unknownDev">unbekannte Geräte</string>
     <string name="overview_buzzer">Tür Buzzer</string>
     <string name="machining_text">Setzte den Machining Status neu. Hierzu musst du dich im Mainframe WLan und im Keller befinden.</string>
+    <string name="woodworking_text">Setzte den Holzwerkstatt Status neu. Hierzu musst du dich im Mainframe WLan und in der Holzwerkstatt befinden.</string>
     <string name="title_activity_log_viewer">Log files</string>
     <string name="overview_trashInfo">Morgen ist Abfuhr: %s</string>
 </resources>

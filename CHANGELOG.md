@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.17.0
+* Adds Woodworking status.
+
 ## 2.16.0
 * Supports Backdoor status and machining keyholder again. 
 

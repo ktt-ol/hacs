@@ -8,7 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import io.mainframe.hacs.R
 import io.mainframe.hacs.common.Constants.SPACE_DOOR
-import io.mainframe.hacs.main.NetworkStatus.NetworkStatusListener
+import io.mainframe.hacs.main.NetworkStatusListener
+import io.mainframe.hacs.main.NetworkStatusValues
 import io.mainframe.hacs.main.Status
 import io.mainframe.hacs.ssh.DoorCommand
 import io.mainframe.hacs.ssh.PkCredentials.Companion.isPasswordSet
@@ -74,10 +75,10 @@ class OverviewFragment : BasePageFragment(), NetworkStatusListener {
             val networkStatus = interaction.networkStatus
             networkStatus.addListener(this)
 
-            if (networkStatus.isRequireMainframeWifi) {
+            if (networkStatus.requireMainframeWifi) {
                 setButtonsEnabled(
-                    networkStatus.isInMainframeWifi,
-                    networkStatus.isInMainframeWifi && !networkStatus.hasMachiningBssid()
+                    buzzerEnabled = networkStatus.isInMainframeWifi,
+                    becomeKeyholderEnabled = networkStatus.hasMainAreaBssid
                 )
             } else {
                 setButtonsEnabled(buzzerEnabled = true, becomeKeyholderEnabled = true)
@@ -87,7 +88,7 @@ class OverviewFragment : BasePageFragment(), NetworkStatusListener {
         }
 
         val statusService = interaction.statusService
-        this.subscription = statusService.subscribe { event: StatusEvent, value: String ->
+        this.subscription = statusService.subscribe { event: StatusEvent, value: String? ->
             checkNotNull(activity).runOnUiThread {
                 when (event) {
                     StatusEvent.SPACE_STATUS -> setStatusText(Status.byEventStatusValue(value))
@@ -192,12 +193,12 @@ class OverviewFragment : BasePageFragment(), NetworkStatusListener {
     }
 
     /* callback */
-    override fun onNetworkChange(
-        hasNetwork: Boolean, hasMobile: Boolean, hasWifi: Boolean,
-        isInMainframeWifi: Boolean, hasMachiningBssid: Boolean, requireMainframeWifi: Boolean
-    ) {
-        if (requireMainframeWifi) {
-            setButtonsEnabled(isInMainframeWifi, isInMainframeWifi && !hasMachiningBssid)
+    override fun onNetworkChange(status: NetworkStatusValues) {
+        if (status.requireMainframeWifi) {
+            setButtonsEnabled(
+                buzzerEnabled = status.isInMainframeWifi,
+                becomeKeyholderEnabled = status.hasMainAreaBssid
+            )
         } else {
             setButtonsEnabled(buzzerEnabled = true, becomeKeyholderEnabled = true)
         }

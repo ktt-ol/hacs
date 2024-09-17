@@ -12,7 +12,7 @@ import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
-typealias EventCallback = (event: StatusEvent, value: String) -> Unit
+typealias EventCallback = (event: StatusEvent, value: String?) -> Unit
 
 interface Subscription {
     fun unsubscribe()

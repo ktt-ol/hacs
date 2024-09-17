@@ -17,6 +17,9 @@
             android:id="@+id/nav_machining"
             android:title="@string/nav_machining"/>
         <item
+            android:id="@+id/nav_woodworking"
+            android:title="@string/nav_woodworking"/>
+        <item
             android:id="@+id/nav_cashbox"
             android:title="@string/nav_cashbox" />
     </group>

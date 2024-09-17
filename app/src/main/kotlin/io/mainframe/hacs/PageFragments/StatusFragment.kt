@@ -12,6 +12,8 @@ import io.mainframe.hacs.common.YesNoDialog
 import io.mainframe.hacs.components.DoorButtons
 import io.mainframe.hacs.main.BackDoorStatus
 import io.mainframe.hacs.main.NetworkStatus
+import io.mainframe.hacs.main.NetworkStatusListener
+import io.mainframe.hacs.main.NetworkStatusValues
 import io.mainframe.hacs.main.Status
 import io.mainframe.hacs.ssh.DoorCommand
 import io.mainframe.hacs.ssh.PkCredentials
@@ -20,7 +22,7 @@ import io.mainframe.hacs.status.Subscription
 import io.mainframe.hacs.trash_notifications.TrashCalendar
 import org.pmw.tinylog.Logger
 
-class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener {
+class StatusFragment : BasePageFragment(), NetworkStatusListener {
 
     private var subscription: Subscription? = null
     private lateinit var doorButtons: DoorButtons
@@ -104,9 +106,8 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener {
             val networkStatus = interaction.networkStatus
             networkStatus.addListener(this)
 
-            if (networkStatus.isRequireMainframeWifi) {
-                doorButtons.isEnabled =
-                    networkStatus.isInMainframeWifi && !networkStatus.hasMachiningBssid()
+            if (networkStatus.requireMainframeWifi) {
+                doorButtons.isEnabled = networkStatus.hasMainAreaBssid
             } else {
                 doorButtons.isEnabled = true
             }
@@ -115,7 +116,7 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener {
         }
 
         val statusService = interaction.statusService
-        subscription = statusService.subscribe { event: StatusEvent, value: String ->
+        subscription = statusService.subscribe { event: StatusEvent, value: String? ->
             if (event == StatusEvent.SPACE_STATUS) {
                 activity?.runOnUiThread {
                     setStatusText(Status.byEventStatusValue(value))
@@ -168,10 +169,7 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener {
 
     /* callback */
 
-    override fun onNetworkChange(
-        hasNetwork: Boolean, hasMobile: Boolean, hasWifi: Boolean,
-        isInMainframeWifi: Boolean, hasMachiningBssid: Boolean, requireMainframeWifi: Boolean
-    ) {
-        doorButtons.isEnabled = !requireMainframeWifi || isInMainframeWifi
+    override fun onNetworkChange(status: NetworkStatusValues) {
+        doorButtons.isEnabled = status.hasMainAreaBssid
     }
 }

@@ -87,8 +87,8 @@ class CashboxFragment : BasePageFragment() {
         }
 
         val networkStatus = getInteraction().getNetworkStatus()
-        if (networkStatus.isRequireMainframeWifi && !networkStatus.isInMainframeWifi) {
-            historyView.addView(makeTextView("Du bist nicht im Mainframe WLan."))
+        if (networkStatus.hasMainAreaBssid) {
+            historyView.addView(makeTextView("Du bist nicht im Mainframe WLan und in der Hauptfläche."))
             return
         }
 

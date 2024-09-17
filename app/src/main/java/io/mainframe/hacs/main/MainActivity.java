@@ -24,6 +24,7 @@ import io.mainframe.hacs.PageFragments.CashboxFragment;
 import io.mainframe.hacs.PageFragments.MachiningFragment;
 import io.mainframe.hacs.PageFragments.OverviewFragment;
 import io.mainframe.hacs.PageFragments.StatusFragment;
+import io.mainframe.hacs.PageFragments.WoodworkingFragment;
 import io.mainframe.hacs.R;
 import io.mainframe.hacs.about.AboutActivity;
 import io.mainframe.hacs.common.Constants;
@@ -185,6 +186,11 @@ public class MainActivity extends AppCompatActivity implements SshUiHandler.OnSh
 //            }
         } else if (id == R.id.nav_machining) {
             loadPageFragment(new MachiningFragment());
+            if (addToBackStack) {
+                fragmentBackState.add(id);
+            }
+        } else if (id == R.id.nav_woodworking) {
+            loadPageFragment(new WoodworkingFragment());
             if (addToBackStack) {
                 fragmentBackState.add(id);
             }

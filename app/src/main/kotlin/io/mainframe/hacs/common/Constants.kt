@@ -21,6 +21,11 @@ object Constants {
     )
 
     @JvmField
+    val WOODWORKING_WIFI_BSSIDS = arrayOf(
+        "TODO!"
+    )
+
+    @JvmField
     val SPACE_DOOR: DoorServer = DoorServer(
         "acs.lan.mainframe.io", "keyholder", 22,
         "C1:28:56:42:2B:8D:45:30:B7:43:EB:F6:A7:36:43:5D"
@@ -31,6 +36,13 @@ object Constants {
         "acs-machining.lan.mainframe.io", "keyholder", 22,
         "B9:24:BC:26:8B:27:CE:0A:B5:8A:4E:BA:F4:CD:0C:84"
     )
+
+    @JvmField
+    val WOODWORKING_DOOR: DoorServer = DoorServer(
+        "acs-woodworking.lan.mainframe.io", "keyholder",22,
+        "1D:CA:A8:86:DC:B2:A5:42:20:B7:2E:FA:2F:3C:F4:83"
+    )
+
 
     const val KEYSTORE_FILE: String = "keystore/hacs_keystore.bks"
     const val KEYSTORE_PW: String = "keystorepw"

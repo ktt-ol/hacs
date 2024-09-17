@@ -83,6 +83,7 @@ public class SshUiHandler extends DialogFragment implements SshResponse<RunSshAs
                 actionDone(true);
                 break;
             case WRONG_HOST_KEY:
+                actionDone(false);
                 boolean checkServerFingerprint = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
                         getString(R.string.PREFS_CHECK_SERVER_FINGERPRINT), true);
                 if (checkServerFingerprint) {
