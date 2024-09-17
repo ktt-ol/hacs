@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.16.0
+* Supports Backdoor status and machining keyholder again. 
+
 ## 2.15.0
 * Removes the mqtt implementation and replaces it with http server send events to our Status page. Not all previous features are supported anymore.
 

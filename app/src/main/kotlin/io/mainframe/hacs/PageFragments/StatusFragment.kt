@@ -35,14 +35,14 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener {
         doorButtons.setOnButtonClickListener { doorButton, _ ->
             if (doorButton.status == Status.CLOSE) {
                 // special action when the space is going to be closed
-//                withBackDoorCheck {
+                withBackDoorCheck {
                     withTrashCheck {
                         interaction.sendSshCommand(
                             SPACE_DOOR,
                             DoorCommand.getSwitchDoorStateCmd(doorButton.status)
                         )
                     }
-//                }
+                }
 
             } else {
                 interaction.sendSshCommand(
@@ -77,11 +77,10 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener {
     }
 
     private fun withBackDoorCheck(next: () -> Unit) {
-//        val backDoorStatus = interaction.mqttConnector.getLastValue<BackDoorStatus>(MqttStatusListener.Topic.BACK_DOOR_BOLT, BackDoorStatus::class.java)
-//        if (backDoorStatus != BackDoorStatus.OPEN) {
-//            next()
-//            return
-//        }
+        if (getBackdoorStatus() != BackDoorStatus.OPEN) {
+            next()
+            return
+        }
 
         YesNoDialog.show(
             context,
@@ -125,8 +124,7 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener {
         }
 
         setStatusText(statusService.getLastStatusValue(StatusEvent.SPACE_STATUS))
-        // not supported by Status
-//        setLedImage(mqtt.getLastValue(MqttStatusListener.Topic.BACK_DOOR_BOLT, BackDoorStatus::class.java))
+        setLedImage(getBackdoorStatus())
     }
 
     override fun onPause() {
@@ -144,6 +142,17 @@ class StatusFragment : BasePageFragment(), NetworkStatus.NetworkStatusListener {
         val view = view ?: return
         val text = view.findViewById<TextView>(R.id.status_status)
         text.text = if (status == null) getString(R.string.unknown) else status.uiValue
+    }
+
+    private fun getBackdoorStatus(): BackDoorStatus {
+        return try {
+            interaction.statusService.getLastValue(StatusEvent.BACKDOOR)
+                ?.let { BackDoorStatus.byMqttValue(it) }
+                ?: BackDoorStatus.UNKNOWN
+        } catch (e: IllegalStateException) {
+            Logger.warn("Unexpected Backdoor status: ${e.message}")
+            BackDoorStatus.UNKNOWN
+        }
     }
 
     private fun setLedImage(status: BackDoorStatus?) {
