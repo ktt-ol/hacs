@@ -10,6 +10,7 @@ public enum Status {
 
     NOT_SET("", "not-set"),
     CLOSE("none", "closed"),
+    CLOSING("closing"),
     KEYHOLDER("keyholder"),
     MEMBER("member"),
     OPEN("open"),
