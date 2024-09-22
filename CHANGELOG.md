@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.18.0
+* Internal refactorings.
+* Removes trash notifications (but the trash reminder still exists)
+
 ## 2.17.0
 * Adds Woodworking status.
 

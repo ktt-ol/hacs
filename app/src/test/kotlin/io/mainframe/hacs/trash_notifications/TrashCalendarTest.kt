@@ -1,15 +1,8 @@
 package io.mainframe.hacs.trash_notifications
 
-import android.content.Context
-import com.nhaarman.mockito_kotlin.mock
 import org.junit.Assert
 import org.junit.Test
-import java.io.ByteArrayInputStream
-import java.io.InputStream
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 class TrashCalendarTest {
 
@@ -37,19 +30,11 @@ END:VEVENT
 END:VCALENDAR  
         """.trimIndent()
 
-        val contextMock = mock<Context> {}
+        val tc = TrashCalendar(
+            dateProvider = { SimpleDateFormat("dd-MM-yyyy hh:mm").parse("01-01-2023 18:23") },
+            loadAsset = { eventData.byteInputStream() }
+        )
 
-        val tc: TrashCalendar = object : TrashCalendar(contextMock) {
-            override fun openAssetAsStream(assetFilename: String?): InputStream {
-                return eventData.byteInputStream()
-            }
-
-            override fun now(): Date = mkDate("01-01-2023 18:23")
-        }
-
-        Assert.assertEquals("Gelber Sack/Tonne, Altpapier", tc.trashSummaryForTomorrow)
+        Assert.assertEquals("Gelber Sack/Tonne, Altpapier", tc.getTrashSummaryForTomorrow())
     }
-
-
-    private fun mkDate(dateValue: String): Date = SimpleDateFormat("dd-MM-yyyy hh:mm").parse(dateValue)
 }

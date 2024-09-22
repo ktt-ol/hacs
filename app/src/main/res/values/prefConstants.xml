@@ -8,5 +8,4 @@
     <string name="PREFS_PRIVATE_KEY_PASSWORD">privateKeyPassword</string>
     <string name="PREFS_PRIVATE_KEY_FILENAME">privateKeyFilename</string>
     <string name="PREFS_DEBUG_LOGGING">debugLogging</string>
-    <string name="PREFS_TRASH_NOTIFICATIONS">trashNotifications</string>
 </resources>
