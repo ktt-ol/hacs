@@ -24,7 +24,7 @@ class SettingsActivity : AppCompatPreferenceActivity(), EditTextWithScanPreferen
     private val callbacks: MutableMap<Int, ActivityResultCallback> = ConcurrentHashMap()
     private var callbackIdCounter = 0
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (!callbacks.containsKey(requestCode)) {
@@ -33,7 +33,7 @@ class SettingsActivity : AppCompatPreferenceActivity(), EditTextWithScanPreferen
 
         val callback = callbacks.remove(requestCode)
         if (resultCode == RESULT_OK) {
-            val contents = data.getStringExtra("SCAN_RESULT")
+            val contents = data?.getStringExtra("SCAN_RESULT")
             callback?.activityResultCallback(contents)
         }
     }
@@ -154,9 +154,9 @@ class SettingsActivity : AppCompatPreferenceActivity(), EditTextWithScanPreferen
                 .execute(PkCredentials.fromSettings(activity))
         }
 
-        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             if (requestCode == RESULT_CHOOSE_PRIVATE_KEY && resultCode == RESULT_OK) {
-                val uri = data.data
+                val uri = data?.data
                 if (uri != null) {
                     activity.contentResolver.takePersistableUriPermission(
                         uri,

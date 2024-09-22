@@ -28,8 +28,10 @@ class CashboxFragment : BasePageFragment() {
 
     private var cashbox: CashboxInfo? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_cashbox, container, false)
 
         view.findViewById<ImageButton>(R.id.cashbox_refresh).setOnClickListener {
@@ -108,18 +110,33 @@ class CashboxFragment : BasePageFragment() {
             this.cashbox = result.result
 
             if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-                updateUi(cashbox!!, cashboxValueView, cashboxRequestedAtView, historyView, updateView)
+                updateUi(
+                    cashbox!!,
+                    cashboxValueView,
+                    cashboxRequestedAtView,
+                    historyView,
+                    updateView
+                )
             }
 
             if (result.createdCookie != cookie) {
                 Logger.debug("Saving cookie value.")
-                prefs.edit().putString(context!!.getString(R.string.PREFS_CASHBOX_COOKIE), result.createdCookie).apply()
+                prefs.edit().putString(
+                    context!!.getString(R.string.PREFS_CASHBOX_COOKIE),
+                    result.createdCookie
+                ).apply()
             }
 
         }.execute()
     }
 
-    private fun updateUi(cashbox: CashboxInfo, cashboxValueView: TextView, cashboxRequestedAtView: TextView, historyView: LinearLayout, updateView: Button) {
+    private fun updateUi(
+        cashbox: CashboxInfo,
+        cashboxValueView: TextView,
+        cashboxRequestedAtView: TextView,
+        historyView: LinearLayout,
+        updateView: Button
+    ) {
         cashboxValueView.text = cashbox.value
         val formattedTime = SimpleDateFormat("HH:mm:ss").format(Date(cashbox.requestedAt))
         cashboxRequestedAtView.text = "Stand: ${formattedTime}"
@@ -132,10 +149,11 @@ class CashboxFragment : BasePageFragment() {
     }
 
     private fun makeTextView(text: String): TextView {
-        val textView = TextView(this.context)
-        textView.text = Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT)
-        textView.textSize = 16f
-        return textView
+        val context = checkNotNull(this.context) { "Needed a context here" }
+        return TextView(context).apply {
+            this.text = Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT)
+            textSize = 16f
+        }
     }
 
     override val titleRes: Int get() = R.string.nav_cashbox

@@ -209,7 +209,7 @@ class MainActivity : AppCompatActivity(), PermissionCallbacks,
     override fun onResume() {
         super.onResume()
 
-        networkStatus?.startListenOnConnectionChange()
+        _networkStatus?.startListenOnConnectionChange()
         _statusService?.connect()
     }
 
@@ -217,7 +217,7 @@ class MainActivity : AppCompatActivity(), PermissionCallbacks,
         super.onPause()
 
         _statusService?.disconnect()
-        networkStatus?.stopListenOnConnectionChange()
+        _networkStatus?.stopListenOnConnectionChange()
     }
 
     override fun onRequestPermissionsResult(
