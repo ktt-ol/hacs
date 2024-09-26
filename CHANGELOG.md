@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.18.0
+## 2.18.1
 * Internal refactorings.
 * Removes trash notifications (but the trash reminder still exists)
 
