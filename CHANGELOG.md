@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.18.2
+* Fixes Mainframe wifi detection in Cashbox view.
+
 ## 2.18.1
 * Internal refactorings.
 * Removes trash notifications (but the trash reminder still exists)

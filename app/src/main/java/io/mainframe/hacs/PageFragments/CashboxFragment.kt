@@ -89,7 +89,7 @@ class CashboxFragment : BasePageFragment() {
         }
 
         val networkStatus = interaction.networkStatus
-        if (networkStatus.hasMainAreaBssid) {
+        if (!networkStatus.hasMainAreaBssid) {
             historyView.addView(makeTextView("Du bist nicht im Mainframe WLan und in der Hauptfläche."))
             return
         }
