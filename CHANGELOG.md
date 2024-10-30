@@ -1,5 +1,8 @@
 # Changelog
 
+# 2.19.0
+* Sets the correct wifi ids for wood working.
+
 ## 2.18.2
 * Fixes Mainframe wifi detection in Cashbox view.
 
