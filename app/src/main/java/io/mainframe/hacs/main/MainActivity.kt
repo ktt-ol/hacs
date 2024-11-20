@@ -1,6 +1,5 @@
 package io.mainframe.hacs.main
 
-import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -28,21 +27,11 @@ import io.mainframe.hacs.ssh.DoorCommand
 import io.mainframe.hacs.status.SpaceStatusService
 import io.mainframe.hacs.trash_notifications.TrashCalendar
 import org.pmw.tinylog.Logger
-import pub.devrel.easypermissions.AppSettingsDialog
-import pub.devrel.easypermissions.EasyPermissions
-import pub.devrel.easypermissions.EasyPermissions.PermissionCallbacks
 import java.util.Stack
 
-class MainActivity : AppCompatActivity(), PermissionCallbacks,
+class MainActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener, BasePageFragmentInteractionListener {
 
-    private val permissions = arrayOf(
-        Manifest.permission.ACCESS_NETWORK_STATE,
-        Manifest.permission.ACCESS_WIFI_STATE,
-        Manifest.permission.INTERNET,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-    )
     private var fragmentBackState = Stack<Int>()
 
     private var _networkStatus: NetworkStatus? = null
@@ -56,7 +45,7 @@ class MainActivity : AppCompatActivity(), PermissionCallbacks,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (ensurePermission()) {
+        if (PermissionHandler.ensurePermission(this)) {
             afterPermissionInit(false)
         } else {
             return
@@ -227,50 +216,11 @@ class MainActivity : AppCompatActivity(), PermissionCallbacks,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        // Forward results to EasyPermissions
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
-    }
-
-    private fun ensurePermission(): Boolean {
-        if (EasyPermissions.hasPermissions(this, *permissions)) {
-            return true
-        } else {
-            Logger.info("Requesting permission")
-            // Do not have permissions, request them now
-            EasyPermissions.requestPermissions(
-                this,
-                getString(R.string.ask_for_permission),
-                1,
-                *permissions
-            )
-            return false
+        val granted = PermissionHandler.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+        if (granted != null) {
+            // even for non granted permissions, we go on
+            afterPermissionInit(true)
         }
-    }
-
-    /* EasyPermissions.PermissionCallbacks */
-    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
-        Logger.warn("onPermissionsDenied: {} / {}", requestCode, perms.size)
-
-        // (Optional) Check whether the user denied any permissions and checked "NEVER ASK AGAIN."
-        // This will display a dialog directing them to enable the permission in app settings.
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            AppSettingsDialog.Builder(this, getString(R.string.ask_for_permission_again))
-                .setTitle(getString(R.string.app_name))
-                .setPositiveButton(getString(R.string.action_settings))
-                .setNegativeButton(getString(R.string.cancel), null /* click listener */)
-                .setRequestCode(1)
-                .build()
-                .show()
-        }
-    }
-
-    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
-        Logger.info("Permission ({}) granted, continue with init.", perms)
-        if (perms.size != permissions.size) {
-            Logger.warn("Got not all permissions, skipping init.")
-            return
-        }
-        afterPermissionInit(true)
     }
 
     override fun sendSshCommand(server: DoorServer, command: DoorCommand) {
