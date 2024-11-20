@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Also update io.mainframe.hacs.main.MainActivity.ensurePermission ! -->
+    <!--
+        https://developer.android.com/guide/topics/permissions/overview#install-time
+    -->
 
+    <!-- Install time permissions (must be declared, but not requested -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- Runtime permissions (must be declared and requested) -->
     <!-- to get the ssid -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>

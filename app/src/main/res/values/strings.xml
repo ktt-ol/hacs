@@ -11,7 +11,7 @@
     <string name="crash_dialog_comment_prompt">Platz für Kommentare</string>
     <string name="crash_dialog_ok_toast">Danke für den Report.</string>
 
-    <string name="ask_for_permission">Ohne die folgenden Rechte wird diese App nicht richtig funktionieren.</string>
+    <string name="ask_for_permission">Bitte erlaube gleich dieser App die \'Standort\' Berechtigung. Das ist für die Erkennung des Mainframe Netzwerks notwendig. Ohne die diese Rechte wird diese App nicht richtig funktionieren.</string>
     <string name="ask_for_permission_again">Du hast der App nicht die notwendigen Rechte gewährt. Ohne diese Rechte wird sie nicht korrekt funktionieren. Du kannst das aber jetzt in den "Einstellungen" ändern.</string>
 
     <string name="settings_qrcode_scan">QR-Code scannen</string>

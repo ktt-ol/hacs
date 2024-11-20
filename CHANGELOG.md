@@ -1,5 +1,8 @@
 # Changelog
 
+# 2.20.0
+* Removes EasyPermissions dependency. The app should work with less permissions now.
+
 # 2.19.0
 * Sets the correct wifi ids for wood working.
 
