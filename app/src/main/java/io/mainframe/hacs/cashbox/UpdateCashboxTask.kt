@@ -28,11 +28,13 @@ class UpdateCashboxTask(
 
         try {
             CashBoxRequester.withCookieAuth(auth) { cookieValue ->
-                Request.Builder()
-                    .url(CASHBOX_UPDATE_URL)
-                    .addHeader("Cookie", "sessionid=${cookieValue}")
-                    .post(jsonBody)
-                    .build()
+                CashBoxRequester.executeRequest(
+                    Request.Builder()
+                        .url(CASHBOX_UPDATE_URL)
+                        .addHeader("Cookie", "sessionid=${cookieValue}")
+                        .post(jsonBody)
+                        .build()
+                )
 
                 result = TaskResult(null, null, cookieValue)
             }

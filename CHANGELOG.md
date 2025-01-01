@@ -1,5 +1,8 @@
 # Changelog
 
+# 2.20.1
+* Fixes Cashbox update.
+
 # 2.20.0
 * Removes EasyPermissions dependency. The app should work with less permissions now.
 
