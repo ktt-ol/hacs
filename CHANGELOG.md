@@ -1,5 +1,8 @@
 # Changelog
 
+# 2.11.0
+* New trash calendar 2025.
+
 # 2.20.1
 * Fixes Cashbox update.
 
