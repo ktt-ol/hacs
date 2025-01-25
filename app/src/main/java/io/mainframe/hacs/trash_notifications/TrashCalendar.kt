@@ -19,6 +19,7 @@ class TrashCalendar(
     init {
         try {
             parseIcalFile("Abfallkalender.ics")
+            Logger.debug("Parsed calendar, events: ${eventList.size}")
         } catch (e: Exception) {
             Logger.error(e, "Can't parse trash calendar: ${e.message}")
         }
@@ -53,8 +54,8 @@ class TrashCalendar(
             var startDate: Date? = null
             var endDate: Date? = null
 
-            var line: String
-            while ((reader.readLine().also { line = it }) != null) {
+            while (true) {
+                val line = reader.readLine() ?: break
                 if (line == "BEGIN:VEVENT") {
                     inEvent = true
                     // reset values
