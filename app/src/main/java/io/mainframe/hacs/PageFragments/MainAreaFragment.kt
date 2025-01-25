@@ -20,7 +20,7 @@ import io.mainframe.hacs.status.StatusEvent
 import io.mainframe.hacs.status.Subscription
 import org.pmw.tinylog.Logger
 
-class StatusFragment : BasePageFragment(), NetworkStatusListener {
+class MainAreaFragment : BasePageFragment(), NetworkStatusListener {
 
     private var subscription: Subscription? = null
     private val doorButtons: DoorButtons? get() = view?.findViewById(R.id.status_doorButtons)

@@ -16,7 +16,7 @@ import io.mainframe.hacs.PageFragments.BasePageFragment.BasePageFragmentInteract
 import io.mainframe.hacs.PageFragments.CashboxFragment
 import io.mainframe.hacs.PageFragments.MachiningFragment
 import io.mainframe.hacs.PageFragments.OverviewFragment
-import io.mainframe.hacs.PageFragments.StatusFragment
+import io.mainframe.hacs.PageFragments.MainAreaFragment
 import io.mainframe.hacs.PageFragments.WoodworkingFragment
 import io.mainframe.hacs.R
 import io.mainframe.hacs.about.AboutActivity
@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity(),
             }
 
             R.id.nav_status -> {
-                loadPageFragment(StatusFragment())
+                loadPageFragment(MainAreaFragment())
                 if (addToBackStack) {
                     fragmentBackState.add(id)
                 }
@@ -229,7 +229,7 @@ class MainActivity : AppCompatActivity(),
 
 
     override fun navigateToPage(target: Class<out BasePageFragment>) {
-        if (StatusFragment::class.java == target) {
+        if (MainAreaFragment::class.java == target) {
             selectBaseFragmentById(R.id.nav_status, true)
         }
     }

@@ -6,7 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import io.mainframe.hacs.R
-import io.mainframe.hacs.common.Constants.WOODWORKING_DOOR
+import io.mainframe.hacs.common.Constants.WOODWORKING_DOOR_BACK
+import io.mainframe.hacs.common.Constants.WOODWORKING_DOOR_FRONT
 import io.mainframe.hacs.components.DoorButtons
 import io.mainframe.hacs.main.NetworkStatusListener
 import io.mainframe.hacs.main.NetworkStatusValues
@@ -22,7 +23,8 @@ import io.mainframe.hacs.status.Subscription
 class WoodworkingFragment : BasePageFragment(), NetworkStatusListener {
     private var subscription: Subscription? = null
 
-    private val doorButtons: DoorButtons? get() = view?.findViewById(R.id.woodworking_doorButtons)
+    private val doorButtonsFront: DoorButtons? get() = view?.findViewById(R.id.woodworking_doorButtons_front)
+    private val doorButtonsBack: DoorButtons? get() = view?.findViewById(R.id.woodworking_doorButtons_back)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,12 +32,13 @@ class WoodworkingFragment : BasePageFragment(), NetworkStatusListener {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_woodworking, container, false)
-        view.findViewById<DoorButtons>(R.id.woodworking_doorButtons)
+        view.findViewById<DoorButtons>(R.id.woodworking_doorButtons_front)
             .setOnButtonClickListener { doorButton, _ ->
-                interaction.sendSshCommand(
-                    WOODWORKING_DOOR,
-                    DoorCommand.getSwitchDoorStateCmd(doorButton.status)
-                )
+                interaction.sendSshCommand(WOODWORKING_DOOR_FRONT, DoorCommand.getSwitchDoorStateCmd(doorButton.status))
+            }
+        view.findViewById<DoorButtons>(R.id.woodworking_doorButtons_back)
+            .setOnButtonClickListener { doorButton, _ ->
+                interaction.sendSshCommand(WOODWORKING_DOOR_BACK, DoorCommand.getSwitchDoorStateCmd(doorButton.status))
             }
         return view
     }
@@ -51,12 +54,15 @@ class WoodworkingFragment : BasePageFragment(), NetworkStatusListener {
             networkStatus.addListener(this)
 
             if (networkStatus.requireMainframeWifi) {
-                doorButtons?.isEnabled = networkStatus.hasWoodworkingBssid
+                doorButtonsFront?.isEnabled = networkStatus.hasWoodworkingFrontBssid
+                doorButtonsBack?.isEnabled = networkStatus.hasWoodworkingBackBssid
             } else {
-                doorButtons?.isEnabled = true
+                doorButtonsFront?.isEnabled = true
+                doorButtonsBack?.isEnabled = true
             }
         } else {
-            doorButtons?.isEnabled = false
+            doorButtonsFront?.isEnabled = false
+            doorButtonsBack?.isEnabled = false
         }
 
         val statusService = interaction.statusService
@@ -100,9 +106,11 @@ class WoodworkingFragment : BasePageFragment(), NetworkStatusListener {
     /* callback */
     override fun onNetworkChange(status: NetworkStatusValues) {
         if (status.requireMainframeWifi) {
-            doorButtons?.isEnabled = status.hasWoodworkingBssid
+            doorButtonsFront?.isEnabled = status.hasWoodworkingFrontBssid
+            doorButtonsBack?.isEnabled = status.hasWoodworkingBackBssid
         } else {
-            doorButtons?.isEnabled = true
+            doorButtonsFront?.isEnabled = true
+            doorButtonsBack?.isEnabled = true
         }
     }
 }

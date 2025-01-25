@@ -63,4 +63,6 @@
     <string name="woodworking_text">Setzte den Holzwerkstatt Status neu. Hierzu musst du dich im Mainframe WLan und in der Holzwerkstatt befinden.</string>
     <string name="title_activity_log_viewer">Log files</string>
     <string name="overview_trashInfo">Morgen ist Abfuhr: %s</string>
+    <string name="door_buttons_front">Vordertür</string>
+    <string name="door_buttons_back">Hintertür</string>
 </resources>

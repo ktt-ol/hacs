@@ -28,12 +28,15 @@ class NetworkStatus(private val context: Context, prefs: SharedPreferences) :
         private set
     override var hasMachiningBssid = false
         private set
-    override var hasWoodworkingBssid = false
+    override var hasWoodworkingFrontBssid = false
         private set
+    override var hasWoodworkingBackBssid = false
+        private set
+
 
     override val hasNetwork: Boolean get() = hasWifi || hasMobile
     override val hasMainAreaBssid: Boolean
-        get() = isInMainframeWifi && (!hasMachiningBssid && !hasWoodworkingBssid)
+        get() = isInMainframeWifi && (!hasMachiningBssid && !hasWoodworkingFrontBssid && !hasWoodworkingBackBssid)
 
     init {
         requireMainframeWifi =
@@ -83,7 +86,8 @@ class NetworkStatus(private val context: Context, prefs: SharedPreferences) :
         hasMobile = false
         isInMainframeWifi = false
         hasMachiningBssid = false
-        hasWoodworkingBssid = false
+        hasWoodworkingFrontBssid = false
+        hasWoodworkingBackBssid = false
 
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val allNetworks = cm.allNetworks
@@ -114,38 +118,39 @@ class NetworkStatus(private val context: Context, prefs: SharedPreferences) :
         if (!requireMainframeWifi) {
             this.isInMainframeWifi = true
             this.hasMachiningBssid = true
-            this.hasWoodworkingBssid = true
+            this.hasWoodworkingFrontBssid = true
+            this.hasWoodworkingBackBssid = true
             Logger.info("requireMainframeWifi = false")
             return
-        }
-
-        for (ssid in Constants.MAINFRAME_SSIDS) {
-            val quotedSsid = "\"$ssid\""
-            if (quotedSsid == wifiInfo.ssid) {
-                isInMainframeWifi = true
-                Logger.info("Mainframe wifi found.")
-                break
-            }
-        }
-
-        if (this.isInMainframeWifi) {
-            val bssid = wifiInfo.bssid
-            for (validBssid in Constants.MACHINING_WIFI_BSSIDS) {
-                if (validBssid.compareTo(bssid, ignoreCase = true) == 0) {
-                    this.hasMachiningBssid = true
-                    break
-                }
-            }
-
-            for (validBssid in Constants.WOODWORKING_WIFI_BSSIDS) {
-                if (validBssid.compareTo(bssid, ignoreCase = true) == 0) {
-                    this.hasWoodworkingBssid = true
-                    break
-                }
-            }
         } else {
-            Logger.debug("Wrong wifi, you must connect to a mainframe wifi.")
+            for (ssid in Constants.MAINFRAME_SSIDS) {
+                val quotedSsid = "\"$ssid\""
+                if (quotedSsid == wifiInfo.ssid) {
+                    isInMainframeWifi = true
+                    Logger.info("Mainframe wifi found.")
+                    break
+                }
+            }
+
+            if (this.isInMainframeWifi) {
+                val bssid = wifiInfo.bssid
+
+                this.hasMachiningBssid = hasMatchingBSSID(bssid, Constants.MACHINING_WIFI_BSSIDS)
+                this.hasWoodworkingFrontBssid = hasMatchingBSSID(bssid, Constants.WOODWORKING_FRONT_WIFI_BSSIDS)
+                this.hasWoodworkingBackBssid = hasMatchingBSSID(bssid, Constants.WOODWORKING_BACK_WIFI_BSSIDS)
+            } else {
+                Logger.debug("Wrong wifi, you must connect to a mainframe wifi.")
+            }
         }
+    }
+
+    private fun hasMatchingBSSID(bssid: String, matchingIDs: Array<String>): Boolean {
+        for (validBssid in matchingIDs) {
+            if (validBssid.compareTo(bssid, ignoreCase = true) == 0) {
+                return true
+            }
+        }
+        return false
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
@@ -167,7 +172,8 @@ interface NetworkStatusValues {
     val isInMainframeWifi: Boolean
     val hasMainAreaBssid: Boolean
     val hasMachiningBssid: Boolean
-    val hasWoodworkingBssid: Boolean
+    val hasWoodworkingFrontBssid: Boolean
+    val hasWoodworkingBackBssid: Boolean
     val requireMainframeWifi: Boolean
 }
 

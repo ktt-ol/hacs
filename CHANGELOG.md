@@ -1,6 +1,9 @@
 # Changelog
 
-# 2.11.0
+# 2.22.0
+* Support for woodworking backdoor.
+
+# 2.21.0
 * New trash calendar 2025.
 
 # 2.20.1

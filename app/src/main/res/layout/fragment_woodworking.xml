@@ -26,8 +26,28 @@
         android:paddingTop="10dp"
         android:text="@string/woodworking_text"/>
 
+    <TextView
+        style="@style/HeadlineWithSpace"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/door_buttons_front"
+        />
     <io.mainframe.hacs.components.DoorButtons
-        android:id="@+id/woodworking_doorButtons"
+        android:id="@+id/woodworking_doorButtons_front"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        hacs:extendedStatus="false">
+    </io.mainframe.hacs.components.DoorButtons>
+
+    <TextView
+        style="@style/HeadlineWithSpace"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/door_buttons_back"
+        />
+
+    <io.mainframe.hacs.components.DoorButtons
+        android:id="@+id/woodworking_doorButtons_back"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         hacs:extendedStatus="false">

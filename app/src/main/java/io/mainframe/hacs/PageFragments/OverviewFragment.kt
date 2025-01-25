@@ -33,7 +33,7 @@ class OverviewFragment : BasePageFragment(), NetworkStatusListener {
         val view = inflater.inflate(R.layout.fragment_overview, container, false)
 
         view.findViewById<View>(R.id.overview_change)
-            .setOnClickListener { interaction.navigateToPage(StatusFragment::class.java) }
+            .setOnClickListener { interaction.navigateToPage(MainAreaFragment::class.java) }
         view.findViewById<View>(R.id.overview_buzzer_outer).setOnClickListener {
             interaction.sendSshCommand(SPACE_DOOR, DoorCommand.outerDoorBuzzerCmd)
         }
