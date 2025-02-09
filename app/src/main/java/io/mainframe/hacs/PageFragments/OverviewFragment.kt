@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import io.mainframe.hacs.R
-import io.mainframe.hacs.common.Constants.SPACE_DOOR
+import io.mainframe.hacs.common.Constants.SPACE_DOOR_FRONT
 import io.mainframe.hacs.main.NetworkStatusListener
 import io.mainframe.hacs.main.NetworkStatusValues
 import io.mainframe.hacs.main.Status
@@ -35,13 +35,13 @@ class OverviewFragment : BasePageFragment(), NetworkStatusListener {
         view.findViewById<View>(R.id.overview_change)
             .setOnClickListener { interaction.navigateToPage(MainAreaFragment::class.java) }
         view.findViewById<View>(R.id.overview_buzzer_outer).setOnClickListener {
-            interaction.sendSshCommand(SPACE_DOOR, DoorCommand.outerDoorBuzzerCmd)
+            interaction.sendSshCommand(SPACE_DOOR_FRONT, DoorCommand.outerDoorBuzzerCmd)
         }
         view.findViewById<View>(R.id.overview_buzzer_inner_glass).setOnClickListener {
-            interaction.sendSshCommand(SPACE_DOOR, DoorCommand.innerGlassDoorBuzzerCmd)
+            interaction.sendSshCommand(SPACE_DOOR_FRONT, DoorCommand.innerGlassDoorBuzzerCmd)
         }
         view.findViewById<View>(R.id.overview_buzzer_inner_metal).setOnClickListener {
-            interaction.sendSshCommand(SPACE_DOOR, DoorCommand.innerMetalDoorBuzzerCmd)
+            interaction.sendSshCommand(SPACE_DOOR_FRONT, DoorCommand.innerMetalDoorBuzzerCmd)
         }
         view.findViewById<View>(R.id.overview_become_keyholder)
             .setOnClickListener { // TODO: there should be an extra command to become keyholder
@@ -49,7 +49,7 @@ class OverviewFragment : BasePageFragment(), NetworkStatusListener {
                     interaction.statusService.getLastStatusValue(StatusEvent.SPACE_STATUS)
                 if (lastStatus != null) {
                     interaction.sendSshCommand(
-                        SPACE_DOOR,
+                        SPACE_DOOR_FRONT,
                         DoorCommand.getSwitchDoorStateCmd(lastStatus)
                     )
                 }

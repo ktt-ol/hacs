@@ -45,10 +45,31 @@
         android:paddingTop="10dp"
         android:text="@string/status_text"/>
 
+    <TextView
+        style="@style/HeadlineWithSpace"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/door_buttons_front"
+        />
+
     <io.mainframe.hacs.components.DoorButtons
-        android:id="@+id/status_doorButtons"
+        android:id="@+id/status_doorButtons_front"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+    </io.mainframe.hacs.components.DoorButtons>
+
+    <TextView
+        style="@style/HeadlineWithSpace"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/door_buttons_back"
+        />
+
+    <io.mainframe.hacs.components.DoorButtons
+        android:id="@+id/status_doorButtons_back"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:extendedStatus="false">
     </io.mainframe.hacs.components.DoorButtons>
 
 

@@ -1,5 +1,8 @@
 # Changelog
 
+# 2.23.0
+* Support for main area backdoor.
+
 # 2.22.0
 * Support for woodworking backdoor.
 

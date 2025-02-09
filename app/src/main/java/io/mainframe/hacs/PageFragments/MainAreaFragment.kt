@@ -7,7 +7,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import io.mainframe.hacs.R
-import io.mainframe.hacs.common.Constants.SPACE_DOOR
+import io.mainframe.hacs.common.Constants.SPACE_DOOR_BACK
+import io.mainframe.hacs.common.Constants.SPACE_DOOR_FRONT
 import io.mainframe.hacs.common.YesNoDialog
 import io.mainframe.hacs.components.DoorButtons
 import io.mainframe.hacs.main.BackDoorStatus
@@ -23,20 +24,21 @@ import org.pmw.tinylog.Logger
 class MainAreaFragment : BasePageFragment(), NetworkStatusListener {
 
     private var subscription: Subscription? = null
-    private val doorButtons: DoorButtons? get() = view?.findViewById(R.id.status_doorButtons)
+    private val doorButtonsFront: DoorButtons? get() = view?.findViewById(R.id.status_doorButtons_front)
+    private val doorButtonsBack: DoorButtons? get() = view?.findViewById(R.id.status_doorButtons_back)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_status, container, false)?.apply {
-            findViewById<DoorButtons>(R.id.status_doorButtons)?.setOnButtonClickListener { doorButton, _ ->
+            findViewById<DoorButtons>(R.id.status_doorButtons_front)?.setOnButtonClickListener { doorButton, _ ->
                 if (doorButton.status == Status.CLOSE) {
                     // special action when the space is going to be closed
                     withBackDoorCheck {
                         withTrashCheck {
                             interaction.sendSshCommand(
-                                SPACE_DOOR,
+                                SPACE_DOOR_FRONT,
                                 DoorCommand.getSwitchDoorStateCmd(doorButton.status)
                             )
                         }
@@ -44,10 +46,17 @@ class MainAreaFragment : BasePageFragment(), NetworkStatusListener {
 
                 } else {
                     interaction.sendSshCommand(
-                        SPACE_DOOR,
+                        SPACE_DOOR_FRONT,
                         DoorCommand.getSwitchDoorStateCmd(doorButton.status)
                     )
                 }
+            }
+
+            findViewById<DoorButtons>(R.id.status_doorButtons_back)?.setOnButtonClickListener { doorButton, _ ->
+                interaction.sendSshCommand(
+                    SPACE_DOOR_BACK,
+                    DoorCommand.getSwitchDoorStateCmd(doorButton.status)
+                )
             }
         }
     }
@@ -99,12 +108,16 @@ class MainAreaFragment : BasePageFragment(), NetworkStatusListener {
             networkStatus.addListener(this)
 
             if (networkStatus.requireMainframeWifi) {
-                doorButtons?.isEnabled = networkStatus.hasMainAreaBssid
+                doorButtonsFront?.isEnabled = networkStatus.hasMainAreaBssid
+                doorButtonsBack?.isEnabled = networkStatus.hasMainAreaBssid
+
             } else {
-                doorButtons?.isEnabled = true
+                doorButtonsFront?.isEnabled = true
+                doorButtonsBack?.isEnabled = true
             }
         } else {
-            doorButtons?.isEnabled = false
+            doorButtonsFront?.isEnabled = false
+            doorButtonsBack?.isEnabled = false
         }
 
         val statusService = interaction.statusService
@@ -160,6 +173,7 @@ class MainAreaFragment : BasePageFragment(), NetworkStatusListener {
     /* callback */
 
     override fun onNetworkChange(status: NetworkStatusValues) {
-        doorButtons?.isEnabled = status.hasMainAreaBssid
+        doorButtonsFront?.isEnabled = status.hasMainAreaBssid
+        doorButtonsBack?.isEnabled = status.hasMainAreaBssid
     }
 }

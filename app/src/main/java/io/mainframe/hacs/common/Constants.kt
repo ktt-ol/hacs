@@ -41,10 +41,18 @@ object Constants {
      */
 
     @JvmField
-    val SPACE_DOOR: DoorServer = DoorServer(
+    val SPACE_DOOR_FRONT: DoorServer = DoorServer(
         "acs.lan.mainframe.io", "keyholder", 22,
         "C1:28:56:42:2B:8D:45:30:B7:43:EB:F6:A7:36:43:5D"
     )
+
+    @JvmField
+    val SPACE_DOOR_BACK: DoorServer = DoorServer(
+        "acs-backdoor.lan.mainframe.io", "keyholder", 22,
+        "A0:51:5F:F5:D0:4F:F8:CB:2F:D0:FC:12:44:41:3A:59"
+    )
+
+
 
     @JvmField
     val MACHINING_DOOR: DoorServer = DoorServer(
