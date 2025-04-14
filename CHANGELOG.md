@@ -1,5 +1,8 @@
 # Changelog
 
+# 2.23.1 (Playstore only)
+* Playstore removal warning
+
 # 2.23.0
 * Support for main area backdoor.
 

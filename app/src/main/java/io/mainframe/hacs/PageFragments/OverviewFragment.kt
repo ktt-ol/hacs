@@ -1,5 +1,7 @@
 package io.mainframe.hacs.PageFragments
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Html
 import android.view.LayoutInflater
@@ -31,6 +33,15 @@ class OverviewFragment : BasePageFragment(), NetworkStatusListener {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_overview, container, false)
+
+        view.findViewById<TextView>(R.id.overview_playstore_warning).apply {
+            val url = "https://f-droid.org/packages/io.mainframe.hacs/"
+            text = Html.fromHtml("""<b>Wichtig</b>: Diese App wird Ende April aus dem Google Playstore entfernt. Für weitere Updates bitte <a href="$url">F-Droid</a> benutzen.""")
+            setOnClickListener {
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                view.context.startActivity(browserIntent)
+            }
+        }
 
         view.findViewById<View>(R.id.overview_change)
             .setOnClickListener { interaction.navigateToPage(MainAreaFragment::class.java) }
