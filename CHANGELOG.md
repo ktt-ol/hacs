@@ -1,5 +1,8 @@
 # Changelog
 
+# 2.23.2
+* Internal version bump to overwrite Playstore version.
+
 # 2.23.0
 * Support for main area backdoor.
 
