@@ -1,5 +1,9 @@
 # Changelog
 
+# 2.24.0
+* Key change of main area backdoor.
+* Update `targetSdkVersion` to 35.
+
 # 2.23.2
 * Internal version bump to overwrite Playstore version.
 
