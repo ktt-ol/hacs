@@ -49,9 +49,8 @@ object Constants {
     @JvmField
     val SPACE_DOOR_BACK: DoorServer = DoorServer(
         "acs-backdoor.lan.mainframe.io", "keyholder", 22,
-        "A0:51:5F:F5:D0:4F:F8:CB:2F:D0:FC:12:44:41:3A:59"
+        "06:db:5c:38:a4:8d:9f:27:4b:72:50:ac:71:6f:6f:f9"
     )
-
 
 
     @JvmField
@@ -89,7 +88,7 @@ object Constants {
 
     const val LOG_FILE_FOLDER: String = "hacs_logs"
 
-    class DoorServer(
+    data class DoorServer(
         @JvmField val host: String,
         @JvmField val user: String,
         @JvmField val port: Int,
