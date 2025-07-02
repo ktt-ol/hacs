@@ -23,7 +23,7 @@ object Constants {
     @JvmField
     val WOODWORKING_FRONT_WIFI_BSSIDS = arrayOf(
         "80:2a:a8:48:65:0a", // mainframe (5 GHz)
-        "80:2a:a8:47:65:0a", // mainframe-legacy (2.4 GHz)
+        "86:2a:a8:48:65:0a", // mainframe-legacy (2.4 GHz)
     )
 
     @JvmField
