@@ -1,5 +1,9 @@
 # Changelog
 
+# 2.25.0
+* New trash calendar 2026.
+* Changes BSSID for woodworking front door.
+
 # 2.24.0
 * Key change of main area backdoor.
 * Update `targetSdkVersion` to 35.
